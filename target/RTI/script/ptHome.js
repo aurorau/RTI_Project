@@ -1,18 +1,21 @@
 
 var touchCount=0;
-var clickCount=0;
+var leftClickCount=0;
+var rightClickCount=0;
 var zoomCount=0;
 var scrollCount=0;
 var keyPressCount=0;
 var scrollEvent=false;
 var tapsEvent=false;
+var dbClickCount=0;
+var orientation;
 
 $(document).ready(function() {
 	console.log("COME BACK");
-	$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
+/*	$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
 	setInterval(function(){ 
 		//$("#getUserDataBtnId").click();
-	},10000);
+	},10000);*/
 	
 	$( window ).resize(function() {
 		zoomCount = zoomCount+1;
@@ -23,58 +26,45 @@ $(document).ready(function() {
 		//alert("DONE");
 	});
 	
-/*    $(window).scroll(function() {
-        if($(window).scrollTop() > 0) {
-        	scrollCount = scrollCount+1;
-            console.log("From Top :"+$(window).scrollTop() );
-        }
-    });*/
-    
-/*    document.body.addEventListener('click', function(e){
-    	clickCount = clickCount+1;
-    	console.log(getCurrentTime());
-    	console.log("Click X :"+e.screenX); // alert pageX coordinate of click point
-    	console.log("Click Y :"+e.screenY);
-    	clickX = e.screenX;
-    	clickY = e.screenY;
-    	
-    }, false)*/
-    
-
-
-    
-/*    document.body.addEventListener('touchstart', function(e){
-    	touchCount = touchCount+1;
-        console.log("Touch-Start X :"+e.changedTouches[0].pageX); // alert pageX coordinate of touch point
-        console.log("Touch-Start Y :"+e.changedTouches[0].pageY);
-    }, false)
-    
-    document.body.addEventListener('touchend', function(e){
-        console.log("Touch-End X :"+e.changedTouches[0].pageX) // alert pageX coordinate of touch point
-        console.log("Touch-End Y :"+e.changedTouches[0].pageY)
-    }, false)*/
-	
 });
 $(document).click(function(e){
-	clickCount = clickCount+1;
+	
+	console.log("Left Right Click :"+e.which);
 	console.log("Click X :"+e.screenX); // alert pageX coordinate of click point
 	console.log("Click Y :"+e.screenY);
+	
+	if(e.which == 1) {
+		//if(e.type == 'click') {
+			leftClickCount = leftClickCount+1;
+		//} 
+	}
+	if(e.which == 2) {
+		
+	}
+	if(e.which == 3) {
+		rightClickCount = rightClickCount+1;
+	}
 });
 
-$('body').on("swipe",function(){
-	tapsEvent = true;
+$(document).dblclick(function(e){
+	dbClickCount = dbClickCount+1;
+
+});
+
+$(document).on({'touchstart': function(){ 
+	touchCount = touchCount+1;
+}});
+
+$(window).on("orientationchange",function(event){
+	  orientation = event.orientation;
 });
 
 $(document).scroll(function(e){
 	scrollEvent = true;
-	//console.log("From Top :"+$(document).scrollTop() );
 	console.log("Scroll Event :"+scrollEvent);
 });
 
 $(document).keypress(function(e) {
-/*    if(e.which == 13) {
-    	setclassroomTable();
-    }*/
 	keyPressCount = keyPressCount+1;
 	console.log("Key press :"+e.which);
 });
@@ -100,7 +90,7 @@ function sendDataToController() {
 	console.log("screenWidth :"+screenWidth);
 	//getLocation();
 	
-	console.log("Country Name : " + geoplugin_countryName());
+/*	console.log("Country Name : " + geoplugin_countryName());
 	console.log("Country Code :"+geoplugin_countryCode());
 	console.log("Continent Code :"+geoplugin_continentCode());
 	console.log("Region :"+geoplugin_region());
@@ -108,7 +98,7 @@ function sendDataToController() {
 	console.log("Latitude :"+geoplugin_latitude());
 	console.log("Longitude :"+geoplugin_longitude());
 	console.log("Currency Symbol :"+geoplugin_currencySymbol());
-	console.log("Currency Code :"+geoplugin_currencyCode());
+	console.log("Currency Code :"+geoplugin_currencyCode());*/
 	
 	var location = $('#searchKeyId').val();
 	
@@ -116,12 +106,15 @@ function sendDataToController() {
 		userAgent : userAgent,
 		location : location,
 		touchCount : touchCount,
-		clickCount : clickCount,
+		leftClickCount : leftClickCount,
 		zoomCount : zoomCount,
 		scrollCount : scrollCount,
 		keyPressCount : keyPressCount,
 		scrollEvent : scrollEvent,
-		tapsEvent : tapsEvent
+		tapsEvent : tapsEvent,
+		orientation : orientation,
+		rightClickCount : rightClickCount,
+		dbClickCount : dbClickCount
 	}, function(data) {
 		if (data.status == 'success') {
 			console.log("IP Address :"+data.result);
