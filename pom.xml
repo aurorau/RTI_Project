@@ -89,7 +89,13 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.10</version>
 		</dependency>
-
+		
+		<!-- Proxy-vole -->
+		<dependency>
+			<groupId>de.ipk-gatersleben</groupId>
+			<artifactId>eDAL-MetaDataAPI</artifactId>
+			<version>2.2.26</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>RTI</finalName>
