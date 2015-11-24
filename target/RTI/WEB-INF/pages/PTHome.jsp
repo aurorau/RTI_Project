@@ -3,6 +3,7 @@
 
 <script src="script/jquery.min.js"></script>
 <script src="script/ptHome.js"></script>
+<script src="script/admin.js"></script>
 <script language="JavaScript" src="http://www.geoplugin.net/javascript.gp" type="text/javascript"></script> 
 <html>
 
@@ -77,6 +78,7 @@
           <div class="sidebar_base"></div>
         </div>
       </div>
+      <input type="hidden" id="hiddenIpAddress"/>
       <div id="content">
         <!-- insert the page content here -->
         <h1>Welcome to the RTI</h1>

@@ -9,34 +9,32 @@ var scrollEvent=false;
 var tapsEvent=false;
 var dbClickCount=0;
 var orientation;
+var eventType;
+var event=null;
+var screenWidth = 0;
+var screenHeight = 0;
+var zoomEvent=null;
+var touchX=0;
+var touchY=0;
 
 $(document).ready(function() {
-	console.log("COME BACK");
 /*	$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
 	setInterval(function(){ 
 		//$("#getUserDataBtnId").click();
 	},10000);*/
-	
-	$( window ).resize(function() {
-		zoomCount = zoomCount+1;
-		console.log("Zoom");
-	});
+
 	
 	$('#gallaryLinkId').on('click', function(){
 		//alert("DONE");
 	});
-	
+	screenWidth = screen.width;
+	screenHeight = screen.height;
 });
-$(document).click(function(e){
-	
-	console.log("Left Right Click :"+e.which);
-	console.log("Click X :"+e.screenX); // alert pageX coordinate of click point
-	console.log("Click Y :"+e.screenY);
-	
+
+function getLeftRightClick(e) {
 	if(e.which == 1) {
-		//if(e.type == 'click') {
-			leftClickCount = leftClickCount+1;
-		//} 
+		leftClickCount = leftClickCount+1;
+		//resizeTest();
 	}
 	if(e.which == 2) {
 		
@@ -44,16 +42,40 @@ $(document).click(function(e){
 	if(e.which == 3) {
 		rightClickCount = rightClickCount+1;
 	}
-});
+}
 
 $(document).dblclick(function(e){
 	dbClickCount = dbClickCount+1;
 
 });
 
-$(document).on({'touchstart': function(){ 
+$(document).on('touchstart', function(e){
+	event = e;
 	touchCount = touchCount+1;
-}});
+	eventType = event.type;
+	touchX = e.originalEvent.touches[0].pageX;
+	touchY = e.originalEvent.touches[0].pageY;
+	//resizeTest();
+});
+
+function resizeTest() {
+	if(screenWidth > touchX || screenHeight > touchY) {
+		zoomEvent = 'zoomOut'
+	}
+	if(screenWidth < touchX || screenHeight < touchY) {
+		zoomEvent = 'zoomIn'
+	}
+	else {
+		zoomEvent = 'NoZooming'
+	}
+}
+
+$(document).on('click', function(e){
+	if(event == null && e.type == 'click') {
+		eventType = e.type;
+		getLeftRightClick(e);
+	}
+});
 
 $(window).on("orientationchange",function(event){
 	  orientation = event.orientation;
@@ -84,7 +106,7 @@ function sendData() {
 function sendDataToController() {
 	var userAgent = navigator.userAgent;
 	var innerWidth = $(window).innerWidth();
-	var screenWidth = screen.width;
+	//var screenWidth = screen.width;
 	
 	console.log("innerWidth :"+innerWidth);
 	console.log("screenWidth :"+screenWidth);
@@ -102,7 +124,7 @@ function sendDataToController() {
 	
 	var location = $('#searchKeyId').val();
 	
-	$.post('homePage/getHeaderString', {
+	$.post('getHeaderString', {
 		userAgent : userAgent,
 		location : location,
 		touchCount : touchCount,
@@ -114,11 +136,18 @@ function sendDataToController() {
 		tapsEvent : tapsEvent,
 		orientation : orientation,
 		rightClickCount : rightClickCount,
-		dbClickCount : dbClickCount
+		dbClickCount : dbClickCount,
+		eventType : eventType,
+		zoomEvent : zoomEvent,
+		screenWidth : screenWidth,
+		touchX : touchX,
+		touchY : touchY,
+		screenHeight : screenHeight
 	}, function(data) {
 		if (data.status == 'success') {
-			console.log("IP Address :"+data.result);
+			console.log("IP Address :"+data.result.IP);
 			console.log("DONE");
+			$('#hiddenIpAddress').val(data.result.IP);
 		} else {
 			console.log(data.status);
 		}

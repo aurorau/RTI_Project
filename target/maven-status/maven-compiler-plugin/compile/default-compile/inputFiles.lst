@@ -4,6 +4,7 @@
 /media/aurora/Other/RTI/RTI/src/main/java/com/aurora/controller/HomePageController.java
 /media/aurora/Other/RTI/RTI/src/main/java/com/aurora/controller/BaseController.java
 /media/aurora/Other/RTI/RTI/src/main/java/com/aurora/controller/GallaryPageController.java
+/media/aurora/Other/RTI/RTI/src/main/java/com/aurora/controller/AdminController.java
 /media/aurora/Other/RTI/RTI/src/main/java/com/aurora/serviceImpl/TestServiceImpl.java
 /media/aurora/Other/RTI/RTI/src/main/java/com/aurora/util/JsonResponce.java
 /media/aurora/Other/RTI/RTI/src/main/java/com/aurora/daoImpl/TestDaoImpl.java
