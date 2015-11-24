@@ -16,14 +16,17 @@ var screenHeight = 0;
 var zoomEvent=null;
 var touchX=0;
 var touchY=0;
+var clickX=0;
+var clickY=0;
+var eventStartTime=0;
+var eventEndTime=0;
 
 $(document).ready(function() {
-/*	$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
-	setInterval(function(){ 
+	$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
+	/*setInterval(function(){ 
 		//$("#getUserDataBtnId").click();
 	},10000);*/
 
-	
 	$('#gallaryLinkId').on('click', function(){
 		//alert("DONE");
 	});
@@ -34,7 +37,8 @@ $(document).ready(function() {
 function getLeftRightClick(e) {
 	if(e.which == 1) {
 		leftClickCount = leftClickCount+1;
-		//resizeTest();
+		clickX = e.screenX;
+		clickY = e.screenY;
 	}
 	if(e.which == 2) {
 		
@@ -81,10 +85,22 @@ $(window).on("orientationchange",function(event){
 	  orientation = event.orientation;
 });
 
-$(document).scroll(function(e){
+/*$(document).scroll(function(e){
 	scrollEvent = true;
+	console.log(e.getTop);
 	console.log("Scroll Event :"+scrollEvent);
-});
+});*/
+
+function scrolled() {
+	console.log("DONE");
+	console.log("offSet :"+$('#banner').offset().top);
+    //do by scroll start
+    $(this).off('scroll')[0].setTimeout(function(){
+        //do by scroll end
+        $(this).on('scroll',scrolled);
+    }, 1000)
+}
+$(window).on('scroll',scrolled);
 
 $(document).keypress(function(e) {
 	keyPressCount = keyPressCount+1;
@@ -110,6 +126,9 @@ function sendDataToController() {
 	
 	console.log("innerWidth :"+innerWidth);
 	console.log("screenWidth :"+screenWidth);
+	
+	console.log("Referer :"+document.referrer);
+	console.log("clickY :"+clickY);
 	//getLocation();
 	
 /*	console.log("Country Name : " + geoplugin_countryName());
@@ -123,6 +142,8 @@ function sendDataToController() {
 	console.log("Currency Code :"+geoplugin_currencyCode());*/
 	
 	var location = $('#searchKeyId').val();
+	var languages = navigator.language;
+	var referer = document.referrer;
 	
 	$.post('getHeaderString', {
 		userAgent : userAgent,
@@ -142,6 +163,11 @@ function sendDataToController() {
 		screenWidth : screenWidth,
 		touchX : touchX,
 		touchY : touchY,
+		clickX : clickX,
+		clickY : clickY,
+		location : location,
+		languages : languages,
+		referer : referer,
 		screenHeight : screenHeight
 	}, function(data) {
 		if (data.status == 'success') {
