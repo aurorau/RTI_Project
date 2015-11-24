@@ -7,9 +7,12 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,30 +32,40 @@ import nl.bitwalker.useragentutils.OperatingSystem;
 import nl.bitwalker.useragentutils.UserAgent;
 
 @Controller
-@RequestMapping("/homePage*")
+@RequestMapping("/*")
 public class HomePageController {
+	 public Map<String, Object> resultMap = null;
+	 
 	 @RequestMapping(method = RequestMethod.GET)
 	 public ModelAndView hello() throws Exception {
-		 //return new ModelAndView("homePage");
 		 return new ModelAndView("PTHome");
+	 }
+	 @RequestMapping(method = RequestMethod.GET, value="/adminPage")
+	 public ModelAndView adminPage() throws Exception {
+		 return new ModelAndView("adminPage");
+	 }
+	 @RequestMapping(method = RequestMethod.GET, value="/getDataForAdminPage")
+	 public @ResponseBody JsonResponce getDataForAdminPage() throws Exception {
+		 JsonResponce res= new JsonResponce();
+		 res.setStatus("success");
+		 res.setResult(resultMap);
+		 
+		 return res;
 	 }
 	 
 	 @RequestMapping(method = RequestMethod.POST, value="/getHeaderString")
 	 public  @ResponseBody JsonResponce getHeaderString(HttpServletRequest request, HttpServletResponse responce) throws Exception {
 		 
 		 JsonResponce res= new JsonResponce();
-		 
-/*		 String touchEnX = null;
+		 resultMap =  new HashMap<String, Object>();
+		 String touchEnX = null;
 		 String touchEny = null;
 		 Long startTime = null;
 		 Long endTime = null;
 		 
-		 String referer = request.getParameter("referer");
-		 String url = request.getParameter("url");
-		 String language = request.getParameter("language");
-		 String userAgent = request.getParameter("userAgent");
-		 String country = request.getParameter("countryName");
-		 String screenHeight = request.getParameter("screenHeight");
+		//String userAgent = request.getParameter("userAgent");
+		 //String url = request.getParameter("url");
+		 /*		 String screenHeight = request.getParameter("screenHeight");
 		 String screenWidth = request.getParameter("screenWidth");
 		 String region = request.getParameter("region");
 		 String city = request.getParameter("city");
@@ -72,6 +85,7 @@ public class HomePageController {
 		 //String ipAddress = request.getRemoteAddr(); 
 		 
 		   //is client behind something?
+		   System.out.println("x forwarded :"+request.getHeader("X-FORWARDED-FOR"));
 		   String ipAddress = request.getHeader("X-FORWARDED-FOR");  
 		   if (ipAddress == null) {  
 			   ipAddress = request.getRemoteAddr();  
@@ -93,9 +107,15 @@ public class HomePageController {
 		   System.out.println("getHeaderFROM :"+request.getHeader("From"));
 		   System.out.println("getHeaderReferer :"+request.getHeader("Referer"));*/
 		   
-		   Long creationTime = request.getSession().getCreationTime();
-		   Long lastAccessTime = request.getSession().getLastAccessedTime();
+		   
+		   String referer = request.getParameter("referer");
+		   String languages = request.getParameter("languages");
 		   String location = request.getParameter("location");
+		   
+		   Long creationTime = request.getSession().getCreationTime();
+		   String sessionId = request.getSession().getId();
+		   Long lastAccessTime = request.getSession().getLastAccessedTime();
+		   
 		   Long leftClickCount = Long.parseLong(request.getParameter("leftClickCount"));
 		   Long rightClickCount = Long.parseLong(request.getParameter("rightClickCount"));
 		   Long dbClickCount = Long.parseLong(request.getParameter("dbClickCount"));
@@ -106,19 +126,36 @@ public class HomePageController {
 		   Boolean scrollEvent = Boolean.parseBoolean(request.getParameter("scrollEvent"));
 		   Boolean tapsEvent = Boolean.parseBoolean(request.getParameter("tapsEvent"));
 		   String orientation = request.getParameter("orientation");
+		   String eventType = request.getParameter("eventType");
+		   String zoomEvent = request.getParameter("zoomEvent");
+		   String screenWidth = request.getParameter("screenWidth");
+		   String screenHeight = request.getParameter("screenHeight");
+		   String touchX = request.getParameter("touchX");
+		   String touchY = request.getParameter("touchY");
+		   String clickX = request.getParameter("clickX");
+		   String clickY = request.getParameter("clickY");
+		  // String refererURI = new URI(request.getHeader("referer")).getPath();
+		   String refererURI = request.getHeader("referer");
+		   
 		   
 /*		   System.out.println("Creation Time :"+getTime(creationTime));
 		   System.out.println("Last Access Time :"+getTime(lastAccessTime));*/
 		   
-		   System.out.println("LeftClick Count :"+leftClickCount);
+/*		   System.out.println("LeftClick Count :"+leftClickCount);
 		   System.out.println("RightClick Count :"+rightClickCount);
 		   System.out.println("DoubleClick Count :"+dbClickCount);
 		   System.out.println("KeyPress Count :"+keyPressCount);
 		   System.out.println("Scroll Event :"+scrollEvent);
 		   System.out.println("Touch Count :"+touchCount);
 		   System.out.println("Orientation :"+orientation);
-/*		   System.out.println("Touch Count :"+touchCount);
+		   System.out.println("Event Type :"+eventType);
 		   System.out.println("Zoom Count :"+zoomCount);
+		   System.out.println("Zoom Event :"+zoomEvent);
+		   System.out.println("Screen Width :"+screenWidth);
+		   System.out.println("Screen Height :"+screenHeight);
+		   System.out.println("Touch-X :"+touchX);
+		   System.out.println("Touch-Y :"+touchY);*/
+/*		   System.out.println("Touch Count :"+touchCount);
 		   System.out.println("Scroll Count :"+scrollCount);*/
 		   
 		  // getServerIp();
@@ -137,9 +174,38 @@ public class HomePageController {
 	        System.out.println("Device :"+deviceName);
 	        System.out.println("OS :"+agent.getName());
 	        System.out.println("Browser :"+browser.getName());
-	       // catchProxy();
+	        //catchProxy();
+	        
+	        resultMap.put("IP", ipAddress);
+	        resultMap.put("Device", deviceName);
+	        resultMap.put("OS", agent.getName());
+	        resultMap.put("Browser", browser.getName());
+	        resultMap.put("LeftClickCount", leftClickCount);
+	        resultMap.put("RightClickCount", rightClickCount);
+	        resultMap.put("DoubleClickCount", dbClickCount);
+	        resultMap.put("KeyPressCount", keyPressCount);
+	        resultMap.put("ScrollEvent", scrollEvent);
+	        resultMap.put("TouchCount", touchCount);
+	        resultMap.put("Orientation", orientation);
+	        resultMap.put("EventType", eventType);
+	        resultMap.put("ZoomCount", zoomCount);
+	        resultMap.put("ZoomEvent", zoomEvent);
+	        resultMap.put("ScreenWidth", screenWidth);
+	        resultMap.put("ScreenHeight", screenHeight);
+	        resultMap.put("TouchX", touchX);
+	        resultMap.put("TouchY", touchY);
+	        resultMap.put("ClickX", clickX);
+	        resultMap.put("ClickY", clickY);
+	        resultMap.put("Referer", referer);
+	        resultMap.put("Languages", languages);
+	        resultMap.put("Location", location);
+	        resultMap.put("SessionCreationTime", creationTime);
+	        resultMap.put("SessionId", sessionId);
+	        resultMap.put("LastAccessTime", lastAccessTime);
+	        resultMap.put("RefererURI", refererURI);
+	        
 		 res.setStatus("success");
-		 res.setResult(ipAddress);
+		 res.setResult(resultMap);
 		 
 		 return res;
 	 }
