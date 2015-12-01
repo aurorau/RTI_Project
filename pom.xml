@@ -96,6 +96,13 @@
 			<artifactId>eDAL-MetaDataAPI</artifactId>
 			<version>2.2.26</version>
 		</dependency>
+		
+		<!-- Geo IP -->
+		<dependency>
+    		<groupId>com.maxmind.geoip</groupId>
+    		<artifactId>geoip-api</artifactId>
+    		<version>1.2.14</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>RTI</finalName>
