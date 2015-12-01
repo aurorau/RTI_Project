@@ -10,7 +10,7 @@ var tapsEvent=false;
 var dbClickCount=0;
 var orientation;
 var eventType;
-var event=null;
+var TEVENT=null;
 var screenWidth = 0;
 var screenHeight = 0;
 var zoomEvent=null;
@@ -20,64 +20,98 @@ var clickX=0;
 var clickY=0;
 var eventStartTime=0;
 var eventEndTime=0;
+var previouseScrollTime = 0;
+var previousKey = 'NotYet';
+var previouseLeftClickTime = 0;
+var globalDBClickEvent = 0;
+var previouseScreenWidth = 0;
+var previouseScreenHeight = 0;
+var zoomInCount = 0;
+var zoomOutCount = 0;
+var previouseTouchTime = 0;
+var previousePosition = 0;
 
 $(document).ready(function() {
-	$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
+	needed();
+	previouseScreenWidth = screen.width;
+	previouseScreenHeight = screen.height;
 	/*setInterval(function(){ 
 		//$("#getUserDataBtnId").click();
 	},10000);*/
 
-	$('#gallaryLinkId').on('click', function(){
+/*	$('#gallaryLinkId').on('click', function(){
 		//alert("DONE");
-	});
+	});*/
+	
+});
+
+function needed(){
+	$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
 	screenWidth = screen.width;
 	screenHeight = screen.height;
-});
+}
 
 function getLeftRightClick(e) {
 	if(e.which == 1) {
 		leftClickCount = leftClickCount+1;
 		clickX = e.screenX;
 		clickY = e.screenY;
+		var coordinate = clickX+"_"+clickY;
+		
 	}
 	if(e.which == 2) {
 		
 	}
-	if(e.which == 3) {
+	if(e.which == 3 || e.which == null) {
 		rightClickCount = rightClickCount+1;
 	}
 }
+/*$(document).on("pagecreate",function(){
+	catchTapFunction();
+	catchScrollEvent();
+});*/
+
+/*function catchScrollEvent () {
+	$(document).on("scrollstop",function(){
+		scrollCount = scrollCount+1;
+	});
+}*/
 
 $(document).dblclick(function(e){
 	dbClickCount = dbClickCount+1;
+	leftClickCount = leftClickCount-2;
 
 });
 
 $(document).on('touchstart', function(e){
-	event = e;
-	touchCount = touchCount+1;
+	TEVENT = e;
+	
+	var currentTouchTime = Date.now();
+	var touchTimeDiffer = (currentTouchTime - previouseTouchTime);
+
+	if(touchTimeDiffer < 400) {
+		zoomCount = zoomCount+1;
+		touchCount = touchCount-1;
+	} else {
+		touchCount = touchCount+1;
+	}
+	previouseTouchTime = currentTouchTime;
+	
 	eventType = event.type;
 	touchX = e.originalEvent.touches[0].pageX;
 	touchY = e.originalEvent.touches[0].pageY;
-	//resizeTest();
 });
 
-function resizeTest() {
-	if(screenWidth > touchX || screenHeight > touchY) {
-		zoomEvent = 'zoomOut'
-	}
-	if(screenWidth < touchX || screenHeight < touchY) {
-		zoomEvent = 'zoomIn'
-	}
-	else {
-		zoomEvent = 'NoZooming'
-	}
-}
+$(document).on('touchmove', function(e){
+	//alert("DONE");
+});
 
-$(document).on('click', function(e){
-	if(event == null && e.type == 'click') {
+$(document).on('mousedown',function(e){
+	if(TEVENT == null) {
 		eventType = e.type;
 		getLeftRightClick(e);
+	} else{
+		TEVENT = null;
 	}
 });
 
@@ -85,32 +119,53 @@ $(window).on("orientationchange",function(event){
 	  orientation = event.orientation;
 });
 
-/*$(document).scroll(function(e){
-	scrollEvent = true;
-	console.log(e.getTop);
-	console.log("Scroll Event :"+scrollEvent);
-});*/
-
 function scrolled() {
-	console.log("DONE");
-	console.log("offSet :"+$('#banner').offset().top);
-    //do by scroll start
-    $(this).off('scroll')[0].setTimeout(function(){
-        //do by scroll end
-        $(this).on('scroll',scrolled);
-    }, 1000)
+
+	screenWidth = screen.width;
+	screenHeight = screen.height;
+	
+	var currentScrollTime = Date.now();
+	
+	var timeDiffer= (currentScrollTime-previouseScrollTime);
+	if(timeDiffer > 100) {
+		scrollCount = scrollCount+1;
+	}
+	previouseScrollTime = currentScrollTime;
 }
+
 $(window).on('scroll',scrolled);
 
 $(document).keypress(function(e) {
-	keyPressCount = keyPressCount+1;
-	console.log("Key press :"+e.which);
+	if(e.which == 45) {
+		zoomInCount = zoomInCount+1;
+		zoomCount = zoomCount+1;
+	}
+	if( e.which == 43) {
+		zoomOutCount = zoomOutCount+1;
+		zoomCount = zoomCount+1;
+	}
+
+	if(previousKey == 'NotYet') {
+		keyPressCount = keyPressCount+1;
+		previousKey = e.which;
+	} else if (e.which != previousKey) {
+		keyPressCount = keyPressCount+1;
+	}
 });
 
 var getCurrentTime=function() {
 	var d = new Date();
-	var time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-	return time;
+	/*	var time = d.getDate() + ":"+d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+	return time;*/
+	  var hours = d.getHours();
+	  var minutes = d.getMinutes();
+	  var seconds = d.getSeconds();
+	  var ampm = hours >= 12 ? 'pm' : 'am';
+	  hours = hours % 12;
+	  hours = hours ? hours : 12; // the hour '0' should be '12'
+	  minutes = minutes < 10 ? '0'+minutes : minutes;
+	  var strTime = hours + ':' + minutes + ':'+seconds + ' ' + ampm;
+	  return strTime;
 }
 
 function sendData() {
@@ -122,14 +177,8 @@ function sendData() {
 function sendDataToController() {
 	var userAgent = navigator.userAgent;
 	var innerWidth = $(window).innerWidth();
-	//var screenWidth = screen.width;
-	
-	console.log("innerWidth :"+innerWidth);
-	console.log("screenWidth :"+screenWidth);
-	
-	console.log("Referer :"+document.referrer);
-	console.log("clickY :"+clickY);
-	//getLocation();
+	var dataSubmitTime = getCurrentTime();
+	//alert(window.devicePixelRatio+"\n"+window.screen.width);
 	
 /*	console.log("Country Name : " + geoplugin_countryName());
 	console.log("Country Code :"+geoplugin_countryCode());
@@ -150,7 +199,7 @@ function sendDataToController() {
 		location : location,
 		touchCount : touchCount,
 		leftClickCount : leftClickCount,
-		zoomCount : zoomCount,
+		zoomInCount : zoomInCount,
 		scrollCount : scrollCount,
 		keyPressCount : keyPressCount,
 		scrollEvent : scrollEvent,
@@ -159,7 +208,7 @@ function sendDataToController() {
 		rightClickCount : rightClickCount,
 		dbClickCount : dbClickCount,
 		eventType : eventType,
-		zoomEvent : zoomEvent,
+		zoomOutCount : zoomOutCount,
 		screenWidth : screenWidth,
 		touchX : touchX,
 		touchY : touchY,
@@ -168,18 +217,16 @@ function sendDataToController() {
 		location : location,
 		languages : languages,
 		referer : referer,
-		screenHeight : screenHeight
+		screenHeight : screenHeight,
+		zoomCount : zoomCount,
+		dataSubmitTime : dataSubmitTime
 	}, function(data) {
 		if (data.status == 'success') {
-			console.log("IP Address :"+data.result.IP);
-			console.log("DONE");
-			$('#hiddenIpAddress').val(data.result.IP);
 		} else {
 			console.log(data.status);
 		}
 	});
 }
-
 function getLocation() {
 	navigator.geolocation.getCurrentPosition(foundLocation, noLocation);
     function foundLocation(position) {

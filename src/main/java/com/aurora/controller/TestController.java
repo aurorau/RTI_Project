@@ -17,8 +17,8 @@ import com.aurora.daoImpl.TestDaoImpl;
 import com.aurora.model.Person;
 import com.aurora.service.TestService;
 
-@Controller
-@RequestMapping("/testController")
+/*@Controller
+@RequestMapping("/testController")*/
 public class TestController {
 
 	 TestService testService1 = null;

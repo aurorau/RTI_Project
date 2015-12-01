@@ -1,5 +1,10 @@
 package com.aurora.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class JsonResponce {
 	private String status = null;
 	private Object result = null;

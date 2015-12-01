@@ -5,6 +5,7 @@
 <script src="script/ptHome.js"></script>
 <script src="script/admin.js"></script>
 <script language="JavaScript" src="http://www.geoplugin.net/javascript.gp" type="text/javascript"></script> 
+<!-- <script src="script/jQueryMobile.js"></script> -->
 <html>
 
 <head>
@@ -29,7 +30,7 @@
         <ul id="menu">
           <!-- put class="selected" in the li tag for the selected page - to highlight which page you're on -->
           <li class="selected"><a href="#">Home</a></li>
-          <li><a href="Gallary" id="gallaryLinkId">Gallery</a></li>
+          <li><a href="gallary" id="gallaryLinkId">Gallery</a></li>
 <!--           <li><a href="page.html">A Page</a></li>
           <li><a href="another_page.html">Another Page</a></li>
           <li><a href="contact.html">Contact Us</a></li> -->
@@ -68,12 +69,16 @@
           <div class="sidebar_top"></div>
           <div class="sidebar_item">
             <h3>Search</h3>
-
+<!--             <table border="0">
+            	<tr>
+            		<td><input class="search" type="text" name="search_field" value="Enter keywords" id="searchKeyId"/></td>
+            		<td><input name="search" type="image" src="images/search.png" alt="Search" title="Search" onclick="sendData()" /></td>
+            	</tr>
+            </table> -->
               <p>
                 <input class="search" type="text" name="search_field" value="Enter keywords" id="searchKeyId"/>
                 <input name="search" type="image" style="border: 0; margin: 0 0 -9px 5px;" src="images/search.png" alt="Search" title="Search" onclick="sendData()" />
               </p>
-
           </div>
           <div class="sidebar_base"></div>
         </div>

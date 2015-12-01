@@ -24,6 +24,6 @@
  
  <mvc:resources mapping="/script/**" location="/script/"/> 
  <mvc:resources mapping="/style/**" location="/style/"/> 
-  <mvc:resources mapping="/images/**" location="/images/"/> 
+ <mvc:resources mapping="/images/**" location="/images/"/>
  
 </beans>
