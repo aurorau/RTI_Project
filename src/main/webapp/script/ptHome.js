@@ -92,14 +92,18 @@ $(document).on('touchstart', function(e){
 	if(touchTimeDiffer < 400) {
 		zoomCount = zoomCount+1;
 		touchCount = touchCount-1;
+		scrollCount = scrollCount-1;
 	} else {
 		touchCount = touchCount+1;
 	}
 	previouseTouchTime = currentTouchTime;
 	
 	eventType = event.type;
-	touchX = e.originalEvent.touches[0].pageX;
-	touchY = e.originalEvent.touches[0].pageY;
+/*	touchX = e.originalEvent.touches[0].pageX;
+	touchY = e.originalEvent.touches[0].pageY;*/
+	
+	touchX = e.originalEvent.touches[0].clientX;
+	touchY = e.originalEvent.touches[0].clientY;
 });
 
 $(document).on('touchmove', function(e){
@@ -120,10 +124,6 @@ $(window).on("orientationchange",function(event){
 });
 
 function scrolled() {
-
-	screenWidth = screen.width;
-	screenHeight = screen.height;
-	
 	var currentScrollTime = Date.now();
 	
 	var timeDiffer= (currentScrollTime-previouseScrollTime);
@@ -136,11 +136,11 @@ function scrolled() {
 $(window).on('scroll',scrolled);
 
 $(document).keypress(function(e) {
-	if(e.which == 45) {
+	if(e.which == 45) { //firefox
 		zoomInCount = zoomInCount+1;
 		zoomCount = zoomCount+1;
 	}
-	if( e.which == 43) {
+	if( e.which == 43) {//firefox
 		zoomOutCount = zoomOutCount+1;
 		zoomCount = zoomCount+1;
 	}
@@ -178,6 +178,14 @@ function sendDataToController() {
 	var userAgent = navigator.userAgent;
 	var innerWidth = $(window).innerWidth();
 	var dataSubmitTime = getCurrentTime();
+	
+	var latitude = geoplugin_latitude();
+	var longitude = geoplugin_longitude();
+	
+/*	console.log("Latitude :"+geoplugin_latitude());
+	console.log("Longitude :"+geoplugin_longitude());*/
+	
+	
 	//alert(window.devicePixelRatio+"\n"+window.screen.width);
 	
 /*	console.log("Country Name : " + geoplugin_countryName());
@@ -197,6 +205,8 @@ function sendDataToController() {
 	$.post('getHeaderString', {
 		userAgent : userAgent,
 		location : location,
+		latitude : latitude,
+		longitude : longitude,
 		touchCount : touchCount,
 		leftClickCount : leftClickCount,
 		zoomInCount : zoomInCount,

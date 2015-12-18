@@ -28,9 +28,76 @@ public class GeoLocation {
         this.longitude = longitude;
     }
 
+    
+    
     // -- getters ommitted
 
-    public static GeoLocation map(Location loc){
+    public String getCountryCode() {
+		return countryCode;
+	}
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+	public String getCountryName() {
+		return countryName;
+	}
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+	public String getPostalCode() {
+		return postalCode;
+	}
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getRegion() {
+		return region;
+	}
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	public int getAreaCode() {
+		return areaCode;
+	}
+
+	public void setAreaCode(int areaCode) {
+		this.areaCode = areaCode;
+	}
+
+	public int getDmaCode() {
+		return dmaCode;
+	}
+	public void setDmaCode(int dmaCode) {
+		this.dmaCode = dmaCode;
+	}
+
+	public int getMetroCode() {
+		return metroCode;
+	}
+	public void setMetroCode(int metroCode) {
+		this.metroCode = metroCode;
+	}
+	public float getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(float latitude) {
+		this.latitude = latitude;
+	}
+	public float getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(float longitude) {
+		this.longitude = longitude;
+	}
+
+	public static GeoLocation map(Location loc){
         return new GeoLocation(loc.countryCode, loc.countryName, loc.postalCode, loc.city, loc.region,
                 loc.area_code, loc.dma_code, loc.metro_code, loc.latitude, loc.longitude);
     }

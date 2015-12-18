@@ -1,50 +1,84 @@
 package com.aurora.controller;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
+import com.aurora.model.BrowserDetails;
+import com.aurora.model.DeviceDetails;
+import com.aurora.model.EventDetails;
+import com.aurora.model.ProxyDetails;
+import com.aurora.model.SessionDetails;
+import com.aurora.service.BrowserDetailsService;
+import com.aurora.service.DeviceDetailsService;
+import com.aurora.service.EventDetailsService;
+import com.aurora.service.ProxyDetailsService;
+import com.aurora.service.SessionDetailsService;
 import com.aurora.util.ClickDetails;
+import com.aurora.util.EventTypes;
 import com.aurora.util.GeoLocation;
 import com.aurora.util.JsonResponce;
-import com.btr.proxy.search.ProxySearch;
-import com.btr.proxy.util.Logger;
 import com.maxmind.geoip.LookupService;
-
 import nl.bitwalker.useragentutils.Browser;
+import nl.bitwalker.useragentutils.BrowserType;
+import nl.bitwalker.useragentutils.Manufacturer;
 import nl.bitwalker.useragentutils.OperatingSystem;
 import nl.bitwalker.useragentutils.UserAgent;
+import nl.bitwalker.useragentutils.Version;
 
 @Controller
 public class HomePageController {
 	 protected final transient Log log = LogFactory.getLog(getClass());
 	 public Map<String, Object> resultMap = null;
+	 public Map<String, Object> userMap = null;
 	 private static LookupService lookUp;
 	 List<String> proxyList = null;
 	 ClickDetails clickDetails = null;
+	 
+	 SessionDetailsService sessionDetailsService = null;
+	 BrowserDetailsService browserDetailsService = null;
+	 EventDetailsService eventDetailsService = null;
+	 DeviceDetailsService deviceDetailsService = null;
+	 ProxyDetailsService proxyDetailsService = null;
+	 
+	 @Autowired
+	 public void setSessionDetailsService(SessionDetailsService sessionDetailsService) {
+		 this.sessionDetailsService = sessionDetailsService;
+	 }
+	 
+	 @Autowired
+	 public void setBrowserDetailsService(BrowserDetailsService browserDetailsService) {
+		 this.browserDetailsService = browserDetailsService;
+	 }
+	 
+	 @Autowired
+	 public void setEventDetailsService(EventDetailsService eventDetailsService) {
+		 this.eventDetailsService = eventDetailsService;
+	 }
+	 
+	 @Autowired
+	 public void setDeviceDetailsService(DeviceDetailsService deviceDetailsService) {
+		 this.deviceDetailsService = deviceDetailsService;
+	 }
+	 
+	 @Autowired
+	 public void setProxyDetailsService(ProxyDetailsService proxyDetailsService) {
+		 this.proxyDetailsService = proxyDetailsService;
+	 }
 	 
 	 @RequestMapping(method = RequestMethod.GET, value="/")
 	 public ModelAndView homePage() throws Exception {
@@ -96,6 +130,7 @@ public class HomePageController {
 		 proxyList = new ArrayList<String>();
 
 		   String ipAddress = request.getHeader("X-FORWARDED-FOR");
+				  
 				   //"112.135.1.252,199.189.80.13";
 		   //"112.135.0.211,199.189.80.13"
 		   String languages = request.getParameter("languages");
@@ -115,20 +150,30 @@ public class HomePageController {
 		   String orientation = request.getParameter("orientation");
 		   String eventType = request.getParameter("eventType");
 		   Long zoomInCount = Long.parseLong(request.getParameter("zoomInCount"));
-		   Long screenWidth = Long.parseLong(request.getParameter("screenWidth"));
-		   Long screenHeight = Long.parseLong(request.getParameter("screenHeight"));
-		   Long touchX = Long.parseLong(request.getParameter("touchX"));
-		   Long touchY = Long.parseLong(request.getParameter("touchY"));
-		   Long clickX = Long.parseLong(request.getParameter("clickX"));
-		   Long clickY = Long.parseLong(request.getParameter("clickY"));
+		   String screenWidth = request.getParameter("screenWidth");
+		   String screenHeight = request.getParameter("screenHeight");
+		   String touchX = request.getParameter("touchX");
+		   String touchY = request.getParameter("touchY");
+		   String clickX = request.getParameter("clickX");
+		   String clickY = request.getParameter("clickY");
 		   String refererURI = request.getHeader("referer");
 		   Long zoomCount = Long.parseLong(request.getParameter("zoomCount"));
 		   String dataSubmitTime = request.getParameter("dataSubmitTime");
+		   String jsLatitude = request.getParameter("latitude");
+		   String jsLongitude = request.getParameter("longitude");
 		   
 	        UserAgent userAgent1 = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
-	        OperatingSystem agent = userAgent1.getOperatingSystem();  
+	        OperatingSystem agent = userAgent1.getOperatingSystem(); 
+	        int getId = userAgent1.getId();
+	        
 	        Browser browser = userAgent1.getBrowser();
+	        String browserName = browser.getName();
+	        BrowserType browserType = browser.getBrowserType();
+	        Version browserVersion = userAgent1.getBrowserVersion();
+	        
 	        String deviceName = agent.getDeviceType().getName();
+	        String osName = agent.getName();
+	        Manufacturer osManufacture = agent.getManufacturer();
 	        
 	        if(ipAddress != null) {
 	        	String[] proxyList1 = ipAddress.split(",");
@@ -169,9 +214,75 @@ public class HomePageController {
 	        clickDetails.setLastAccessTime(lastAccessTime);
 	        clickDetails.setDataSubmitTime(dataSubmitTime);
 	        clickDetails.setProxyList(proxyList);
+	        clickDetails.setLatitude(jsLatitude);
+	        clickDetails.setLongitude(jsLongitude);
+	        clickDetails.setUserAgentId(getId);
+	        clickDetails.setBrowserName(browserName);
+	        clickDetails.setBrowserVersion(browserVersion.toString());
+	        clickDetails.setBrowserType(browserType.toString());
+	        clickDetails.setOsName(osName);
+	        clickDetails.setOsManufacture(osManufacture.toString());
+	        
+/*	        ProxyTest proxyTest = new ProxyTest();
+	        proxyTest.inetProxy();*/
 	        
 		 res.setStatus("success");
 		 res.setResult(clickDetails);
+		 
+		 DeviceDetails deviceDetails = new DeviceDetails();
+		 deviceDetails.setDeviceName(deviceName);
+		 //deviceDetails.setDeviceType(deviceType);
+		 deviceDetails.setHeight(screenHeight);
+		 deviceDetails.setWidth(screenWidth);
+		 deviceDetails.setOrientation(orientation);
+		 deviceDetails.setOsManufacture(osManufacture.toString());
+		 deviceDetails.setOsName(osName);
+		 
+		 deviceDetailsService.saveDeviceDetails(deviceDetails);
+		 
+		 BrowserDetails browserDetails =  new BrowserDetails();
+		 browserDetails.setBrowserName(browserName);
+		 browserDetails.setBrowserType(browserType.toString());
+		 browserDetails.setBrowserVersion(browserVersion.toString());
+		 browserDetails.setUserAgetntId(getId);
+		 browserDetails.setDeviceDetails(deviceDetails);
+		 
+		 browserDetailsService.saveBrowserDetails(browserDetails);
+		 
+		 SessionDetails sessionDetails = new SessionDetails();
+		 sessionDetails.setSessionId(sessionId);
+		 sessionDetails.setSessionLastAccessedTime(lastAccessTime);
+		 sessionDetails.setSessionCreatedTime(creationTime);
+		 sessionDetails.setBrowserDetails(browserDetails);
+		 
+		 sessionDetailsService.saveSessionDetails(sessionDetails);
+		 		 
+		 EventDetails eventDetails = new EventDetails();
+		 eventDetails.setEventName(EventTypes.LEFT_CLICK.name());
+		 eventDetails.setEventTypes(EventTypes.LEFT_CLICK.getEventTypes());
+		 eventDetails.setTriggeredTime(dataSubmitTime);
+		 eventDetails.setBrowserDetails(browserDetails);
+		 eventDetails.setCoordinateX(clickX);
+		 eventDetails.setCoordinateY(clickY);
+		 
+		 eventDetailsService.saveEventDetails(eventDetails);
+
+		 for(String proxyIP : proxyList) {
+			 ProxyDetails proxyDetails=  new ProxyDetails();
+			 GeoLocation geoLocation = getLocation(proxyIP);
+			 
+			 proxyDetails.setBrowserDetails(browserDetails);
+			 proxyDetails.setCity(geoLocation.getCity());
+			 proxyDetails.setCountryCode(geoLocation.getCountryCode());
+			 proxyDetails.setCountryName(geoLocation.getCountryName());
+			 proxyDetails.setIpAddress(proxyIP);
+			 proxyDetails.setLatitude(geoLocation.getLatitude());
+			 proxyDetails.setLongitude(geoLocation.getLongitude());
+			 proxyDetails.setPostalCode(geoLocation.getPostalCode());
+			 proxyDetails.setRegion(geoLocation.getRegion());
+			 
+			 proxyDetailsService.saveProxyDetailsService(proxyDetails);
+		 }
 		 
 		 log.debug("**/Exit getHeaderString method/**");
 		 

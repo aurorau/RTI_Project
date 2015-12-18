@@ -44,6 +44,14 @@ function getData() {
 					$('#proxyPort').text(data.result.proxyPort);*/
 					$('#zoomCount').text(data.result.zoomCount);
 					$('#dataSubmitTime').text(data.result.dataSubmitTime);
+					$('#jsLatitude').text(data.result.latitude);
+					$('#jsLongitude').text(data.result.longitude);
+					$('#osName').text(data.result.osName);
+					$('#osManufacture').text(data.result.osManufacture);
+					$('#browserName').text(data.result.browserName);
+					$('#browserType').text(data.result.browserType);
+					$('#browserVersion').text(data.result.browserVersion);
+					$('#userAgentId').text(data.result.userAgentId);
 					
 					if(data.result.proxyList != null){
 						 $("#proxyTableDiv").show();

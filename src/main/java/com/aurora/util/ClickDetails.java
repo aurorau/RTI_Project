@@ -7,8 +7,14 @@ import java.util.Map;
 public class ClickDetails {
 	private String xForwardedFor;
 	private String deviceName;
+	private int userAgentId;
 	private String os;
 	private String browser;
+	private String browserName;
+	private String browserType;
+	private String browserVersion;
+	private String osName;
+	private String osManufacture;
 	private long leftClickCount;
 	private long rightClickCount;
 	private long dbClickCount;
@@ -20,12 +26,12 @@ public class ClickDetails {
 	private long zoomOutCount;
 	private long zoomInCount;
 	private long zoomCount;
-	private long screenWidth;
-	private long screenHeight;
-	private long touchX;
-	private long touchY;
-	private long clickX;
-	private long clickY;
+	private String screenWidth;
+	private String screenHeight;
+	private String touchX;
+	private String touchY;
+	private String clickX;
+	private String clickY;
 	private String languages;
 	private String location;
 	private Long creationTime;
@@ -34,6 +40,8 @@ public class ClickDetails {
 	private String refererURI;
 	private String dataSubmitTime;
 	private List<String> proxyList;
+	private String latitude;
+	private String longitude;
 	
 	public String getxForwardedFor() {
 		return xForwardedFor;
@@ -125,40 +133,40 @@ public class ClickDetails {
 	public void setZoomCount(long zoomCount) {
 		this.zoomCount = zoomCount;
 	}
-	public long getScreenWidth() {
+	public String getScreenWidth() {
 		return screenWidth;
 	}
-	public void setScreenWidth(long screenWidth) {
+	public void setScreenWidth(String screenWidth) {
 		this.screenWidth = screenWidth;
 	}
-	public long getScreenHeight() {
+	public String getScreenHeight() {
 		return screenHeight;
 	}
-	public void setScreenHeight(long screenHeight) {
+	public void setScreenHeight(String screenHeight) {
 		this.screenHeight = screenHeight;
 	}
-	public long getTouchX() {
+	public String getTouchX() {
 		return touchX;
 	}
-	public void setTouchX(long touchX) {
+	public void setTouchX(String touchX) {
 		this.touchX = touchX;
 	}
-	public long getTouchY() {
+	public String getTouchY() {
 		return touchY;
 	}
-	public void setTouchY(long touchY) {
+	public void setTouchY(String touchY) {
 		this.touchY = touchY;
 	}
-	public long getClickX() {
+	public String getClickX() {
 		return clickX;
 	}
-	public void setClickX(long clickX) {
+	public void setClickX(String clickX) {
 		this.clickX = clickX;
 	}
-	public long getClickY() {
+	public String getClickY() {
 		return clickY;
 	}
-	public void setClickY(long clickY) {
+	public void setClickY(String clickY) {
 		this.clickY = clickY;
 	}
 	public String getLanguages() {
@@ -208,5 +216,53 @@ public class ClickDetails {
 	}
 	public void setProxyList(List<String> proxyList) {
 		this.proxyList = proxyList;
+	}
+	public String getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+	public int getUserAgentId() {
+		return userAgentId;
+	}
+	public void setUserAgentId(int userAgentId) {
+		this.userAgentId = userAgentId;
+	}
+	public String getBrowserName() {
+		return browserName;
+	}
+	public void setBrowserName(String browserName) {
+		this.browserName = browserName;
+	}
+	public String getBrowserType() {
+		return browserType;
+	}
+	public void setBrowserType(String browserType) {
+		this.browserType = browserType;
+	}
+	public String getBrowserVersion() {
+		return browserVersion;
+	}
+	public void setBrowserVersion(String browserVersion) {
+		this.browserVersion = browserVersion;
+	}
+	public String getOsName() {
+		return osName;
+	}
+	public void setOsName(String osName) {
+		this.osName = osName;
+	}
+	public String getOsManufacture() {
+		return osManufacture;
+	}
+	public void setOsManufacture(String osManufacture) {
+		this.osManufacture = osManufacture;
 	}
 }
