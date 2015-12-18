@@ -28,7 +28,7 @@
 			<artifactId>spring-core</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>nl.bitwalker</groupId>
 			<artifactId>UserAgentUtils</artifactId>
@@ -48,7 +48,7 @@
 		</dependency>
 
 		<!-- Spring Security dependency -->
-		
+
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
@@ -75,6 +75,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.31</version>
 		</dependency>
+        
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.3-1100-jdbc41</version>
+		</dependency>
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -82,26 +88,26 @@
 			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Jackson JSON Mapper -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.10</version>
 		</dependency>
-		
+
 		<!-- Proxy-vole -->
 		<dependency>
 			<groupId>de.ipk-gatersleben</groupId>
 			<artifactId>eDAL-MetaDataAPI</artifactId>
 			<version>2.2.26</version>
 		</dependency>
-		
+
 		<!-- Geo IP -->
 		<dependency>
-    		<groupId>com.maxmind.geoip</groupId>
-    		<artifactId>geoip-api</artifactId>
-    		<version>1.2.14</version>
+			<groupId>com.maxmind.geoip</groupId>
+			<artifactId>geoip-api</artifactId>
+			<version>1.2.14</version>
 		</dependency>
 	</dependencies>
 	<build>
