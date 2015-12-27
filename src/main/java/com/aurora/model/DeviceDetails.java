@@ -1,12 +1,20 @@
 package com.aurora.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="device_details")
@@ -20,6 +28,7 @@ public class DeviceDetails implements Serializable {
 	private String orientation;
 	private String width;
 	private String height;
+	private List<BrowserDetails> browserDetailsList = new ArrayList<BrowserDetails>();
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -87,11 +96,22 @@ public class DeviceDetails implements Serializable {
 	public void setHeight(String height) {
 		this.height = height;
 	}
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "deviceDetails", cascade=CascadeType.ALL)
+	@JsonIgnore
+	public List<BrowserDetails> getBrowserDetailsList() {
+		return browserDetailsList;
+	}
+	public void setBrowserDetailsList(List<BrowserDetails> browserDetailsList) {
+		this.browserDetailsList = browserDetailsList;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((DID == null) ? 0 : DID.hashCode());
+		result = prime * result + ((browserDetailsList == null) ? 0 : browserDetailsList.hashCode());
 		result = prime * result + ((deviceName == null) ? 0 : deviceName.hashCode());
 		result = prime * result + ((deviceType == null) ? 0 : deviceType.hashCode());
 		result = prime * result + ((height == null) ? 0 : height.hashCode());
@@ -114,6 +134,11 @@ public class DeviceDetails implements Serializable {
 			if (other.DID != null)
 				return false;
 		} else if (!DID.equals(other.DID))
+			return false;
+		if (browserDetailsList == null) {
+			if (other.browserDetailsList != null)
+				return false;
+		} else if (!browserDetailsList.equals(other.browserDetailsList))
 			return false;
 		if (deviceName == null) {
 			if (other.deviceName != null)
@@ -156,6 +181,7 @@ public class DeviceDetails implements Serializable {
 	public String toString() {
 		return "DeviceDetails [DID=" + DID + ", deviceType=" + deviceType + ", deviceName=" + deviceName + ", osName="
 				+ osName + ", osManufacture=" + osManufacture + ", orientation=" + orientation + ", width=" + width
-				+ ", height=" + height + "]";
+				+ ", height=" + height + ", browserDetailsList=" + browserDetailsList + "]";
 	}
+	
 }

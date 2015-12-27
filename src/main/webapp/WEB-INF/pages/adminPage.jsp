@@ -9,8 +9,29 @@
 </head>
 
 <body>
-	<h2>ADMIN PAGE</h2>
-	<button onclick="getData()">Get Data</button>
+
+<h2>ADMIN PAGE</h2>
+
+<div>
+	<div style="width:50%; float: left;">
+		<table>
+			<tr>
+				<th><h3>Number of current users :</h3></th>
+				<th><label id="numberOfCurrentUsers"></label></label></th>
+			</tr>
+		</table>
+		<br>
+		<table id="userDetailsTable">
+<!-- 			<tr>
+				<th>User <label id="userId"> :</label></th>
+				<th><button id="userDetailsBtn" onclick="getUserDetails">Get User Details</button></th>
+			</tr> -->
+		</table>
+	</div>
+	
+	<div style="width:50%; float: right;" id="rightDiv">
+		<h2>ADMIN PAGE</h2>
+	<button onclick="getCurrentUserCount()">Get Data</button>
 	<button onclick="resetForm()">Reset</button>
 	<br>
 
@@ -22,11 +43,11 @@
 	<div id=clickDetails>
 		<h4>--User Details--</h4>
 		<span>Data Submit Time :</span><label id="dataSubmitTime"></label><br>
-		<span>Languages :</span><label id="languages"></label><br> <span>Location
-			:</span><label id="location"></label><br> <span>JS Latitude :</span><label
-			id="jsLatitude"></label><br> <span>JS Longitude :</span><label
-			id="jsLongitude"></label><br> <span>User Agent ID :</span><label
-			id="userAgentId"></label><br>
+		<span>Languages :</span><label id="languages"></label><br> <span>Location:</span><label id="location"></label><br>
+		 <span>JS Latitude :</span>
+		 <label id="jsLatitude"></label><br> <span>JS Longitude :</span>
+		 <label id="jsLongitude"></label><br> <span>User Agent ID :</span>
+		 <label id="userAgentId"></label><br>
 
 		<h4>--Device Details--</h4>
 		<span>Device :</span><label id="device"></label><br> <span>OS
@@ -75,5 +96,14 @@
 	<div id="resultNullId">
 		<h4>No click details to display</h4>
 	</div>
+	</div>
+</div>
+
+
+
+
+
+
+	
 </body>
 </html>

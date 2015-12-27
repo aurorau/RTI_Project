@@ -1,12 +1,14 @@
 package com.aurora.serviceImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.aurora.dao.BrowserDetailsDao;
-import com.aurora.dao.SessionDetailsDao;
 import com.aurora.model.BrowserDetails;
+import com.aurora.model.SessionDetails;
 import com.aurora.service.BrowserDetailsService;
+import com.aurora.util.BrowserAndDeviceDetailsDTO;
 import com.aurora.util.Constants;
 
 @Service("browserDetailsService")
@@ -30,6 +32,38 @@ public class BrowserDetailsImpl implements BrowserDetailsService {
 			res = Constants.ERROR;
 		}
 		return res;
+	}
+
+	public List<BrowserAndDeviceDetailsDTO> getBrowserDetails() {
+		List<BrowserAndDeviceDetailsDTO>  list =null;
+		try {
+			list = browserDetailsDao.getBrowserDetails();
+		}catch (Exception e){
+			System.out.println("Error :"+e);
+		}
+		return list;
+	}
+
+	@Override
+	public List<BrowserDetails> getBrowserDetailsByUserAgentId(long userAgentId) {
+		List<BrowserDetails>  list =null;
+		try {
+			//list = browserDetailsDao.getBrowserDetailsByUserAgentId();
+		}catch (Exception e){
+			System.out.println("Error :"+e);
+		}
+		return list;
+	}
+
+	@Override
+	public BrowserDetails getBrowserById(Long bid) {
+		BrowserDetails browser = null;
+		
+		try {
+			browser = browserDetailsDao.getBrowserById(bid);
+		} catch(Exception e) {
+		}
+		return browser;
 	}
 
 }

@@ -24,33 +24,45 @@
 <!-- 		
 		Database connection settings for postgres
 		<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-		<property name="hibernate.connection.url">jdbc:postgres://tarfeoictozucb:k8daIOZpbq_31E_QpddWnx7X08@ec2-54-83-201-196.compute-1.amazonaws.com:5432/dft9tucmuqhaf1</property>
+		<property name="hibernate.connection.url">jdbc:postgresql://ec2-54-83-201-196.compute-1.amazonaws.com:5432/dft9tucmuqhaf1</property>
 		<property name="hibernate.connection.username">tarfeoictozucb</property>
 		<property name="hibernate.connection.password">k8daIOZpbq_31E_QpddWnx7X08</property>
 
 		SQL dialect
 		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+		
 		Specify session context
-		<property name="hibernate.current_session_context_class">org.hibernate.context.internal.ThreadLocalSessionContext</property>
 		<property name="hibernate.current_session_context_class">thread</property>
+		<property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
 		<property name="show_sql">true</property>
 		<property name="hbm2ddl.auto">update</property>
-
  -->
- 
- 		<!-- Database connection settings for postgres -->
-		<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-		<property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/aurorarti</property>
-		<property name="hibernate.connection.username">postgres</property>
-		<property name="hibernate.connection.password">postgres</property>
 
-		<!-- SQL dialect -->
-		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-		<!-- Specify session context -->
-		<property name="hibernate.current_session_context_class">org.hibernate.context.internal.ThreadLocalSessionContext</property>
-		<property name="hibernate.current_session_context_class">thread</property>
-		<property name="show_sql">true</property>
-		<property name="hbm2ddl.auto">update</property>
+ 
+        <!-- Database connection settings -->
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://127.0.0.1:5432/aurorarti</property>
+        <property name="connection.username">aurora</property>
+        <property name="connection.password">aurora123</property>
+
+        <!-- JDBC connection pool (use the built-in) -->
+        <property name="connection.pool_size">1</property>
+
+        <!-- SQL dialect -->
+        <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+
+        <!-- Disable the second-level cache -->
+        <property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
+
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">true</property>
+
+        <!-- Drop and re-create the database schema on startup -->
+        <property name="hbm2ddl.auto">update</property>
+
 
 		<!-- Models -->
 		<mapping class="com.aurora.model.SessionDetails"></mapping>

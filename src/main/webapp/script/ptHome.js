@@ -30,14 +30,16 @@ var zoomInCount = 0;
 var zoomOutCount = 0;
 var previouseTouchTime = 0;
 var previousePosition = 0;
+var coordinateX = 0;
+var coordinateY = 0;
 
 $(document).ready(function() {
 	needed();
 	previouseScreenWidth = screen.width;
 	previouseScreenHeight = screen.height;
-	/*setInterval(function(){ 
-		//$("#getUserDataBtnId").click();
-	},10000);*/
+	setInterval(function(){ 
+		heartBeat();
+	},10000);
 
 /*	$('#gallaryLinkId').on('click', function(){
 		//alert("DONE");
@@ -45,8 +47,12 @@ $(document).ready(function() {
 	
 });
 
+function heartBeat() {
+	//console.log("DONE");
+}
+
 function needed(){
-	$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
+	//$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
 	screenWidth = screen.width;
 	screenHeight = screen.height;
 }
@@ -54,16 +60,26 @@ function needed(){
 function getLeftRightClick(e) {
 	if(e.which == 1) {
 		leftClickCount = leftClickCount+1;
-		clickX = e.screenX;
-		clickY = e.screenY;
+		coordinateX = e.screenX;
+		coordinateY = e.screenY;
 		var coordinate = clickX+"_"+clickY;
-		
+		eventType = "LC";
+
+		setTimeout(function(){
+			if(eventType == "LC") {
+				sendEventDetailsToController();
+			}
+	    },1000);
 	}
 	if(e.which == 2) {
 		
 	}
 	if(e.which == 3 || e.which == null) {
 		rightClickCount = rightClickCount+1;
+		coordinateX = e.screenX;
+		coordinateY = e.screenY;
+		eventType = "RC";
+		sendEventDetailsToController();
 	}
 }
 /*$(document).on("pagecreate",function(){
@@ -78,9 +94,14 @@ function getLeftRightClick(e) {
 }*/
 
 $(document).dblclick(function(e){
+
 	dbClickCount = dbClickCount+1;
 	leftClickCount = leftClickCount-2;
-
+	eventType = "DC";
+	
+	coordinateX = e.screenX;
+	coordinateY = e.screenY;
+	sendEventDetailsToController();
 });
 
 $(document).on('touchstart', function(e){
@@ -93,17 +114,33 @@ $(document).on('touchstart', function(e){
 		zoomCount = zoomCount+1;
 		touchCount = touchCount-1;
 		scrollCount = scrollCount-1;
+		eventType = "TZE";
+		coordinateX = e.originalEvent.touches[0].clientX;
+		coordinateY = e.originalEvent.touches[0].clientY;
+		sendEventDetailsToController();
 	} else {
+		
 		touchCount = touchCount+1;
+		eventType = "TE";
+		coordinateX = e.originalEvent.touches[0].clientX;
+		coordinateY = e.originalEvent.touches[0].clientY;
+		//sendEventDetailsToController();
+		setTimeout(function(){
+			if(eventType == "TE") {
+				sendEventDetailsToController();
+			}
+	    },500);
 	}
 	previouseTouchTime = currentTouchTime;
 	
-	eventType = event.type;
+	
 /*	touchX = e.originalEvent.touches[0].pageX;
 	touchY = e.originalEvent.touches[0].pageY;*/
 	
-	touchX = e.originalEvent.touches[0].clientX;
-	touchY = e.originalEvent.touches[0].clientY;
+/*	touchX = e.originalEvent.touches[0].clientX;
+	touchY = e.originalEvent.touches[0].clientY;*/
+
+	 
 });
 
 $(document).on('touchmove', function(e){
@@ -125,12 +162,18 @@ $(window).on("orientationchange",function(event){
 
 function scrolled() {
 	var currentScrollTime = Date.now();
-	
-	var timeDiffer= (currentScrollTime-previouseScrollTime);
-	if(timeDiffer > 100) {
-		scrollCount = scrollCount+1;
+	if(eventType != "TZE") {
+		eventType = "SE";
+		var timeDiffer= (currentScrollTime-previouseScrollTime);
+		if(timeDiffer > 100) {
+			scrollCount = scrollCount+1;
+			coordinateX = 0;
+			coordinateY = 0;
+			sendEventDetailsToController();
+		}
+		previouseScrollTime = currentScrollTime;
 	}
-	previouseScrollTime = currentScrollTime;
+	
 }
 
 $(window).on('scroll',scrolled);
@@ -139,18 +182,26 @@ $(document).keypress(function(e) {
 	if(e.which == 45) { //firefox
 		zoomInCount = zoomInCount+1;
 		zoomCount = zoomCount+1;
-	}
-	if( e.which == 43) {//firefox
+		eventType = "DZE";
+		
+	} else if( e.which == 43) {//firefox
 		zoomOutCount = zoomOutCount+1;
 		zoomCount = zoomCount+1;
+		eventType = "DZE";
+		
+	} else {
+		eventType = "KP";
 	}
 
-	if(previousKey == 'NotYet') {
+/*	if(previousKey == 'NotYet') {
 		keyPressCount = keyPressCount+1;
 		previousKey = e.which;
+		eventType = "KP";
 	} else if (e.which != previousKey) {
 		keyPressCount = keyPressCount+1;
-	}
+		eventType = "KP";
+	}*/
+	sendEventDetailsToController();
 });
 
 var getCurrentTime=function() {
@@ -170,8 +221,39 @@ var getCurrentTime=function() {
 
 function sendData() {
     setTimeout(function(){
-    	sendDataToController();
+    	//sendDataToController();
     }, 500);
+}
+
+function sendEventDetailsToController () {
+	var eventTriggeredTime = getCurrentTime();
+	screenHeight = screen.height;
+	screenWidth = screen.width;
+	var sessionID = sessionStorage.getItem('sessionID');
+	
+	console.log("Host name :"+document.location.hostname);
+	console.log("Protocol :"+document.location.protocol);
+	console.log("Port :"+document.location.port);
+	
+	$.post('postEventDetails', {
+		eventType : eventType,
+		coordinateX : coordinateX,
+		coordinateY : coordinateY,
+		screenHeight : screenHeight,
+		screenWidth : screenWidth,
+		orientation : orientation,
+		sessionID : sessionID,
+		eventTriggeredTime : eventTriggeredTime
+	}, function(data) {
+		if (data.status == 'success') {
+			if(data.result !=  null) {
+				sessionStorage.setItem('sessionID', data.result);
+			}
+			
+		} else {
+			console.log(data.status);
+		}
+	});
 }
 
 function sendDataToController() {
@@ -198,7 +280,7 @@ function sendDataToController() {
 	console.log("Currency Symbol :"+geoplugin_currencySymbol());
 	console.log("Currency Code :"+geoplugin_currencyCode());*/
 	
-	var location = $('#searchKeyId').val();
+	//var location = $('#searchKeyId').val();
 	var languages = navigator.language;
 	var referer = document.referrer;
 	
@@ -231,10 +313,11 @@ function sendDataToController() {
 		zoomCount : zoomCount,
 		dataSubmitTime : dataSubmitTime
 	}, function(data) {
-		if (data.status == 'success') {
+/*		if (data.status == 'success') {
+			
 		} else {
 			console.log(data.status);
-		}
+		}*/
 	});
 }
 function getLocation() {

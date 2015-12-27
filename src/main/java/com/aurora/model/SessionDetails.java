@@ -12,8 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="session_details")
@@ -23,7 +22,9 @@ public class SessionDetails implements Serializable{
 	private String sessionId;
 	private Long sessionCreatedTime;
 	private Long sessionLastAccessedTime;
-	private BrowserDetails browserDetails;
+	//private BrowserDetails browserDetails;
+	private Long sessionAccessCount;
+	private String lastAccessTime;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -35,7 +36,7 @@ public class SessionDetails implements Serializable{
 		SID = sID;
 	}
 	
-	@Column(name="session_id", nullable=false, length=100)
+	@Column(name="session_id", nullable=true, length=100)
 	public String getSessionId() {
 		return sessionId;
 	}
@@ -43,7 +44,7 @@ public class SessionDetails implements Serializable{
 		this.sessionId = sessionId;
 	}
 	
-	@Column(name="session_created_time", nullable=false, length=100)
+	@Column(name="session_created_time", nullable=true, length=100)
 	public Long getSessionCreatedTime() {
 		return sessionCreatedTime;
 	}
@@ -51,7 +52,7 @@ public class SessionDetails implements Serializable{
 		this.sessionCreatedTime = sessionCreatedTime;
 	}
 	
-	@Column(name="session_last_accessed_time", nullable=false, length=100)
+	@Column(name="session_last_accessed_time", nullable=true, length=100)
 	public Long getSessionLastAccessedTime() {
 		return sessionLastAccessedTime;
 	}
@@ -59,7 +60,7 @@ public class SessionDetails implements Serializable{
 		this.sessionLastAccessedTime = sessionLastAccessedTime;
 	}
 	
-    @OneToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+/*    @OneToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name="FBID", nullable=false)
     @JsonIgnore
 	public BrowserDetails getBrowserDetails() {
@@ -67,13 +68,30 @@ public class SessionDetails implements Serializable{
 	}
 	public void setBrowserDetails(BrowserDetails browserDetails) {
 		this.browserDetails = browserDetails;
+	}*/
+	
+	@Column(name="session_accessed_count", nullable=true, length=100)
+	public Long getSessionAccessCount() {
+		return sessionAccessCount;
+	}
+	public void setSessionAccessCount(Long sessionAccessCount) {
+		this.sessionAccessCount = sessionAccessCount;
+	}
+	
+	@Column(name="last_access_time", nullable=true, length=100)
+	public String getLastAccessTime() {
+		return lastAccessTime;
+	}
+	public void setLastAccessTime(String lastAccessTime) {
+		this.lastAccessTime = lastAccessTime;
 	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((SID == null) ? 0 : SID.hashCode());
-		result = prime * result + ((browserDetails == null) ? 0 : browserDetails.hashCode());
+		result = prime * result + ((lastAccessTime == null) ? 0 : lastAccessTime.hashCode());
+		result = prime * result + ((sessionAccessCount == null) ? 0 : sessionAccessCount.hashCode());
 		result = prime * result + ((sessionCreatedTime == null) ? 0 : sessionCreatedTime.hashCode());
 		result = prime * result + ((sessionId == null) ? 0 : sessionId.hashCode());
 		result = prime * result + ((sessionLastAccessedTime == null) ? 0 : sessionLastAccessedTime.hashCode());
@@ -93,10 +111,15 @@ public class SessionDetails implements Serializable{
 				return false;
 		} else if (!SID.equals(other.SID))
 			return false;
-		if (browserDetails == null) {
-			if (other.browserDetails != null)
+		if (lastAccessTime == null) {
+			if (other.lastAccessTime != null)
 				return false;
-		} else if (!browserDetails.equals(other.browserDetails))
+		} else if (!lastAccessTime.equals(other.lastAccessTime))
+			return false;
+		if (sessionAccessCount == null) {
+			if (other.sessionAccessCount != null)
+				return false;
+		} else if (!sessionAccessCount.equals(other.sessionAccessCount))
 			return false;
 		if (sessionCreatedTime == null) {
 			if (other.sessionCreatedTime != null)
@@ -118,8 +141,8 @@ public class SessionDetails implements Serializable{
 	@Override
 	public String toString() {
 		return "SessionDetails [SID=" + SID + ", sessionId=" + sessionId + ", sessionCreatedTime=" + sessionCreatedTime
-				+ ", sessionLastAccessedTime=" + sessionLastAccessedTime + ", browserDetails=" + browserDetails + "]";
+				+ ", sessionLastAccessedTime=" + sessionLastAccessedTime + ", sessionAccessCount=" + sessionAccessCount
+				+ ", lastAccessTime=" + lastAccessTime + "]";
 	}
-
 	
 }

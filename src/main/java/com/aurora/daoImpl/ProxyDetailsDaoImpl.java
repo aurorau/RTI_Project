@@ -18,6 +18,7 @@ public class ProxyDetailsDaoImpl extends HibernateBase implements ProxyDetailsDa
 		session.getTransaction().begin();
 		session.save(proxyDetails);
 		session.getTransaction().commit();
+		session.close();
 	}
 
 }

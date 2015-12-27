@@ -11,8 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import com.aurora.util.EventTypes;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="event_details")
@@ -24,7 +23,10 @@ public class EventDetails implements Serializable {
 	private String triggeredTime;
 	private String coordinateX;
 	private String coordinateY;
-	private BrowserDetails browserDetails;
+	private String screenWidth;
+	private String screenHeight;
+	private String orientation;
+	//private BrowserDetails browserDetails;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -36,7 +38,7 @@ public class EventDetails implements Serializable {
 		EID = eID;
 	}
 	
-	@Column(name="event_type", nullable=false, length=100)
+	@Column(name="event_type", nullable=true, length=100)
 	public String getEventTypes() {
 		return eventTypes;
 	}
@@ -44,7 +46,7 @@ public class EventDetails implements Serializable {
 		this.eventTypes = eventTypes;
 	}
 	
-	@Column(name="event_name", nullable=false, length=100)
+	@Column(name="event_name", nullable=true, length=100)
 	public String getEventName() {
 		return eventName;
 	}
@@ -52,7 +54,7 @@ public class EventDetails implements Serializable {
 		this.eventName = eventName;
 	}
 	
-	@Column(name="triggered_time", nullable=false, length=100)
+	@Column(name="triggered_time", nullable=true, length=100)
 	public String getTriggeredTime() {
 		return triggeredTime;
 	}
@@ -60,7 +62,7 @@ public class EventDetails implements Serializable {
 		this.triggeredTime = triggeredTime;
 	}
 	
-    @ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+/*    @ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name="FBID", nullable=false)
     @JsonIgnore
 	public BrowserDetails getBrowserDetails() {
@@ -69,9 +71,9 @@ public class EventDetails implements Serializable {
 
 	public void setBrowserDetails(BrowserDetails browserDetails) {
 		this.browserDetails = browserDetails;
-	}
+	}*/
     
-    @Column(name="coordinate_x", nullable=false, length=100)
+    @Column(name="coordinate_x", nullable=true, length=100)
 	public String getCoordinateX() {
 		return coordinateX;
 	}
@@ -79,23 +81,49 @@ public class EventDetails implements Serializable {
 		this.coordinateX = coordinateX;
 	}
 	
-	@Column(name="coordinate_y", nullable=false, length=100)
+	@Column(name="coordinate_y", nullable=true, length=100)
 	public String getCoordinateY() {
 		return coordinateY;
 	}
 	public void setCoordinateY(String coordinateY) {
 		this.coordinateY = coordinateY;
 	}
+	
+	@Column(name="screen_width", nullable=true, length=100)
+	public String getScreenWidth() {
+		return screenWidth;
+	}
+	public void setScreenWidth(String screenWidth) {
+		this.screenWidth = screenWidth;
+	}
+	
+	@Column(name="screen_height", nullable=true, length=100)
+	public String getScreenHeight() {
+		return screenHeight;
+	}
+	public void setScreenHeight(String screenHeight) {
+		this.screenHeight = screenHeight;
+	}
+	
+	@Column(name="orientation", nullable=true, length=100)
+	public String getOrientation() {
+		return orientation;
+	}
+	public void setOrientation(String orientation) {
+		this.orientation = orientation;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((EID == null) ? 0 : EID.hashCode());
-		result = prime * result + ((browserDetails == null) ? 0 : browserDetails.hashCode());
 		result = prime * result + ((coordinateX == null) ? 0 : coordinateX.hashCode());
 		result = prime * result + ((coordinateY == null) ? 0 : coordinateY.hashCode());
 		result = prime * result + ((eventName == null) ? 0 : eventName.hashCode());
 		result = prime * result + ((eventTypes == null) ? 0 : eventTypes.hashCode());
+		result = prime * result + ((orientation == null) ? 0 : orientation.hashCode());
+		result = prime * result + ((screenHeight == null) ? 0 : screenHeight.hashCode());
+		result = prime * result + ((screenWidth == null) ? 0 : screenWidth.hashCode());
 		result = prime * result + ((triggeredTime == null) ? 0 : triggeredTime.hashCode());
 		return result;
 	}
@@ -113,11 +141,6 @@ public class EventDetails implements Serializable {
 				return false;
 		} else if (!EID.equals(other.EID))
 			return false;
-		if (browserDetails == null) {
-			if (other.browserDetails != null)
-				return false;
-		} else if (!browserDetails.equals(other.browserDetails))
-			return false;
 		if (coordinateX == null) {
 			if (other.coordinateX != null)
 				return false;
@@ -128,12 +151,30 @@ public class EventDetails implements Serializable {
 				return false;
 		} else if (!coordinateY.equals(other.coordinateY))
 			return false;
-		if (eventName != other.eventName)
+		if (eventName == null) {
+			if (other.eventName != null)
+				return false;
+		} else if (!eventName.equals(other.eventName))
 			return false;
 		if (eventTypes == null) {
 			if (other.eventTypes != null)
 				return false;
 		} else if (!eventTypes.equals(other.eventTypes))
+			return false;
+		if (orientation == null) {
+			if (other.orientation != null)
+				return false;
+		} else if (!orientation.equals(other.orientation))
+			return false;
+		if (screenHeight == null) {
+			if (other.screenHeight != null)
+				return false;
+		} else if (!screenHeight.equals(other.screenHeight))
+			return false;
+		if (screenWidth == null) {
+			if (other.screenWidth != null)
+				return false;
+		} else if (!screenWidth.equals(other.screenWidth))
 			return false;
 		if (triggeredTime == null) {
 			if (other.triggeredTime != null)
@@ -146,7 +187,8 @@ public class EventDetails implements Serializable {
 	public String toString() {
 		return "EventDetails [EID=" + EID + ", eventTypes=" + eventTypes + ", eventName=" + eventName
 				+ ", triggeredTime=" + triggeredTime + ", coordinateX=" + coordinateX + ", coordinateY=" + coordinateY
-				+ ", browserDetails=" + browserDetails + "]";
+				+ ", screenWidth=" + screenWidth + ", screenHeight=" + screenHeight + ", orientation=" + orientation
+				+ "]";
 	}
 
 }

@@ -1,12 +1,23 @@
 $(document).ready(function() {
 	$('#clickDetails').hide();
+	$('#userDetailsTable').hide();
 	$("#resultNullId").hide();
 	$("#proxyTableDiv").hide();
+	$("#rightDiv").hide();
+	getCurrentUserCount();
+	setInterval(function(){ 
+		//getCurrentUserCount();
+	},30000);
 });
 
 function getData() {
-	 $.get('getDataForAdminPage', function(data) {
-			if (data.status == 'success') {
+	
+	$.ajax({
+        type: "GET",
+        url: "getDataForAdminPage",
+        //data: formdata,
+        success: function(data) {        	
+        	if (data.status == 'success') {
 				if(data.result != null){
 					$("#resultNullId").hide();
 					$('#clickDetails').show();
@@ -39,9 +50,9 @@ function getData() {
 					$('#sessionId').text(data.result.sessionId);
 					$('#SLATime').text(data.result.lastAccessTime);
 					$('#refererURI').text(data.result.refererURI);
-/*					$('#proxyHostName').text(data.result.proxyHostName);
+					$('#proxyHostName').text(data.result.proxyHostName);
 					$('#proxyAddrs').text(data.result.proxyAddrs);
-					$('#proxyPort').text(data.result.proxyPort);*/
+					$('#proxyPort').text(data.result.proxyPort);
 					$('#zoomCount').text(data.result.zoomCount);
 					$('#dataSubmitTime').text(data.result.dataSubmitTime);
 					$('#jsLatitude').text(data.result.latitude);
@@ -61,8 +72,6 @@ function getData() {
 							  $('#proxyTable').append('<tr><td><label id='+index+'>'+value+'</label></td><td id=_'+index+'><button onclick="getLocationDetails('+index+');">Get Location Details</button></td></tr>');
 						  });
 					  }
-					
-					/*$('#proxyTable').append('<tr><td><input type="checkbox" id="'+value.id+'"></td><td>'+value.description+'</td><td><input type="text" id="evaluationCriteriaRemark'+value.id+'" value="'+value.remark+'"></td></tr>');*/
 				} else {
 					$("#resultNullId").show();
 				}
@@ -70,7 +79,46 @@ function getData() {
 			} else {
 				alert(data.status);
 			}
-	    });
+        }
+	});
+}
+
+function getCurrentUserCount () {
+	var allUsers = 0;
+	var desktoUserCount = 0;
+	var mobileUserCount = 0;
+	$.ajax({
+        type: "GET",
+        url: "getCurrentUserCount",
+        //data: formdata,
+        success: function(data) {
+        	if (data.status == 'success') {
+					if(data.result != null){
+						allUsers = data.result.length;
+						$('#numberOfCurrentUsers').text(allUsers);
+						$('#userDetailsTable').show();
+						 $.each(data.result, function(index, value) {
+							 index = index+1;
+							 $('#userDetailsTable').append('<tr><td><label id='+index+'>User :'+index+'</label></td><td id=_'+index+'><button onclick="getUserDetails('+value.sid+');">Get User Details</button></td></tr>');
+						 });
+					  }
+        	}
+        }
+	});
+}
+
+function getUserDetails(sid) {
+	
+	$.ajax({
+        type: "GET",
+        url: "getUserDetailsBySessionId",
+        data:"sid="+sid,
+        success: function(data) {
+        	if(data.result != null){
+        		
+        	}
+        }
+    });
 }
 function resetForm() {
 	$('#clickDetails').hide();
@@ -88,4 +136,8 @@ function getLocationDetails(ip) {
 			 $("#_"+ip).append(data.result);
 		 }
 	 });
+}
+
+function getAllDetails(deviceId) {
+	
 }

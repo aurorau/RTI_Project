@@ -19,6 +19,7 @@ public class EventDetailsDaoImpl extends HibernateBase implements EventDetailsDa
 		session.getTransaction().begin();
 		session.save(eventDetails);
 		session.getTransaction().commit();
+		session.close();
 	}
 
 }

@@ -8,7 +8,8 @@ public enum EventTypes {
 	KEY_PRESS("KP"),
 	SCROLL_EVENT("SE"),
 	TOUCH_EVENT("TE"),
-	ZOOM_EVENT("ZE");
+	DESKTOP_ZOOM_EVENT("DZE"),
+	TOUCH_ZOOM_EVENT("TZE");
 
 	private String eventCode;
 

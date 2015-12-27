@@ -10,20 +10,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.annotations.Index;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="browser_details")
 public class BrowserDetails implements Serializable {
 	
 	private Long BID;
-	private Integer userAgetntId;
+	private Long userAgetntId;
 	private String browserName;
 	private String browserVersion;
 	private String browserType;
+	private String refererURL;
 	private DeviceDetails deviceDetails;
+	private SessionDetails sessionDetails;
+	private EventDetails eventDetails;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -35,15 +41,15 @@ public class BrowserDetails implements Serializable {
 		BID = bID;
 	}
 	
-	@Column(name="user_agent_id", nullable=false, length=100)
-	public Integer getUserAgetntId() {
+	@Column(name="user_agent_id", nullable=true, length=100)
+	public Long getUserAgetntId() {
 		return userAgetntId;
 	}
-	public void setUserAgetntId(Integer userAgetntId) {
+	public void setUserAgetntId(Long userAgetntId) {
 		this.userAgetntId = userAgetntId;
 	}
 	
-	@Column(name="browser_name", nullable=false, length=100)
+	@Column(name="browser_name", nullable=true, length=100)
 	public String getBrowserName() {
 		return browserName;
 	}
@@ -51,7 +57,7 @@ public class BrowserDetails implements Serializable {
 		this.browserName = browserName;
 	}
 	
-	@Column(name="browser_version", nullable=false, length=100)
+	@Column(name="browser_version", nullable=true, length=100)
 	public String getBrowserVersion() {
 		return browserVersion;
 	}
@@ -59,7 +65,7 @@ public class BrowserDetails implements Serializable {
 		this.browserVersion = browserVersion;
 	}
 	
-	@Column(name="browser_type", nullable=false, length=100)
+	@Column(name="browser_type", nullable=true, length=100)
 	public String getBrowserType() {
 		return browserType;
 	}
@@ -67,7 +73,15 @@ public class BrowserDetails implements Serializable {
 		this.browserType = browserType;
 	}
 	
-    @ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	@Column(name="referer_url", nullable=true, length=150)
+    public String getRefererURL() {
+		return refererURL;
+	}
+	public void setRefererURL(String refererURL) {
+		this.refererURL = refererURL;
+	}
+	
+	@ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     @JoinColumn(name="FDID", nullable=false)
     @JsonIgnore
 	public DeviceDetails getDeviceDetails() {
@@ -76,6 +90,27 @@ public class BrowserDetails implements Serializable {
 	public void setDeviceDetails(DeviceDetails deviceDetails) {
 		this.deviceDetails = deviceDetails;
 	}
+	
+	@ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @JoinColumn(name="FSID", nullable=false)
+    @JsonIgnore
+	public SessionDetails getSessionDetails() {
+		return sessionDetails;
+	}
+	public void setSessionDetails(SessionDetails sessionDetails) {
+		this.sessionDetails = sessionDetails;
+	}
+	
+	@OneToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+    @JoinColumn(name="FEID", nullable=false)
+    @JsonIgnore
+	public EventDetails getEventDetails() {
+		return eventDetails;
+	}
+	public void setEventDetails(EventDetails eventDetails) {
+		this.eventDetails = eventDetails;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -85,6 +120,9 @@ public class BrowserDetails implements Serializable {
 		result = prime * result + ((browserType == null) ? 0 : browserType.hashCode());
 		result = prime * result + ((browserVersion == null) ? 0 : browserVersion.hashCode());
 		result = prime * result + ((deviceDetails == null) ? 0 : deviceDetails.hashCode());
+		result = prime * result + ((eventDetails == null) ? 0 : eventDetails.hashCode());
+		result = prime * result + ((refererURL == null) ? 0 : refererURL.hashCode());
+		result = prime * result + ((sessionDetails == null) ? 0 : sessionDetails.hashCode());
 		result = prime * result + ((userAgetntId == null) ? 0 : userAgetntId.hashCode());
 		return result;
 	}
@@ -122,6 +160,21 @@ public class BrowserDetails implements Serializable {
 				return false;
 		} else if (!deviceDetails.equals(other.deviceDetails))
 			return false;
+		if (eventDetails == null) {
+			if (other.eventDetails != null)
+				return false;
+		} else if (!eventDetails.equals(other.eventDetails))
+			return false;
+		if (refererURL == null) {
+			if (other.refererURL != null)
+				return false;
+		} else if (!refererURL.equals(other.refererURL))
+			return false;
+		if (sessionDetails == null) {
+			if (other.sessionDetails != null)
+				return false;
+		} else if (!sessionDetails.equals(other.sessionDetails))
+			return false;
 		if (userAgetntId == null) {
 			if (other.userAgetntId != null)
 				return false;
@@ -132,8 +185,9 @@ public class BrowserDetails implements Serializable {
 	@Override
 	public String toString() {
 		return "BrowserDetails [BID=" + BID + ", userAgetntId=" + userAgetntId + ", browserName=" + browserName
-				+ ", browserVersion=" + browserVersion + ", browserType=" + browserType + ", deviceDetails="
-				+ deviceDetails + "]";
+				+ ", browserVersion=" + browserVersion + ", browserType=" + browserType + ", refererURL=" + refererURL
+				+ ", deviceDetails=" + deviceDetails + ", sessionDetails=" + sessionDetails + ", eventDetails="
+				+ eventDetails + "]";
 	}
 	
 }

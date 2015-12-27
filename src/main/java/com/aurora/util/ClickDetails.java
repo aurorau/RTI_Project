@@ -7,7 +7,7 @@ import java.util.Map;
 public class ClickDetails {
 	private String xForwardedFor;
 	private String deviceName;
-	private int userAgentId;
+	private long userAgentId;
 	private String os;
 	private String browser;
 	private String browserName;
@@ -229,10 +229,10 @@ public class ClickDetails {
 	public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
-	public int getUserAgentId() {
+	public long getUserAgentId() {
 		return userAgentId;
 	}
-	public void setUserAgentId(int userAgentId) {
+	public void setUserAgentId(long userAgentId) {
 		this.userAgentId = userAgentId;
 	}
 	public String getBrowserName() {

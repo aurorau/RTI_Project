@@ -4,7 +4,7 @@
 
 <script src="script/jquery.min.js"></script>
 <script src="script/ptHome.js"></script>
-<script src="script/admin.js"></script>
+<!-- <script src="script/admin.js"></script> -->
 <script language="JavaScript"
 	src="http://www.geoplugin.net/javascript.gp" type="text/javascript"></script>
 <!-- <script src="script/jQueryMobile.js"></script> -->
