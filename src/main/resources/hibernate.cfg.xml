@@ -24,9 +24,9 @@
 <!-- 		
 		Database connection settings for postgres
 		<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-		<property name="hibernate.connection.url">jdbc:postgresql://ec2-54-83-201-196.compute-1.amazonaws.com:5432/dft9tucmuqhaf1</property>
-		<property name="hibernate.connection.username">tarfeoictozucb</property>
-		<property name="hibernate.connection.password">k8daIOZpbq_31E_QpddWnx7X08</property>
+		<property name="hibernate.connection.url">jdbc:postgresql://ec2-54-204-8-138.compute-1.amazonaws.com:5432/dcvd0cmv47aq0q</property>
+		<property name="hibernate.connection.username">cvrxlrwerpritn</property>
+		<property name="hibernate.connection.password">ID0xtmGX1OA9RLH5_DEe_NrnIN</property>
 
 		SQL dialect
 		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
@@ -35,11 +35,11 @@
 		<property name="hibernate.current_session_context_class">thread</property>
 		<property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
 		<property name="show_sql">true</property>
-		<property name="hbm2ddl.auto">update</property>
- -->
+		<property name="hbm2ddl.auto">create</property>
 
+ -->
  
-        <!-- Database connection settings -->
+       <!--  Database connection settings -->
         <property name="connection.driver_class">org.postgresql.Driver</property>
         <property name="connection.url">jdbc:postgresql://127.0.0.1:5432/aurorarti</property>
         <property name="connection.username">aurora</property>
@@ -51,7 +51,7 @@
         <!-- SQL dialect -->
         <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
-        <!-- Enable Hibernate's automatic session context management -->
+       <!--  Enable Hibernate's automatic session context management -->
         <property name="current_session_context_class">thread</property>
 
         <!-- Disable the second-level cache -->

@@ -1,12 +1,11 @@
 package com.aurora.serviceImpl;
 
 import java.util.List;
-
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.aurora.dao.BrowserDetailsDao;
 import com.aurora.model.BrowserDetails;
-import com.aurora.model.SessionDetails;
 import com.aurora.service.BrowserDetailsService;
 import com.aurora.util.BrowserAndDeviceDetailsDTO;
 import com.aurora.util.Constants;
@@ -21,6 +20,7 @@ public class BrowserDetailsImpl implements BrowserDetailsService {
 		 this.browserDetailsDao = browserDetailsDao;
 	 }
 	
+	@Transactional
 	public String saveBrowserDetails(BrowserDetails browserDetails) {
 		String res = Constants.FAIL;
 		
@@ -33,7 +33,8 @@ public class BrowserDetailsImpl implements BrowserDetailsService {
 		}
 		return res;
 	}
-
+	
+	@Transactional
 	public List<BrowserAndDeviceDetailsDTO> getBrowserDetails() {
 		List<BrowserAndDeviceDetailsDTO>  list =null;
 		try {
@@ -43,8 +44,8 @@ public class BrowserDetailsImpl implements BrowserDetailsService {
 		}
 		return list;
 	}
-
-	@Override
+	
+	@Transactional
 	public List<BrowserDetails> getBrowserDetailsByUserAgentId(long userAgentId) {
 		List<BrowserDetails>  list =null;
 		try {
@@ -54,8 +55,8 @@ public class BrowserDetailsImpl implements BrowserDetailsService {
 		}
 		return list;
 	}
-
-	@Override
+	
+	@Transactional
 	public BrowserDetails getBrowserById(Long bid) {
 		BrowserDetails browser = null;
 		

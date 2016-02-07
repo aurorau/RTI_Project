@@ -97,6 +97,7 @@
 			<div id="content">
 				<!-- insert the page content here -->
 				<h1>Welcome to the RTI</h1>
+				<input type="hidden" id="hiddenSessionId"/>
 				<p>
 					This standards compliant, simple, fixed width website template is
 					released as an 'open source' design (under a <a href="#">Creative

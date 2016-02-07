@@ -37,8 +37,9 @@ $(document).ready(function() {
 	needed();
 	previouseScreenWidth = screen.width;
 	previouseScreenHeight = screen.height;
+	//heartBeat();
 	setInterval(function(){ 
-		heartBeat();
+		//heartBeat();
 	},10000);
 
 /*	$('#gallaryLinkId').on('click', function(){
@@ -47,9 +48,22 @@ $(document).ready(function() {
 	
 });
 
-function heartBeat() {
-	//console.log("DONE");
-}
+/*function heartBeat() {
+	var sessionID = $('#hiddenSessionId').val(data.result);
+		//sessionStorage.getItem('sessionID');
+	var status = 'active';
+	$.ajax({
+        type: "POST",
+        url: "postActiveSession",
+        data:"sessionID="+sessionID,
+        success: function(data) {
+			if(data.result !=  null) {
+				//sessionStorage.setItem('sessionID', data.result);
+				$('#hiddenSessionId').val(data.result);
+			}
+        }	
+    });
+}*/
 
 function needed(){
 	//$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
@@ -64,7 +78,7 @@ function getLeftRightClick(e) {
 		coordinateY = e.screenY;
 		var coordinate = clickX+"_"+clickY;
 		eventType = "LC";
-
+		
 		setTimeout(function(){
 			if(eventType == "LC") {
 				sendEventDetailsToController();
@@ -115,14 +129,14 @@ $(document).on('touchstart', function(e){
 		touchCount = touchCount-1;
 		scrollCount = scrollCount-1;
 		eventType = "TZE";
-		coordinateX = e.originalEvent.touches[0].clientX;
+		coordinateX = e.originalEvent.touches[0].screenX;
 		coordinateY = e.originalEvent.touches[0].clientY;
 		sendEventDetailsToController();
 	} else {
 		
 		touchCount = touchCount+1;
 		eventType = "TE";
-		coordinateX = e.originalEvent.touches[0].clientX;
+		coordinateX = e.originalEvent.touches[0].screenX;
 		coordinateY = e.originalEvent.touches[0].clientY;
 		//sendEventDetailsToController();
 		setTimeout(function(){
@@ -166,6 +180,7 @@ function scrolled() {
 		eventType = "SE";
 		var timeDiffer= (currentScrollTime-previouseScrollTime);
 		if(timeDiffer > 100) {
+			console.log($(document).scrollTop());
 			scrollCount = scrollCount+1;
 			coordinateX = 0;
 			coordinateY = 0;
@@ -230,10 +245,10 @@ function sendEventDetailsToController () {
 	screenHeight = screen.height;
 	screenWidth = screen.width;
 	var sessionID = sessionStorage.getItem('sessionID');
+		//sessionStorage.getItem('sessionID');
+	//$('#hiddenSessionId').val(sessionID);
 	
-	console.log("Host name :"+document.location.hostname);
-	console.log("Protocol :"+document.location.protocol);
-	console.log("Port :"+document.location.port);
+	//console.log("Hidden Session Id :"+$('#hiddenSessionId').val());
 	
 	$.post('postEventDetails', {
 		eventType : eventType,
@@ -248,6 +263,7 @@ function sendEventDetailsToController () {
 		if (data.status == 'success') {
 			if(data.result !=  null) {
 				sessionStorage.setItem('sessionID', data.result);
+				//$('#hiddenSessionId').val(data.result);
 			}
 			
 		} else {

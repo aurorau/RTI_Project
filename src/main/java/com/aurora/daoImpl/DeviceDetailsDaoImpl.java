@@ -44,7 +44,6 @@ public class DeviceDetailsDaoImpl extends HibernateBase implements DeviceDetails
 		return deviceDetailsList;
 	}
 
-	@Override
 	public DeviceDetails getDeviceDetailsById(Long did) throws Exception {
 		DeviceDetails deviceDetails = null;
 		

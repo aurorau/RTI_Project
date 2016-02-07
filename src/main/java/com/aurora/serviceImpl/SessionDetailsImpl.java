@@ -2,6 +2,8 @@ package com.aurora.serviceImpl;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import com.aurora.service.SessionDetailsService;
 import com.aurora.util.Constants;
 import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.SessionBrowserDetailsDTO;
+import com.aurora.util.UserDetailsDTO;
 
 @Service("sessionDetailsService")
 public class SessionDetailsImpl implements SessionDetailsService{
@@ -22,6 +25,7 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		 this.sessionDetailsDao = sessionDetailsDao;
 	 }
 	
+	@Transactional
 	public String saveSessionDetails(SessionDetails sessionDetails) {
 		String res = Constants.FAIL;
 		
@@ -35,7 +39,7 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		return res;
 	}
 
-	@Override
+	@Transactional
 	public SessionDetails getSessionDetailsByCreationTimeById(Long creationTime, String sessionId) {
 		SessionDetails session = null;
 		
@@ -47,7 +51,7 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		return session;
 	}
 
-	@Override
+	@Transactional
 	public SessionDetails getById(Long sid) {
 		SessionDetails session = null;
 		
@@ -58,7 +62,7 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		return session;
 	}
 
-	@Override
+	@Transactional
 	public List<CurrentUsersDTO> getCurrentUserCount() {
 		List<CurrentUsersDTO> dtoList = null;
 		
@@ -70,14 +74,17 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		return dtoList;
 	}
 
-	@Override
-	public void getUserDetailsBySessionId(Long sid) {
+	@Transactional
+	public List<UserDetailsDTO> getUserDetailsBySessionId(Long sid) {
+		
+		List<UserDetailsDTO> list = null;
+		
 		try {
-			sessionDetailsDao.getUserDetailsBySessionId(sid);
+			list = sessionDetailsDao.getUserDetailsBySessionId(sid);
 		} catch(Exception e) {
 			System.out.println(e);
 		}
-		
+		return list;
 	}
 
 }

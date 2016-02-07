@@ -1,5 +1,7 @@
 package com.aurora.serviceImpl;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.aurora.dao.EventDetailsDao;
@@ -17,6 +19,7 @@ public class EventDetailsImpl implements EventDetailsService {
 		this.eventDetailsDao = eventDetailsDao;
 	}
 	
+	@Transactional
 	public String saveEventDetails(EventDetails eventDetails) {
 		String res = Constants.FAIL;
 		

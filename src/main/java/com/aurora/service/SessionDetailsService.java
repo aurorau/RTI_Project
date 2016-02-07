@@ -9,6 +9,7 @@ import javax.ws.rs.PathParam;
 import com.aurora.model.SessionDetails;
 import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.SessionBrowserDetailsDTO;
+import com.aurora.util.UserDetailsDTO;
 
 public interface SessionDetailsService {
 	public String saveSessionDetails(SessionDetails sessionDetails);
@@ -35,11 +36,11 @@ public interface SessionDetailsService {
 	 *  Get getUserDetailsBySessionId
 	 *  
 	 *  @param Long sid
-	 * @return SessionDetails
+	 * @return List<UserDetailsDTO>
 	 */
 	@GET
 	@Path("getUserDetailsBySessionId/{sid}")
-	public void getUserDetailsBySessionId(@PathParam("sid") Long sid);
+	public List<UserDetailsDTO> getUserDetailsBySessionId(@PathParam("sid") Long sid);
 	
 	/**
 	 *  Get getSessionDetailsByCreationTimeById

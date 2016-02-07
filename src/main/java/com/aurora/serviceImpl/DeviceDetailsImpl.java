@@ -1,12 +1,11 @@
 package com.aurora.serviceImpl;
 
 import java.util.List;
-
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.aurora.dao.DeviceDetailsDao;
 import com.aurora.model.DeviceDetails;
-import com.aurora.model.SessionDetails;
 import com.aurora.service.DeviceDetailsService;
 import com.aurora.util.Constants;
 
@@ -20,6 +19,7 @@ public class DeviceDetailsImpl implements DeviceDetailsService {
 		this.deviceDetailsDao = deviceDetailsDao;
 	}
 	
+	@Transactional
 	public String saveDeviceDetails(DeviceDetails deviceDetails) {
 		String res = Constants.FAIL;
 		
@@ -32,6 +32,7 @@ public class DeviceDetailsImpl implements DeviceDetailsService {
 		return res;
 	}
 
+	@Transactional
 	public List<DeviceDetails> getDeviceCount() {
 		List<DeviceDetails>  list =null;
 		try {
@@ -42,7 +43,7 @@ public class DeviceDetailsImpl implements DeviceDetailsService {
 		return list;
 	}
 
-	@Override
+	@Transactional
 	public DeviceDetails getDeviceDetailsById(Long did) {
 		DeviceDetails device = null;
 		

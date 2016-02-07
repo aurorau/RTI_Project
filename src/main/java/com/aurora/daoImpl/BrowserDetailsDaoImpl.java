@@ -73,7 +73,6 @@ public class BrowserDetailsDaoImpl extends HibernateBase implements BrowserDetai
 		return list;
 	}
 
-	@Override
 	public BrowserDetails getBrowserById(Long bid) throws Exception {
 		
 		BrowserDetails browserDetails = null;

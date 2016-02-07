@@ -3,26 +3,21 @@ package com.aurora.daoImpl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
 import javax.transaction.Transactional;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
-
 import com.aurora.dao.SessionDetailsDao;
 import com.aurora.model.BrowserDetails;
-import com.aurora.model.EventDetails;
+import com.aurora.model.ProxyDetails;
 import com.aurora.model.SessionDetails;
-import com.aurora.util.BrowserAndDeviceDetailsDTO;
 import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.HibernateBase;
-import com.aurora.util.SessionBrowserDetailsDTO;
 import com.aurora.util.UserDetailsDTO;
 
 @Repository("sessionDetailsDao")
@@ -85,6 +80,7 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		
 		Criteria criteria = session.createCriteria(SessionDetails.class,"sessionDetails")
 				.add(Restrictions.between("sessionDetails.lastAccessTime",beforeTime, currentTime));
+		criteria.addOrder(Order.asc("SID"));
 		criteria.setProjection(Projections.projectionList()
 				.add(Projections.property("SID").as("sid"))
 				.add(Projections.property("lastAccessTime").as("lastAccessTime")));
@@ -110,8 +106,7 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		 return result;
 	 }
 
-	@Override
-	public void getUserDetailsBySessionId(Long sid) throws Exception {
+	public List<UserDetailsDTO> getUserDetailsBySessionId(Long sid) throws Exception {
 		
 		List<UserDetailsDTO> list = null;
 		
@@ -123,38 +118,64 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 			criteria.createAlias("browserDetails.deviceDetails", "deviceDetails");
 			criteria.createAlias("browserDetails.eventDetails", "eventDetails");
 			criteria.add(Restrictions.eq("sessionDetails.SID", sid));
+			criteria.addOrder(Order.asc("eventDetails.EID"));
 			criteria.setProjection(Projections.projectionList()
 					.add(Projections.property("sessionDetails.SID").as("sid"))
 					.add(Projections.property("eventDetails.EID").as("eid"))
+					.add(Projections.property("eventDetails.triggeredTime").as("eventTriggeredTime"))
+					.add(Projections.property("eventDetails.eventName").as("eventName"))
+					.add(Projections.property("eventDetails.coordinateX").as("coordinateX"))
+					.add(Projections.property("eventDetails.coordinateY").as("coordinateY"))
+					.add(Projections.property("eventDetails.screenWidth").as("screenWidth"))
+					.add(Projections.property("eventDetails.screenHeight").as("screenHeight"))
+					.add(Projections.property("eventDetails.orientation").as("orientation"))
 					.add(Projections.property("BID").as("bid"))
-					.add(Projections.property("deviceDetails.DID").as("did")));
-		
+					.add(Projections.property("browserName").as("browserName"))
+					.add(Projections.property("browserVersion").as("browserVersion"))
+					.add(Projections.property("userAgetntId").as("userAgentId"))
+					.add(Projections.property("deviceDetails.DID").as("did"))
+					.add(Projections.property("deviceDetails.deviceName").as("deviceName")));
 			list = criteria.setResultTransformer(Transformers.aliasToBean(UserDetailsDTO.class)).list();
 			
 		session.getTransaction().commit();
 		session.close();
 		
-		System.out.println(list.size());
-		//list = getEID(list);
-		
+		list = getPID(list);
+		return list;
 	}
 	
-	public List<UserDetailsDTO> getEID(List<UserDetailsDTO> list) {
+	public List<UserDetailsDTO> getPID(List<UserDetailsDTO> list) {
 		
 		Session session = getSession();
 		session.getTransaction().begin();
 		
 		for(UserDetailsDTO userDetailsDTO : list) {
-			Criteria criteriaEvent = session.createCriteria(EventDetails.class,"eventDetails");
-				criteriaEvent.add(Restrictions.eq("eventDetails.BID", userDetailsDTO.getBid()));
+			Criteria criteriaProxy = session.createCriteria(ProxyDetails.class,"proxyDetails");
+			criteriaProxy.add(Restrictions.eq("proxyDetails.browserDetails.BID", userDetailsDTO.getBid()));
+			criteriaProxy.setProjection(Projections.projectionList()
+						.add(Projections.property("PID").as("pid")));
 			
-				EventDetails eventDetails = (EventDetails) criteriaEvent.uniqueResult();
-				userDetailsDTO.setEid(eventDetails.getEID());
+				List<Long> pidList = criteriaProxy.list();
+				
+				userDetailsDTO.setPid(pidList);
 		}
 		
 		session.getTransaction().commit();
 		session.close();
 		
 		return list;
+	}
+	
+	public void displayData(List<UserDetailsDTO> list){
+		for(UserDetailsDTO userDetailsDTO : list) {
+			System.out.println("SID"+userDetailsDTO.getSid());
+			System.out.println("BID"+userDetailsDTO.getBid());
+			System.out.println("DID"+userDetailsDTO.getDid());
+			System.out.println("EID"+userDetailsDTO.getEid());
+			
+			for(Long id : userDetailsDTO.getPid()) {
+				System.out.println("PID"+id);
+			}
+		}
 	}
 }
