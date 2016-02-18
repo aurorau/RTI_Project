@@ -4,6 +4,7 @@
 
 <script src="script/jquery.min.js"></script>
 <script src="script/ptHome.js"></script>
+<!-- <script src="script/mobileJs.js"></script> -->
 <!-- <script src="script/admin.js"></script> -->
 <script language="JavaScript"
 	src="http://www.geoplugin.net/javascript.gp" type="text/javascript"></script>
@@ -98,7 +99,7 @@
 				<!-- insert the page content here -->
 				<h1>Welcome to the RTI</h1>
 				<input type="hidden" id="hiddenSessionId"/>
-				<p>
+				<p class="test">
 					This standards compliant, simple, fixed width website template is
 					released as an 'open source' design (under a <a href="#">Creative
 						Commons Attribution 3.0 Licence</a>), which means that you are free to

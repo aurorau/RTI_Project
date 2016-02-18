@@ -1,5 +1,6 @@
 package com.aurora.controller;
 
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
@@ -7,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.aurora.model.BrowserDetails;
 import com.aurora.model.DeviceDetails;
 import com.aurora.model.EventDetails;
@@ -34,6 +38,7 @@ import com.aurora.util.JsonResponce;
 import com.aurora.util.ProxyDetailsDTO;
 import com.aurora.util.UserDetailsDTO;
 import com.maxmind.geoip.LookupService;
+
 import nl.bitwalker.useragentutils.Browser;
 import nl.bitwalker.useragentutils.BrowserType;
 import nl.bitwalker.useragentutils.Manufacturer;
@@ -185,9 +190,9 @@ public class HomePageController {
 	     response.setHeader("Access-Control-Allow-Methods", "POST");
 	     response.setHeader("Access-Control-Max-Age", "3600");
 	     response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
-		 
-		 String orientation = request.getParameter("orientation");
+
 		 String eventType = request.getParameter("eventType");
+		 String orientation = request.getParameter("orientation");
 		 String eventTriggeredTime = request.getParameter("eventTriggeredTime");
 		 String coordinateX = request.getParameter("coordinateX");
 		 String coordinateY = request.getParameter("coordinateY");
@@ -302,6 +307,22 @@ public class HomePageController {
 		 } else if(eventType.equalsIgnoreCase("TZE")) {
 			 eventDetails.setEventName(EventTypes.TOUCH_ZOOM_EVENT.name());
 			 eventDetails.setEventTypes(EventTypes.TOUCH_ZOOM_EVENT.getEventTypes());
+			 
+		 } else if(eventType.equalsIgnoreCase("TZE_SE")) {
+			 eventDetails.setEventName(EventTypes.TOUCH_ZOOM_EVENT_SCROLL_EVENT.name());
+			 eventDetails.setEventTypes(EventTypes.TOUCH_ZOOM_EVENT_SCROLL_EVENT.getEventTypes());
+			 
+		 }  else if(eventType.equalsIgnoreCase("TE_SE")) {
+			 eventDetails.setEventName(EventTypes.TOUCH_SCROLL_EVENT.name());
+			 eventDetails.setEventTypes(EventTypes.TOUCH_SCROLL_EVENT.getEventTypes());
+			 
+		 }  else if(eventType.equalsIgnoreCase("TM")) {
+			 eventDetails.setEventName(EventTypes.TOUCH_MOVE_EVENT.name());
+			 eventDetails.setEventTypes(EventTypes.TOUCH_MOVE_EVENT.getEventTypes());
+			 
+		 } else if(eventType.equalsIgnoreCase("DE_SE")) {
+			 eventDetails.setEventName(EventTypes.DESKTOP_SCROLL_EVENT.name());
+			 eventDetails.setEventTypes(EventTypes.DESKTOP_SCROLL_EVENT.getEventTypes());
 			 
 		 } else {
 			 System.out.println("New Type :"+eventType );
@@ -424,4 +445,5 @@ public class HomePageController {
 	 public static GeoLocation getLocation(InetAddress ipAddress){
 	        return GeoLocation.map(lookUp.getLocation(ipAddress));
 	 }
+	 
 }

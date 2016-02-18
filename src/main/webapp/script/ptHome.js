@@ -11,8 +11,8 @@ var dbClickCount=0;
 var orientation;
 var eventType;
 var TEVENT=null;
-var screenWidth = 0;
-var screenHeight = 0;
+var getScreenWidth=-1;
+var getScreenHeight=-1;
 var zoomEvent=null;
 var touchX=0;
 var touchY=0;
@@ -24,59 +24,98 @@ var previouseScrollTime = 0;
 var previousKey = 'NotYet';
 var previouseLeftClickTime = 0;
 var globalDBClickEvent = 0;
-var previouseScreenWidth = 0;
-var previouseScreenHeight = 0;
 var zoomInCount = 0;
 var zoomOutCount = 0;
 var previouseTouchTime = 0;
 var previousePosition = 0;
 var coordinateX = 0;
 var coordinateY = 0;
+var getBrowserWidth=0;
+var getBrowserHeight=0;
 
 $(document).ready(function() {
-	needed();
-	previouseScreenWidth = screen.width;
-	previouseScreenHeight = screen.height;
-	//heartBeat();
+
 	setInterval(function(){ 
 		//heartBeat();
 	},10000);
 
-/*	$('#gallaryLinkId').on('click', function(){
-		//alert("DONE");
+	identifyDeviceWidthHeight();
+	
+/*	$("#content").click(function(event) {
+	    //alert(this.innerHTML);
+		var x = $("#content").offset();
+	    alert("Top: " + x.top + " Left: " + x.left);
 	});*/
 	
 });
 
-/*function heartBeat() {
-	var sessionID = $('#hiddenSessionId').val(data.result);
-		//sessionStorage.getItem('sessionID');
-	var status = 'active';
-	$.ajax({
-        type: "POST",
-        url: "postActiveSession",
-        data:"sessionID="+sessionID,
-        success: function(data) {
-			if(data.result !=  null) {
-				//sessionStorage.setItem('sessionID', data.result);
-				$('#hiddenSessionId').val(data.result);
-			}
-        }	
-    });
-}*/
+/*if (window.matchMedia("(min-width: 400px)").matches) {
+	   the viewport is at least 400 pixels wide 
+	} else {
+	   the viewport is less than 400 pixels wide 
+	}*/
 
-function needed(){
-	//$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
-	screenWidth = screen.width;
-	screenHeight = screen.height;
+
+function identifyDeviceWidthHeight(){
+
+	var deviceMinWidthStatus = window.matchMedia('(min-device-width: '+screen.width+'px)').matches;
+	var deviceMinHeightStatus = window.matchMedia('(min-device-height:'+screen.height+'px)').matches;
+	
+	var deviceMaxWidthStatus = window.matchMedia('(max-device-width: '+screen.width+'px)').matches;
+	var deviceMaxHeightStatus = window.matchMedia('(max-device-height:'+screen.height+'px)').matches;
+	
+	var orientaton  = window.matchMedia("(orientation: landscape)").matches;
+	
+	if((screen.width > screen.height) && orientaton){
+		if(deviceMinWidthStatus && deviceMaxWidthStatus && deviceMinHeightStatus && deviceMaxHeightStatus){
+			getProperHeightWidth();
+		} else {
+			getFraudHeightWidth("mx");
+		}
+	} else if((screen.width < screen.height) && !orientaton){
+		if(deviceMinWidthStatus && deviceMaxWidthStatus && deviceMinHeightStatus && deviceMaxHeightStatus){
+			getProperHeightWidth();
+		} else {
+			getFraudHeightWidth("mx");
+		}
+
+	} else {
+		getFraudHeightWidth("s");
+	}
+
+/*	console.log("deviceMinWidthStatus :"+deviceMinWidthStatus+"\ndeviceMinHeightStatus :"+deviceMinHeightStatus+"\norientaton :"+orientaton);
+	console.log("///////////////////");
+	console.log("deviceMaxWidthStatus :"+deviceMaxWidthStatus+"\ndeviceMaxWidthStatus :"+deviceMaxWidthStatus+"\norientaton :"+orientaton);
+	var browserWidthStatus = window.matchMedia("(min-width: 1366px)").matches;
+	var browserHeightStatus = window.matchMedia("(min-height: 768px)").matches;*/
 }
 
+
+function getProperHeightWidth(){
+	//$('#searchKeyId').val(geoplugin_countryName()+'/'+geoplugin_region());
+	getScreenWidth = screen.width;
+	getScreenHeight = screen.height;
+}
+
+function getFraudHeightWidth(status){
+	getScreenWidth = screen.width+status;
+	getScreenHeight = screen.height+status;
+}
+
+
 function getLeftRightClick(e) {
+
+	//eventTriggredPositionDetails(e);
+	
 	if(e.which == 1) {
 		leftClickCount = leftClickCount+1;
-		coordinateX = e.screenX;
-		coordinateY = e.screenY;
-		var coordinate = clickX+"_"+clickY;
+		coordinateX = e.clientX;
+		coordinateY = e.clientY;
+		
+		console.log("page Y :"+e.pageY); //relative to the html docuemnt
+		console.log("client Y :"+e.clientY); //relative to the browser
+		console.log("screen Y :"+e.screenY); //relative to the device
+		
 		eventType = "LC";
 		
 		setTimeout(function(){
@@ -90,8 +129,8 @@ function getLeftRightClick(e) {
 	}
 	if(e.which == 3 || e.which == null) {
 		rightClickCount = rightClickCount+1;
-		coordinateX = e.screenX;
-		coordinateY = e.screenY;
+		coordinateX = e.clientX; //e.screenX;
+		coordinateY = e.clientY;
 		eventType = "RC";
 		sendEventDetailsToController();
 	}
@@ -113,37 +152,54 @@ $(document).dblclick(function(e){
 	leftClickCount = leftClickCount-2;
 	eventType = "DC";
 	
-	coordinateX = e.screenX;
-	coordinateY = e.screenY;
+	coordinateX = e.clientX;
+	coordinateY = e.clientY;
 	sendEventDetailsToController();
 });
 
+function touchTest(e){
+	if (e.originalEvent) {
+        if (e.originalEvent.touches && e.originalEvent.touches.length) {
+            alert("touches"+e.originalEvent.touches.length);
+        } else if (e.originalEvent.changedTouches && e.originalEvent.changedTouches.length) {
+        	alert("changedTouches"+ e.originalEvent.changedTouches);
+        }
+    }
+}
 $(document).on('touchstart', function(e){
 	TEVENT = e;
 	
 	var currentTouchTime = Date.now();
 	var touchTimeDiffer = (currentTouchTime - previouseTouchTime);
-
+	
+	//touchTest(e);
+	
 	if(touchTimeDiffer < 400) {
 		zoomCount = zoomCount+1;
 		touchCount = touchCount-1;
 		scrollCount = scrollCount-1;
 		eventType = "TZE";
-		coordinateX = e.originalEvent.touches[0].screenX;
+		coordinateX = e.originalEvent.touches[0].clientX;
 		coordinateY = e.originalEvent.touches[0].clientY;
-		sendEventDetailsToController();
+		//sendEventDetailsToController();
+		setTimeout(function(){
+			if(eventType == "TZE" || eventType == "SE") {
+				eventType = 'TZE';
+				sendEventDetailsToController();
+			} 
+	    },400);
 	} else {
 		
 		touchCount = touchCount+1;
 		eventType = "TE";
-		coordinateX = e.originalEvent.touches[0].screenX;
+		coordinateX = e.originalEvent.touches[0].clientX;
 		coordinateY = e.originalEvent.touches[0].clientY;
 		//sendEventDetailsToController();
 		setTimeout(function(){
 			if(eventType == "TE") {
 				sendEventDetailsToController();
 			}
-	    },500);
+	    },400);
 	}
 	previouseTouchTime = currentTouchTime;
 	
@@ -158,9 +214,75 @@ $(document).on('touchstart', function(e){
 });
 
 $(document).on('touchmove', function(e){
-	//alert("DONE");
+	eventType = "TM";
+	coordinateX = e.originalEvent.touches[0].clientX;
+	coordinateY = e.originalEvent.touches[0].clientY;
+	sendEventDetailsToController();
+/*	setTimeout(function(){
+		if(eventType == "TM") {
+			sendEventDetailsToController();
+		}
+    },500);*/
 });
 
+function eventTriggredPositionDetails(e){
+	var name = e.target.tagName;
+	var id =  e.target.id;
+	var clz = $(e.target).attr('class');
+	//var hsClz = $(e.target).hasClass();
+	
+	var x = $("."+clz).offset();
+  //  console.log("Top: " + x.top + " Left: " + x.left);
+	
+	if(id == null || id == ''){
+		$(e.target).attr('id','test');
+	}
+	
+	
+	console.log("Tag Name :"+name);
+	console.log("beforeid :"+id);
+	console.log("afterid :"+e.target.id);
+	console.log("clz :"+clz);
+	//console.log("hsClz :"+hsClz);
+	
+	var rect = document.getElementById(e.target.id).getBoundingClientRect();
+	console.log("Top: " + rect.top);
+	console.log("left: " + rect.left);
+	console.log("width : " + rect.width );
+	console.log("height : " + rect.height );
+	
+	
+	console.log("e.target.attributes :"+e.target.attributes.length);
+	var attibuteList = e.target.attributes;
+	var index =0;
+/*	if(attibuteList.length > 0){
+		$.each(attibuteList, function(name, value){
+			index = index +1;
+			console.log("Attribute Name :"+this.name+"\nAttribute Value :"+this.value+"\n///////////////////////");
+			
+			if(this.name =='id') {
+				var id = this.value.trim();
+				if(id.length > 0){
+					console.log("Index :"+index);
+				} else {
+					console.log("DONE :");
+					//$(this).setAttribute('id', index);
+				}
+				$(this).attr("id", index);
+				var x = $("."+clzName).offset();
+				console.log("Top: " + x.top + " Left: " + x.left);
+				setTimeout(function(){
+					var rect = document.getElementById(id).getBoundingClientRect();
+					console.log("Top: " + rect.top);
+					console.log("left: " + rect.left);
+					console.log("width : " + rect.width );
+					console.log("height : " + rect.height );
+				},500);
+
+			}
+		});
+	}*/
+}
 $(document).on('mousedown',function(e){
 	if(TEVENT == null) {
 		eventType = e.type;
@@ -174,26 +296,43 @@ $(window).on("orientationchange",function(event){
 	  orientation = event.orientation;
 });
 
-function scrolled() {
+//function scrolled() 
+$(document).on('scroll',function(e){
 	var currentScrollTime = Date.now();
-	if(eventType != "TZE") {
-		eventType = "SE";
-		var timeDiffer= (currentScrollTime-previouseScrollTime);
-		if(timeDiffer > 100) {
-			console.log($(document).scrollTop());
-			scrollCount = scrollCount+1;
-			coordinateX = 0;
-			coordinateY = 0;
-			sendEventDetailsToController();
-		}
-		previouseScrollTime = currentScrollTime;
-	}
+/*	if(eventType == "TZE") {
+		eventType = "TZE_SE";
+		setScroll(currentScrollTime);
+	} else if(eventType == "TE"){
+		eventType = "TE_SE";
+		setScroll(currentScrollTime);
+	} else {
+		eventType = "DE_SE";
+		setScroll(currentScrollTime);
+	}*/
 	
+	eventType = "SE";
+	setScroll(currentScrollTime);
+	
+});
+function setScroll(currentScrollTime){
+	var timeDiffer= (currentScrollTime-previouseScrollTime);
+	if(timeDiffer > 100) {
+		//console.log($(document).scrollTop());
+		//scrollCount = scrollCount+1;
+		coordinateX = 0;
+		coordinateY = 0;
+		sendEventDetailsToController();
+/*		setTimeout(function(){
+			sendEventDetailsToController();
+	    },500);*/
+	}
+	previouseScrollTime = currentScrollTime;
 }
-
-$(window).on('scroll',scrolled);
+//$(window).on('scroll',scrolled);
 
 $(document).keypress(function(e) {
+
+
 	if(e.which == 45) { //firefox
 		zoomInCount = zoomInCount+1;
 		zoomCount = zoomCount+1;
@@ -242,8 +381,8 @@ function sendData() {
 
 function sendEventDetailsToController () {
 	var eventTriggeredTime = getCurrentTime();
-	screenHeight = screen.height;
-	screenWidth = screen.width;
+	screenHeight = getScreenHeight;
+	screenWidth = getScreenWidth;
 	var sessionID = sessionStorage.getItem('sessionID');
 		//sessionStorage.getItem('sessionID');
 	//$('#hiddenSessionId').val(sessionID);
