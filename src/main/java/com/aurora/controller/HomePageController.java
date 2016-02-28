@@ -1,25 +1,40 @@
 package com.aurora.controller;
 
-import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.displaytag.tags.TableTagParameters;
+import org.displaytag.util.ParamEncoder;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ExtendedModelMap;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.aurora.model.BrowserDetails;
 import com.aurora.model.DeviceDetails;
@@ -31,7 +46,9 @@ import com.aurora.service.DeviceDetailsService;
 import com.aurora.service.EventDetailsService;
 import com.aurora.service.ProxyDetailsService;
 import com.aurora.service.SessionDetailsService;
+import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.ClickDetails;
+import com.aurora.util.Constants;
 import com.aurora.util.EventTypes;
 import com.aurora.util.GeoLocation;
 import com.aurora.util.JsonResponce;
@@ -51,6 +68,7 @@ public class HomePageController {
 	 protected final transient Log log = LogFactory.getLog(getClass());
 	 public Map<String, Object> resultMap = null;
 	 public Map<String, Object> userMap = null;
+	 Map<String, String> map = null;
 	 private static LookupService lookUp;
 	 List<String> proxyList = null;
 	 ClickDetails clickDetails = null;
@@ -102,10 +120,10 @@ public class HomePageController {
 		 return new ModelAndView("adminPage");
 	 }
 	 
-/*	 @RequestMapping(method = RequestMethod.GET, value="/gallary*")
+	 @RequestMapping(method = RequestMethod.GET, value="/gallary")
 	 public ModelAndView galleryPage() throws Exception {
 		 return new ModelAndView("Gallary");
-	 }*/
+	 }
 	 
 /*	 @RequestMapping(method = RequestMethod.GET, value="/getLocationDetails")
 	 public @ResponseBody JsonResponce getLocationDetails(HttpServletRequest request) throws Exception {
@@ -151,7 +169,7 @@ public class HomePageController {
 	 }
 	 
 	 @RequestMapping(method = RequestMethod.GET, value="/getUserDetailsBySessionId")
-	 public @ResponseBody JsonResponce getUserDetailsBySessionId(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	 public ModelAndView getUserDetailsBySessionId(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		 JsonResponce res= new JsonResponce();
 		 
 	     response.setHeader("Access-Control-Allow-Origin", "*");
@@ -163,7 +181,70 @@ public class HomePageController {
 	     
 	     List<UserDetailsDTO> list = null;
 	     
-	     list = sessionDetailsService.getUserDetailsBySessionId(sessionPK);
+/*	     list = sessionDetailsService.getUserDetailsBySessionId(sessionPK);
+	     
+		 res.setStatus("success");
+		 res.setResult(list);
+		 
+		 return res;*/
+	     
+		 Model model = new ExtendedModelMap();
+		 ParamEncoder paramEncoder = new ParamEncoder(Constants.USER_DETAILS);
+		 
+	    	try{
+	    		String sortField = ServletRequestUtils.getStringParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_SORT));
+	    		int order = ServletRequestUtils.getIntParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER), 0);
+	    		int page = ServletRequestUtils.getIntParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE), 0);
+	    		int start = (page>0) ? (page - 1) * Constants.GRID_TABLE_SIZE : 0;
+	    		String searchq = ServletRequestUtils.getStringParameter(request, Constants.PARAMETER_SEARCH);
+			
+	    		list = sessionDetailsService.getUserDetailsBySessionId(sortField,order,start, Constants.GRID_TABLE_SIZE, searchq, sessionPK);
+	    		int listCount = sessionDetailsService.getUserDetailsCountBySessionId(searchq, sessionPK);
+			
+	    		request.setAttribute(Constants.TABLE_SIZE, listCount );
+	    		request.setAttribute(Constants.GRID_TABLE_SIZE_KEY, Constants.GRID_TABLE_SIZE);
+	    		model.addAttribute(Constants.USER_DETAILS, list);
+	    	} catch (Exception e) {
+	    		System.out.println(e);
+	    	}
+		 return new ModelAndView("dynamicTables/dynamicUserDetailsTable", model.asMap());
+	 }
+	 
+	 @RequestMapping(method = RequestMethod.GET, value="/analyseUserBySessionId")
+	 public @ResponseBody JsonResponce analyseUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		 
+		 JsonResponce res= new JsonResponce();
+		 
+	     response.setHeader("Access-Control-Allow-Origin", "*");
+	     response.setHeader("Access-Control-Allow-Methods", "GET");
+	     response.setHeader("Access-Control-Max-Age", "3600");
+	     response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+	     
+	     Long sessionPK = Long.parseLong(request.getParameter("sid"));
+	     
+	     AnalyseUserDTO list = null;
+/*		 Model model = new ExtendedModelMap();
+	     
+		 ParamEncoder paramEncoder = new ParamEncoder(Constants.ANALYSE_USER_TABLE);
+		 
+	    	try{
+	    		String sortField = ServletRequestUtils.getStringParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_SORT));
+	    		int order = ServletRequestUtils.getIntParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER), 0);
+	    		int page = ServletRequestUtils.getIntParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE), 0);
+	    		int start = (page>0) ? (page - 1) * Constants.GRID_TABLE_SIZE : 0;
+	    		String searchq = ServletRequestUtils.getStringParameter(request, Constants.PARAMETER_SEARCH);
+			
+	    		list = sessionDetailsService.analyseUserBySessionId(sortField,order,start, Constants.GRID_TABLE_SIZE, searchq, sessionPK);
+	    		int listCount = sessionDetailsService.analyseUserCountBySessionId(searchq, sessionPK);
+			
+	    		request.setAttribute(Constants.TABLE_SIZE, listCount );
+	    		request.setAttribute(Constants.GRID_TABLE_SIZE_KEY, Constants.GRID_TABLE_SIZE);
+	    		model.addAttribute(Constants.ANALYSE_USER_TABLE, list);
+	    	} catch (Exception e) {
+	    		System.out.println(e);
+	    	}
+		 return new ModelAndView("dynamicTables/dynamicanalyseUserTable", model.asMap());*/
+		 list = sessionDetailsService.analyseUserBySessionId("",1,1, Constants.GRID_TABLE_SIZE, "", sessionPK);
 	     
 		 res.setStatus("success");
 		 res.setResult(list);
@@ -172,7 +253,7 @@ public class HomePageController {
 	 }
 	 
 	 @RequestMapping(method = RequestMethod.POST, value="/postEventDetails")
-	 public  @ResponseBody JsonResponce postEventDetails(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	 public  @ResponseBody JsonResponce postEventDetails(HttpServletRequest request, HttpServletResponse response, TimeZone timeZone) throws Exception {
 		 
 		 String sessionId = null;
 		 
@@ -199,6 +280,17 @@ public class HomePageController {
 		 String screenWidth = request.getParameter("screenWidth");
 		 String screenHeight = request.getParameter("screenHeight");
 		 
+		 String tagName = request.getParameter("tagName");
+		 String elementId = request.getParameter("elementId");
+		 String elementHeight = request.getParameter("elementHeight");
+		 String elementWidth = request.getParameter("elementWidth");
+		 String elementOffsetTop = request.getParameter("elementOffsetTop");
+		 String elementOffsetLeft = request.getParameter("elementOffsetLeft");
+		 String elementClass = request.getParameter("elementClass");
+		 String numberOfFingers = request.getParameter("numberOfFingers");
+		 String scrollTopPx = request.getParameter("scrollTopPx");
+		 String elementScrollTop = request.getParameter("elementScrollTop");
+		 
 		 System.out.println("eventType :"+eventType);
 		 System.out.println("coordinateX :"+coordinateX);
 		 System.out.println("coordinateY :"+coordinateY);
@@ -207,13 +299,23 @@ public class HomePageController {
 		 System.out.println("eventTriggeredTime :"+eventTriggeredTime);
 		 System.out.println("orientation :"+orientation);
 		 
+		 System.out.println("tagName :"+tagName);
+		 System.out.println("elementId :"+elementId);
+		 System.out.println("elementClass :"+elementClass);
+		 System.out.println("elementHeight :"+elementHeight);
+		 System.out.println("elementWidth :"+elementWidth);
+		 System.out.println("elementOffsetTop :"+elementOffsetTop);
+		 System.out.println("elementOffsetLeft :"+elementOffsetLeft);
+		 System.out.println("numberOfFingers :"+numberOfFingers);
+		 System.out.println("scrollTopPx :"+scrollTopPx);
+		 System.out.println("elementScrollTop :"+elementScrollTop);
+		 
 		 String res1 = saveSessionDetails(request, sessionId);
 		 
 		 res.setStatus(res1);
 		 res.setResult(sessionId);
 
 		 log.debug("**/Exit postEventDetails method/**");
-		 
 		 return res;
 	 }
 	 
@@ -266,15 +368,44 @@ public class HomePageController {
 		 String coordinateY = request.getParameter("coordinateY");
 		 String screenWidth = request.getParameter("screenWidth");
 		 String screenHeight = request.getParameter("screenHeight");
+		 String viewportHeight = request.getParameter("viewportHeight");
+		 String viewportWidth = request.getParameter("viewportWidth");
+		 String numberOfFingers = request.getParameter("numberOfFingers");
+		 String tagName = request.getParameter("tagName");
+		 String elementScrollTopPx = request.getParameter("elementScrollTop");
+		 String scrollTop = request.getParameter("scrollTopPx");
+		 String imageName = request.getParameter("imageName");
+		 
 		 
 		 EventDetails eventDetails = new EventDetails();
 
 		 eventDetails.setCoordinateX(coordinateX);
 		 eventDetails.setCoordinateY(coordinateY);
 		 eventDetails.setTriggeredTime(eventTriggeredTime);
+/*		 try {
+			eventDetails.setTriggeredTime(setStringToDateFormat(eventTriggeredTime));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}*/
 		 eventDetails.setScreenWidth(screenWidth);
 		 eventDetails.setScreenHeight(screenHeight);
 		 eventDetails.setOrientation(orientation);
+		 eventDetails.setNumOfTaps(numberOfFingers);
+		 eventDetails.setViewportHeight(viewportHeight);
+		 eventDetails.setViewportWidth(viewportWidth);
+		 eventDetails.setTagName(tagName);
+		 if(imageName.equalsIgnoreCase("-1")){
+			 eventDetails.setImageName("No Image");
+		 } else {
+			 eventDetails.setImageName(imageName); 
+		 }
+		 
+		 if(eventType.equalsIgnoreCase("SE")) {
+			 eventDetails.setScrollTop(scrollTop);
+		 } else {
+			 eventDetails.setScrollTop(elementScrollTopPx); 
+		 }
+		 
 		 
 		 if(eventType.equalsIgnoreCase("LC")) {
 			 eventDetails.setEventName(EventTypes.LEFT_CLICK.name());
@@ -301,32 +432,53 @@ public class HomePageController {
 			 eventDetails.setEventTypes(EventTypes.TOUCH_EVENT.getEventTypes());
 			 
 		 } else if(eventType.equalsIgnoreCase("DZE")) {
-			 eventDetails.setEventName(EventTypes.DESKTOP_ZOOM_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.DESKTOP_ZOOM_EVENT.getEventTypes());
+			 eventDetails.setEventName(EventTypes.DESKTOP_ZOOM.name());
+			 eventDetails.setEventTypes(EventTypes.DESKTOP_ZOOM.getEventTypes());
 			 
 		 } else if(eventType.equalsIgnoreCase("TZE")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_ZOOM_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_ZOOM_EVENT.getEventTypes());
+			 eventDetails.setEventName(EventTypes.TOUCH_ZOOM.name());
+			 eventDetails.setEventTypes(EventTypes.TOUCH_ZOOM.getEventTypes());
 			 
 		 } else if(eventType.equalsIgnoreCase("TZE_SE")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_ZOOM_EVENT_SCROLL_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_ZOOM_EVENT_SCROLL_EVENT.getEventTypes());
+			 eventDetails.setEventName(EventTypes.TOUCH_ZOOM_EVENT_SCROLL.name());
+			 eventDetails.setEventTypes(EventTypes.TOUCH_ZOOM_EVENT_SCROLL.getEventTypes());
 			 
 		 }  else if(eventType.equalsIgnoreCase("TE_SE")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_SCROLL_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_SCROLL_EVENT.getEventTypes());
+			 eventDetails.setEventName(EventTypes.TOUCH_SCROLL.name());
+			 eventDetails.setEventTypes(EventTypes.TOUCH_SCROLL.getEventTypes());
 			 
 		 }  else if(eventType.equalsIgnoreCase("TM")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_MOVE_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_MOVE_EVENT.getEventTypes());
+			 eventDetails.setEventName(EventTypes.TOUCH_MOVE.name());
+			 eventDetails.setEventTypes(EventTypes.TOUCH_MOVE.getEventTypes());
 			 
-		 } else if(eventType.equalsIgnoreCase("DE_SE")) {
-			 eventDetails.setEventName(EventTypes.DESKTOP_SCROLL_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.DESKTOP_SCROLL_EVENT.getEventTypes());
+		 } else if(eventType.equalsIgnoreCase("DSE")) {
+			 eventDetails.setEventName(EventTypes.DESKTOP_SCROLL.name());
+			 eventDetails.setEventTypes(EventTypes.DESKTOP_SCROLL.getEventTypes());
+			 
+		 } else if(eventType.equalsIgnoreCase("TS")) {
+			 eventDetails.setEventName(EventTypes.TOUCH_START.name());
+			 eventDetails.setEventTypes(EventTypes.TOUCH_START.getEventTypes());
+			 
+		 } else if(eventType.equalsIgnoreCase("RF")) {
+			 eventDetails.setEventName(EventTypes.REFRESH_EVENT.name());
+			 eventDetails.setEventTypes(EventTypes.REFRESH_EVENT.getEventTypes());
+			 
+		 } else if(eventType.equalsIgnoreCase("STZE")) {
+			 eventDetails.setEventName(EventTypes.SWAP_TOUCH_ZOOM.name());
+			 eventDetails.setEventTypes(EventTypes.SWAP_TOUCH_ZOOM.getEventTypes());
+			 
+		 } else if(eventType.equalsIgnoreCase("TSE")) {
+			 eventDetails.setEventName(EventTypes.TOUCH_SCROLL_EVENT.name());
+			 eventDetails.setEventTypes(EventTypes.TOUCH_SCROLL_EVENT.getEventTypes());
 			 
 		 } else {
 			 System.out.println("New Type :"+eventType );
 		 }
+
+		 Map<String, String> map = getCountryDateAndTime(request.getParameter("timeZoneOffset"));
+		 
+		 eventDetails.setTimeZone(map.get("timeZone"));
+		 eventDetails.setZoneDateTime(map.get("dateTime"));
 		 
 		 eventDetailsService.saveEventDetails(eventDetails);
 		 setNewBrowserDetails(request,sessionDetails,deviceDetails,eventDetails);
@@ -422,8 +574,36 @@ public class HomePageController {
 		deviceDetailsService.saveDeviceDetails(deviceDetails);
 		
 		setNewEventDetails(request,sessionDetails,deviceDetails);
+		//getTimeZone(request);
+		
+
 	}
-	
+	public void getTimeZone(HttpServletRequest request){
+		Cookie[] cookies = request.getCookies();
+		String timeOffset=null;
+		if (cookies != null) {
+		 for (Cookie cookie : cookies) {
+		   if (cookie.getName().equals("TIMEZONE_COOKIE")) {
+		        timeOffset=cookie.getValue();
+		        break;
+		    }
+		   }
+		  }
+		//TimeZone timeZone = TimeZone.getTimeZone("GMT");
+		//System.out.println("time zone :"+timeZone);
+		//Add the offset to the time that you got from server , you have to write the code something like this
+		//Calendar now = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid")); // in your case now will be the server time after getting from DB
+		//now.add(Calendar.MINUTE, Integer.parseInt(timeOffset)*(-1));
+		
+		//instantiates a calendar using the current time in the specified timezone
+		Calendar cSchedStartCal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+		//change the timezone
+		cSchedStartCal.setTimeZone(TimeZone.getTimeZone("GMT+5"));
+		
+		
+		System.out.println("Time Zone :"+cSchedStartCal.getTimeZone());
+		System.out.println("Time :"+cSchedStartCal.getTime());
+	}
     static {
         try {
             lookUp = new LookupService(
@@ -445,5 +625,44 @@ public class HomePageController {
 	 public static GeoLocation getLocation(InetAddress ipAddress){
 	        return GeoLocation.map(lookUp.getLocation(ipAddress));
 	 }
-	 
+	 public Date setStringToDateFormat(String date1) throws ParseException{
+		
+        DateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+        Date date = originalFormat.parse(date1);
+        Date dateOut = date;
+		
+        return dateOut;
+	 }
+	 public Map<String, String> getCountryDateAndTime(String timeOffset) {
+		 map = new HashMap<String, String>();
+		 if(!timeOffset.equalsIgnoreCase("-1")) {
+			 System.out.println("Offset :"+timeOffset);
+			 System.out.println("Offset in miliseconds :"+(Integer.parseInt(timeOffset)* 60000 * -1));
+			 DateTime utc = new DateTime(DateTimeZone.UTC);
+			// DateTimeZone tz = DateTimeZone.forID(timeZone);
+			 DateTimeZone tz = DateTimeZone.forOffsetMillis((Integer.parseInt(timeOffset)* 60000 * -1));
+			 DateTime currentTime = utc.toDateTime(tz);
+			 
+			 String timeZone = currentTime.getZone().toString();
+			 String year = String.valueOf(currentTime.getYear());
+			 String month = String.valueOf(currentTime.getMonthOfYear());
+			 String day = String.valueOf(currentTime.getDayOfMonth());
+			 String hour = String.valueOf(currentTime.getHourOfDay());
+			 String minutes = String.valueOf(currentTime.getMinuteOfHour());
+			 String seconds = String.valueOf(currentTime.getSecondOfMinute());
+			 String miliseconds = String.valueOf(currentTime.getMillisOfSecond());
+			 
+			 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
+			 String str = currentTime.toString(fmt);
+			 String dateTime = str;
+					 //year.concat("-").concat(month).concat("-").concat(day).concat(" ").concat(hour).concat(":").concat(minutes).concat(":").concat(seconds).concat(":").concat(miliseconds);
+					 //"-"+currentTime.getMonthOfYear()+"-"+currentTime.getDayOfMonth()+" => \n"+currentTime.getHourOfDay()+":"+currentTime.getMinuteOfHour()+":"+currentTime.getSecondOfMinute()+":"+currentTime.getMillisOfSecond()
+			 
+			 System.out.println("Date Time :"+dateTime);
+			 
+			 map.put("timeZone", timeZone);
+			 map.put("dateTime", dateTime);
+		 }
+		 return map;
+	 }
 }

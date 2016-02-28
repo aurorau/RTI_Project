@@ -389,14 +389,99 @@ table {
 }
 
 table tr th, table tr td {
-	background: #3B3B3B;
+	font-size:10px;
+	background: green;
 	color: #FFF;
 	padding: 7px 4px;
-	text-align: left;
+	text-align: center;
 }
 
 table tr td {
 	background: #E5E5DB;
 	color: #47433F;
 	border-top: 1px solid #FFF;
+	text-align: center;
 }
+
+/* TABLES */
+
+th.sorted a, th.sortable a {
+    display: block;
+}
+
+.table th.order1 a {
+    background-image: url(../images/arrow_down.png);
+}
+
+.table th.order2 a {
+    background-image: url(../images/arrow_up.png);
+}
+
+.table th.sorted a, .table th.sortable a {
+    background-position: right;
+    background-repeat: no-repeat;
+    display: block;
+	padding: 0 20px 0 0;
+}
+
+div.exportlinks a {
+    text-decoration: none;
+}
+
+div.exportlinks span {
+    background-repeat: no-repeat;
+    background-position: 1px 2px;
+}
+
+span.csv {
+    background-image: url(../images/ico_file_csv.png);
+}
+
+span.excel {
+    background-image: url(../images/ico_file_excel.png);
+}
+
+span.pdf {
+    background-image: url(../images/ico_file_pdf.png);
+}
+
+span.xml {
+    background-image: url(../images/ico_file_xml.png);
+}
+
+span.export {
+    cursor: pointer;
+    display: inline-block;
+    padding: 0 4px 1px 20px;
+}
+
+span.pagebanner {
+																																																display: block;
+																																																margin: 0 0 0 210px;
+																																																padding: 0px 4px 2px 0;
+																																																position: absolute;
+																																																float: left;
+	
+display: none !important;
+}
+
+span.pagelinks {
+    display: block;
+    font-size: .95em;
+    margin-bottom: 5px;
+    margin-top: -18px;
+    padding: 2px 0 2px 0;
+    text-align: right;
+    width:50%;
+	float:right;
+}
+
+
+.bold_interview{
+	font-weight: bold;
+}
+
+.style_fix{
+	  padding-right: 19px !important;
+}
+

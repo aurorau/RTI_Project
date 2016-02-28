@@ -3,7 +3,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <script src="script/jquery.min.js"></script>
-<script src="script/ptHome.js"></script>
+<!-- <script src="script/ptHome.js"></script> -->
+<script src="script/rtiNew.js"></script>
 <!-- <script src="script/mobileJs.js"></script> -->
 <!-- <script src="script/admin.js"></script> -->
 <script language="JavaScript"

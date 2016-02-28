@@ -2,7 +2,7 @@ $(document).ready(function() {
 	$('#userDetailsTable').hide();
 	$("#proxyDiv").hide();
 	$("#rightDiv").hide();
-	getCurrentUserCount();
+	//getCurrentUserCount();
 	setInterval(function(){ 
 		//getCurrentUserCount();
 	},30000);
@@ -25,7 +25,7 @@ function getCurrentUserCount () {
 						$('#userDetailsTable').show();
 						 $.each(data.result, function(index, value) {
 							 index = index+1;
-							 $('#userDetailsTable').append('<tr><td><label>User :'+index+'</label></td><td id=_'+index+'><button onclick="getUserDetails('+value.sid+');">Get Details</button></td></tr>');
+							 $('#userDetailsTable').append('<tr><td><label>User :'+index+'</label></td><td id=_'+index+'><button onclick="getUserDetails('+value.sid+');">Get Details</button></td><td><button onclick="analyseUser('+value.sid+');">AnalyseUser</button></td></tr>');
 						 });
 					  }
         	}
@@ -33,9 +33,44 @@ function getCurrentUserCount () {
 	});
 }
 
+function analyseUser(sid){
+	
+	q = '';
+	var formdata = 'ajax=true&q='+q+'&sid='+sid;
+	$.ajax({
+        type: "GET",
+        url: "analyseUserBySessionId",
+        data: formdata,
+        success: function(data) {
+/*          $("#rightDiv").show();
+          $("#proxyDiv").hide();
+          $("#eventDetailsTableId").html(data);
+       	  $("#eventDetailsTableId").displayTagAjax();
+       	 // removeTableText('eventDetailsTableId');
+*/        }
+	});
+}
+
 function getUserDetails(sid) {
 	
-	var eventCount = 0;
+	var q =$('#addDetailsSearchId').val();
+	q = '';
+	var formdata = 'ajax=true&q='+q+'&sid='+sid;
+	$.ajax({
+        type: "GET",
+        url: "getUserDetailsBySessionId",
+        data: formdata,
+        success: function(data) {
+          $("#rightDiv").show();
+          $("#proxyDiv").hide();
+          $("#eventDetailsTableId").html(data);
+       	  $("#eventDetailsTableId").displayTagAjax();
+       	 // removeTableText('eventDetailsTableId');
+        }
+	});
+	
+	
+/*	var eventCount = 0;
 	var numOfProxies = 0;
 	
 	$.ajax({
@@ -47,8 +82,8 @@ function getUserDetails(sid) {
         		eventCount = data.result.length;
         		$("#rightDiv").show();
         		$('#eventDetailsTableId').html('');
-        		
         		$('#numberOfEvents').text(eventCount);
+        		
         		$.each(data.result, function(index, value) {
         			numOfProxies = value.pid.length;
         			index = index+1;
@@ -75,7 +110,7 @@ function getUserDetails(sid) {
         		
         	}
         }
-    });
+    });*/
 }
 function resetForm() {
 	$('#clickDetails').hide();
@@ -86,16 +121,32 @@ function getLocationDetails(bid) {
 	 $.get('getProxyDetails',{
 		 bid:bid
 	 }, function(data) {
-		 if(data.result != null){
+		 if(data.result.length > 0){
      			$("#proxyDiv").show();
      			$('#proxyDetailsTableId').html('');
 			 $.each(data.result, function(index, value) {
 				 //index = index+1;
 				 $('#proxyDetailsTableId').append("<tr>" +
-						 	//"<td><label>"+index+"</label></td>" +
-							"<td><label>"+value.ip+"</label></td>" +
-							"<td><label>"+value.countryName+"</label></td></tr>");
+					 	//"<td><label>"+index+"</label></td>" +
+						"<td>"+value.ip+"</td>" +
+						"<td>"+value.countryName+"</td></tr>"); 
 			 });
 		 }
 	 });
+}
+
+var removeTableText = function(id){
+	var textTable = $('#'+escapeStr(id)+' .pagebanner').text();
+	if(textTable == 'No items found.'){
+		$('#'+escapeStr(id)+' .pagebanner').hide();
+	}else{
+		$('#'+escapeStr(id)+' .pagebanner').show();
+	}
+}
+function escapeStr(str) 
+{
+  if (str)
+      return str.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1');      
+
+  return str;
 }

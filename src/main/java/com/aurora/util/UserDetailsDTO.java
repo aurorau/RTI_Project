@@ -18,7 +18,16 @@ public class UserDetailsDTO {
 	private String screenHeight;
 	private String screenWidth;
 	private String orientation;
-	
+	private List<Long> pid;
+	private String osName;
+	private String viewportHeight;
+	private String viewportWidth;
+	private String numOfTaps;
+	private String tagName;
+	private String scrollTop;
+	private String timeZone;
+	private String zoneDateTime;
+	private String imageName;
 
 	public String getBrowserVersion() {
 		return browserVersion;
@@ -38,7 +47,6 @@ public class UserDetailsDTO {
 	public void setOrientation(String orientation) {
 		this.orientation = orientation;
 	}
-	private List<Long> pid;
 	
 	public Long getSid() {
 		return sid;
@@ -117,6 +125,60 @@ public class UserDetailsDTO {
 	}
 	public void setScreenWidth(String screenWidth) {
 		this.screenWidth = screenWidth;
+	}
+	public String getOsName() {
+		return osName;
+	}
+	public void setOsName(String osName) {
+		this.osName = osName;
+	}
+	public String getViewportHeight() {
+		return viewportHeight;
+	}
+	public void setViewportHeight(String viewportHeight) {
+		this.viewportHeight = viewportHeight;
+	}
+	public String getViewportWidth() {
+		return viewportWidth;
+	}
+	public void setViewportWidth(String viewportWidth) {
+		this.viewportWidth = viewportWidth;
+	}
+	public String getNumOfTaps() {
+		return numOfTaps;
+	}
+	public void setNumOfTaps(String numOfTaps) {
+		this.numOfTaps = numOfTaps;
+	}
+	public String getTagName() {
+		return tagName;
+	}
+	public void setTagName(String tagName) {
+		this.tagName = tagName;
+	}
+	public String getScrollTop() {
+		return scrollTop;
+	}
+	public void setScrollTop(String scrollTop) {
+		this.scrollTop = scrollTop;
+	}
+	public String getTimeZone() {
+		return timeZone;
+	}
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+	}
+	public String getZoneDateTime() {
+		return zoneDateTime;
+	}
+	public void setZoneDateTime(String zoneDateTime) {
+		this.zoneDateTime = zoneDateTime;
+	}
+	public String getImageName() {
+		return imageName;
+	}
+	public void setImageName(String imageName) {
+		this.imageName = imageName;
 	}
 	
 }
