@@ -1,11 +1,14 @@
+var USER_LAST_ACCESS_TIME = -1;
+
 $(document).ready(function() {
 	$('#userDetailsTable').hide();
 	$("#proxyDiv").hide();
 	$("#rightDiv").hide();
+	$("#analyseTableId").hide();
 	//getCurrentUserCount();
 	setInterval(function(){ 
-		//getCurrentUserCount();
-	},30000);
+		getCurrentUserCount();
+	},10000);
 });
 
 function getCurrentUserCount () {
@@ -20,12 +23,14 @@ function getCurrentUserCount () {
         	if (data.status == 'success') {
 					if(data.result != null){
 						allUsers = data.result.length;
+				        $("#rightDiv").hide();
+				        //$("#analyseTableId").hide();
 						$('#numberOfCurrentUsers').text(allUsers);
 						$('#userDetailsTable').html('');
 						$('#userDetailsTable').show();
 						 $.each(data.result, function(index, value) {
 							 index = index+1;
-							 $('#userDetailsTable').append('<tr><td><label>User :'+index+'</label></td><td id=_'+index+'><button onclick="getUserDetails('+value.sid+');">Get Details</button></td><td><button onclick="analyseUser('+value.sid+');">AnalyseUser</button></td></tr>');
+							 $('#userDetailsTable').append('<tr><td><label>User :'+index+'</label></td><td id=_'+index+'><button onclick="getUserDetails('+value.sid+');">Get Details</button></td></tr>');
 						 });
 					  }
         	}
@@ -34,7 +39,6 @@ function getCurrentUserCount () {
 }
 
 function analyseUser(sid){
-	
 	q = '';
 	var formdata = 'ajax=true&q='+q+'&sid='+sid;
 	$.ajax({
@@ -42,6 +46,31 @@ function analyseUser(sid){
         url: "analyseUserBySessionId",
         data: formdata,
         success: function(data) {
+        	if(data.result.eventCount != null) {
+        		$("#analyseTableId").show();
+        		$("#device").text(": "+data.result.deviceType);
+        		$("#firstAccessTime").text(": "+data.result.eventCount.FIRST_ACCESS_TIME);
+        		$("#lastAccessTime").text(": "+data.result.eventCount.LAST_ACCESS_TIME);
+        		$("#totalEvents").text(": "+data.result.eventCount.TOTAL_COUNT);
+        		$("#totalRF").text(": "+data.result.eventCount.USER_EVENT_COUNT.RF_COUNT);
+        		$("#userStayingTime").text(": "+data.result.eventCount.USER_STAYING_TIME+" min");
+        		$("#userIdleTime").text(": "+data.result.eventCount.MAX_IDLE_TIME+" min");
+        		$("#avgTime").text(": "+data.result.eventCount.AVG_TIME_TWO_EVENT+" sec");
+        		$("#totalIMG").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT);
+        		$("#imgTS").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TS);
+        		$("#imgTM").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TM);
+        		$("#imgTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TZE);
+        		$("#imgSTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_STZE);
+        		$("#imgLC").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_LC);
+        		$("#totalPARA").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_P_COUNT);
+        		$("#pTS").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_TS);
+        		$("#pTM").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_TM);
+        		$("#pTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_TZE);
+        		$("#pSTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_STZE);
+        		$("#pLC").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_LC);
+        	}
+        	
+        	
 /*          $("#rightDiv").show();
           $("#proxyDiv").hide();
           $("#eventDetailsTableId").html(data);
@@ -65,6 +94,7 @@ function getUserDetails(sid) {
           $("#proxyDiv").hide();
           $("#eventDetailsTableId").html(data);
        	  $("#eventDetailsTableId").displayTagAjax();
+       	  analyseUser(sid);
        	 // removeTableText('eventDetailsTableId');
         }
 	});

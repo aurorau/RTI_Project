@@ -6,17 +6,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.displaytag.tags.TableTagParameters;
@@ -34,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.support.RequestContextUtils;
-
 import com.aurora.model.BrowserDetails;
 import com.aurora.model.DeviceDetails;
 import com.aurora.model.EventDetails;
@@ -55,7 +49,6 @@ import com.aurora.util.JsonResponce;
 import com.aurora.util.ProxyDetailsDTO;
 import com.aurora.util.UserDetailsDTO;
 import com.maxmind.geoip.LookupService;
-
 import nl.bitwalker.useragentutils.Browser;
 import nl.bitwalker.useragentutils.BrowserType;
 import nl.bitwalker.useragentutils.Manufacturer;
@@ -136,6 +129,22 @@ public class HomePageController {
 		 return res;
 	 }*/
 	 
+	 @RequestMapping(method = RequestMethod.GET, value="/heartBeat")
+	 public @ResponseBody JsonResponce heartBeat(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		 JsonResponce res= new JsonResponce();
+		 
+	     response.setHeader("Access-Control-Allow-Origin", "*");
+	     response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+	     response.setHeader("Access-Control-Max-Age", "3600");
+	     response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+		 
+	     String status = sessionDetailsService.heartBeat(request);
+	     
+		 res.setStatus(status);
+		 res.setResult(status);
+		 return res;
+	 }
+	 
 	 @RequestMapping(method = RequestMethod.GET, value="/getProxyDetails")
 	 public @ResponseBody JsonResponce getProxyDetails(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		 JsonResponce res= new JsonResponce();
@@ -178,15 +187,7 @@ public class HomePageController {
 	     response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
 	     
 	     Long sessionPK = Long.parseLong(request.getParameter("sid"));
-	     
 	     List<UserDetailsDTO> list = null;
-	     
-/*	     list = sessionDetailsService.getUserDetailsBySessionId(sessionPK);
-	     
-		 res.setStatus("success");
-		 res.setResult(list);
-		 
-		 return res;*/
 	     
 		 Model model = new ExtendedModelMap();
 		 ParamEncoder paramEncoder = new ParamEncoder(Constants.USER_DETAILS);
@@ -256,7 +257,6 @@ public class HomePageController {
 	 public  @ResponseBody JsonResponce postEventDetails(HttpServletRequest request, HttpServletResponse response, TimeZone timeZone) throws Exception {
 		 
 		 String sessionId = null;
-		 
 		 sessionId = request.getParameter("sessionID");
 		 
 		 if(sessionId == null || sessionId.equalsIgnoreCase("")) {
@@ -310,7 +310,7 @@ public class HomePageController {
 		 System.out.println("scrollTopPx :"+scrollTopPx);
 		 System.out.println("elementScrollTop :"+elementScrollTop);
 		 
-		 String res1 = saveSessionDetails(request, sessionId);
+		 String res1 = sessionDetailsService.saveSessionDetails(request);
 		 
 		 res.setStatus(res1);
 		 res.setResult(sessionId);
@@ -325,7 +325,8 @@ public class HomePageController {
 		   
 		   Long creationTime = request.getSession().getCreationTime();
 		   String sessionId = sessionId1;
-		   Long lastAccessTime = request.getSession().getLastAccessedTime();
+		   
+		   String currentLocationBasedTime = getLocationBasedCurrentTime(request.getParameter("timeZoneOffset"));
 		   
 		   SessionDetails sessionDetails = null;
 		   try{
@@ -335,25 +336,25 @@ public class HomePageController {
 				   
 				   sessionDetails = new SessionDetails();
 				   sessionDetails.setSessionId(sessionId);
-				   sessionDetails.setSessionLastAccessedTime(lastAccessTime);
-				   sessionDetails.setSessionCreatedTime(creationTime);
+				  // sessionDetails.setSessionLastAccessedTime(lastAccessTime);
+				  // sessionDetails.setSessionCreatedTime(creationTime);
 				   sessionDetails.setSessionAccessCount(1L);
-				   sessionDetails.setLastAccessTime(getTime());
+				   sessionDetails.setLastAccessTime(currentLocationBasedTime);
 				   
 			   } else {
 				   sessionDetails = sessionDetailsService.getById(sessionDetails.getSID());
-				   sessionDetails.setSessionLastAccessedTime(lastAccessTime);
+				   //sessionDetails.setSessionLastAccessedTime(lastAccessTime);
 				   sessionDetails.setSessionAccessCount(sessionDetails.getSessionAccessCount()+1);
-				   sessionDetails.setLastAccessTime(getTime());
+				   sessionDetails.setLastAccessTime(currentLocationBasedTime);
 			   }
 			   
-			   sessionDetailsService.saveSessionDetails(sessionDetails);		   
-			   
-			   setNewDeviceDetails(request,sessionDetails);
-			   res = "success";
+			  // sessionDetailsService.saveSessionDetails(sessionDetails);		   
+			   sessionDetailsService.saveSessionDetails(request);
+			  // setNewDeviceDetails(request,sessionDetails);
+			   res = Constants.SUCCESS;
 			   
 		   } catch(Exception e){
-			   res = "ERROR";
+			   res = Constants.ERROR;
 			   System.out.println("SaveSessionDetails Controller:"+e);
 		   }
 		   return res;
@@ -480,8 +481,8 @@ public class HomePageController {
 		 eventDetails.setTimeZone(map.get("timeZone"));
 		 eventDetails.setZoneDateTime(map.get("dateTime"));
 		 
-		 eventDetailsService.saveEventDetails(eventDetails);
-		 setNewBrowserDetails(request,sessionDetails,deviceDetails,eventDetails);
+		 //eventDetailsService.saveEventDetails(eventDetails);
+		// setNewBrowserDetails(request,sessionDetails,deviceDetails,eventDetails);
 	 }
 	 
 	 public void setNewProxyDetails(HttpServletRequest request,BrowserDetails browserDetails) {
@@ -514,7 +515,7 @@ public class HomePageController {
 			 proxyDetails.setPostalCode(geoLocation.getPostalCode());
 			 proxyDetails.setRegion(geoLocation.getRegion());
 			 
-			 proxyDetailsService.saveProxyDetailsService(proxyDetails);
+			// proxyDetailsService.saveProxyDetailsService(proxyDetails);
 		 }
 	 }
 
@@ -548,9 +549,9 @@ public class HomePageController {
 		browserDetails.setSessionDetails(sessionDetails);
 		browserDetails.setEventDetails(eventDetails);
 		
-		browserDetailsService.saveBrowserDetails(browserDetails);
+		//browserDetailsService.saveBrowserDetails(browserDetails);
 
-		setNewProxyDetails(request, browserDetails);
+		//setNewProxyDetails(request, browserDetails);
 	}
 	
 	public void setNewDeviceDetails(HttpServletRequest request, SessionDetails sessionDetails) {
@@ -564,45 +565,14 @@ public class HomePageController {
         
 		DeviceDetails deviceDetails = new DeviceDetails();
 		deviceDetails.setDeviceName(deviceName);
-		//deviceDetails.setDeviceType(deviceType);
-/*		deviceDetails.setHeight(screenHeight);
-		deviceDetails.setWidth(screenWidth);*/
 		deviceDetails.setOrientation(orientation);
 		deviceDetails.setOsManufacture(osManufacture.toString());
 		deviceDetails.setOsName(osName);
 		 
-		deviceDetailsService.saveDeviceDetails(deviceDetails);
+		//deviceDetailsService.saveDeviceDetails(deviceDetails);
 		
-		setNewEventDetails(request,sessionDetails,deviceDetails);
-		//getTimeZone(request);
-		
+		//setNewEventDetails(request,sessionDetails,deviceDetails);
 
-	}
-	public void getTimeZone(HttpServletRequest request){
-		Cookie[] cookies = request.getCookies();
-		String timeOffset=null;
-		if (cookies != null) {
-		 for (Cookie cookie : cookies) {
-		   if (cookie.getName().equals("TIMEZONE_COOKIE")) {
-		        timeOffset=cookie.getValue();
-		        break;
-		    }
-		   }
-		  }
-		//TimeZone timeZone = TimeZone.getTimeZone("GMT");
-		//System.out.println("time zone :"+timeZone);
-		//Add the offset to the time that you got from server , you have to write the code something like this
-		//Calendar now = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid")); // in your case now will be the server time after getting from DB
-		//now.add(Calendar.MINUTE, Integer.parseInt(timeOffset)*(-1));
-		
-		//instantiates a calendar using the current time in the specified timezone
-		Calendar cSchedStartCal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-		//change the timezone
-		cSchedStartCal.setTimeZone(TimeZone.getTimeZone("GMT+5"));
-		
-		
-		System.out.println("Time Zone :"+cSchedStartCal.getTimeZone());
-		System.out.println("Time :"+cSchedStartCal.getTime());
 	}
     static {
         try {
@@ -636,33 +606,32 @@ public class HomePageController {
 	 public Map<String, String> getCountryDateAndTime(String timeOffset) {
 		 map = new HashMap<String, String>();
 		 if(!timeOffset.equalsIgnoreCase("-1")) {
-			 System.out.println("Offset :"+timeOffset);
-			 System.out.println("Offset in miliseconds :"+(Integer.parseInt(timeOffset)* 60000 * -1));
 			 DateTime utc = new DateTime(DateTimeZone.UTC);
-			// DateTimeZone tz = DateTimeZone.forID(timeZone);
 			 DateTimeZone tz = DateTimeZone.forOffsetMillis((Integer.parseInt(timeOffset)* 60000 * -1));
 			 DateTime currentTime = utc.toDateTime(tz);
 			 
 			 String timeZone = currentTime.getZone().toString();
-			 String year = String.valueOf(currentTime.getYear());
-			 String month = String.valueOf(currentTime.getMonthOfYear());
-			 String day = String.valueOf(currentTime.getDayOfMonth());
-			 String hour = String.valueOf(currentTime.getHourOfDay());
-			 String minutes = String.valueOf(currentTime.getMinuteOfHour());
-			 String seconds = String.valueOf(currentTime.getSecondOfMinute());
-			 String miliseconds = String.valueOf(currentTime.getMillisOfSecond());
 			 
 			 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
 			 String str = currentTime.toString(fmt);
 			 String dateTime = str;
-					 //year.concat("-").concat(month).concat("-").concat(day).concat(" ").concat(hour).concat(":").concat(minutes).concat(":").concat(seconds).concat(":").concat(miliseconds);
-					 //"-"+currentTime.getMonthOfYear()+"-"+currentTime.getDayOfMonth()+" => \n"+currentTime.getHourOfDay()+":"+currentTime.getMinuteOfHour()+":"+currentTime.getSecondOfMinute()+":"+currentTime.getMillisOfSecond()
-			 
-			 System.out.println("Date Time :"+dateTime);
 			 
 			 map.put("timeZone", timeZone);
 			 map.put("dateTime", dateTime);
 		 }
 		 return map;
+	 }
+	 public String getLocationBasedCurrentTime(String timeOffset){
+		 String dateTime = null;
+		 if(!timeOffset.equalsIgnoreCase("-1")) {
+			 DateTime utc = new DateTime(DateTimeZone.UTC);
+			 DateTimeZone tz = DateTimeZone.forOffsetMillis((Integer.parseInt(timeOffset)* 60000 * -1));
+			 DateTime currentTime = utc.toDateTime(tz);
+			 
+			 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+			 String str = currentTime.toString(fmt);
+			 dateTime = str;
+		 }
+		 return dateTime;
 	 }
 }

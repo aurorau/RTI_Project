@@ -1,6 +1,8 @@
 package com.aurora.service;
 
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -10,7 +12,7 @@ import com.aurora.model.SessionDetails;
 
 
 public interface DeviceDetailsService {
-	public String saveDeviceDetails(DeviceDetails deviceDetails);
+	public String saveDeviceDetails(HttpServletRequest request, SessionDetails sessionDetails);
 	/**
 	 *  Get getDeviceDetailsById
 	 *  

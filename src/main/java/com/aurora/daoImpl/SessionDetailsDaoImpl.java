@@ -78,7 +78,8 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		session.getTransaction().begin();
 		
 		Criteria criteria = session.createCriteria(SessionDetails.class,"sessionDetails")
-				.add(Restrictions.between("sessionDetails.lastAccessTime",beforeTime, currentTime));
+				.add(Restrictions.eq("sessionDetails.status","ACTIVE"));
+				//.add(Restrictions.between("sessionDetails.lastAccessTime",beforeTime, currentTime));
 		criteria.addOrder(Order.asc("SID"));
 		criteria.setProjection(Projections.projectionList()
 				.add(Projections.property("SID").as("sid"))
@@ -92,14 +93,14 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 	
 	public String getTime(){
 		 
-		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss.S");
+		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		 Date date = new Date();
 		 String result = formatter.format(date);
 		 return result;
 	 }
 	public String getBeforeTime(){
 		 
-		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss.S");
+		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		 Date date = new Date();
 		 String result = formatter.format(DateUtils.addMinutes(date, -3));
 		 return result;
@@ -131,6 +132,8 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 			
 			criteria.setProjection(Projections.projectionList()
 					.add(Projections.property("sessionDetails.SID").as("sid"))
+					.add(Projections.property("sessionDetails.lastAccessTime").as("lastAccessTime"))
+					.add(Projections.property("sessionDetails.sessionCreatedTime").as("firstAccessTime"))
 					.add(Projections.property("eventDetails.EID").as("eid"))
 					.add(Projections.property("eventDetails.triggeredTime").as("eventTriggeredTime"))
 					.add(Projections.property("eventDetails.eventTypes").as("eventName"))
@@ -242,6 +245,8 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		
 		criteria.setProjection(Projections.projectionList()
 				.add(Projections.property("sessionDetails.SID").as("sid"))
+				.add(Projections.property("sessionDetails.lastAccessTime").as("lastAccessTime"))
+				.add(Projections.property("sessionDetails.sessionCreatedTime").as("firstAccessTime"))
 				.add(Projections.property("eventDetails.EID").as("eid"))
 				.add(Projections.property("eventDetails.triggeredTime").as("eventTriggeredTime"))
 				.add(Projections.property("eventDetails.eventTypes").as("eventName"))

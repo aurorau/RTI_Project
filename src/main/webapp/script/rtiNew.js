@@ -28,17 +28,31 @@ var globalEventType= -1;
 var imageName = -1;
 
 $(document).ready(function() {
-
-	setInterval(function(){ 
-		//heartBeat();
-	},10000);
-	//identifyDeviceWidthHeight();
 	clearValues();
 	eventType = "RF";
 	sendEventDetailsToController();
+	setInterval(function(){ 
+		heartBeat();
+	},10000);
 });
 
-
+function heartBeat(){
+	var sessionID = -1;
+	sessionID = sessionStorage.getItem('sessionID');
+	setTimeZoneInCookie();
+	$.get('heartBeat', {
+		sessionID : sessionID,
+		timeZoneOffset : timeZoneOffset
+	}, function(data) {
+		if (data.status == 'SUCCESS') {
+			if(data.result !=  'SUCCESS') {
+				sessionStorage.setItem('sessionID',"");
+			}
+		} else {
+			console.log(data.status);
+		}
+	});
+}
 
 function identifyDeviceWidthHeight(){
 	//getProperHeightWidth();
@@ -93,15 +107,15 @@ function getProperHeightWidth(){
 }
 
 function getFraudHeightWidth(status){
-	getScreenWidth = screen.width+status;
-	getScreenHeight = screen.height+status;
+	getScreenWidth = -100;
+	getScreenHeight = -100;
 }
 
 $(document).dblclick(function(e){
 	globalEventType = "DC";
 	eventType = "DC";
-	coordinateX = e.clientX;
-	coordinateY = e.clientY;
+	coordinateX = Math.round(e.clientX);
+	coordinateY = Math.round(e.clientY);
 	eventTriggredPositionDetails(e);
 	sendEventDetailsToController();
 });
@@ -131,8 +145,8 @@ $(document).on('touchstart', function(e){
 			setTimeout(function(){
 				if(numberOfFingers == 1) {
 					eventType = "TZE";
-					coordinateX = e.originalEvent.touches[0].clientX;
-					coordinateY = e.originalEvent.touches[0].clientY;
+					coordinateX = Math.round(e.originalEvent.touches[0].clientX);
+					coordinateY = Math.round(e.originalEvent.touches[0].clientY);
 					eventTriggredPositionDetails(e);
 					sendEventDetailsToController();
 				}
@@ -155,16 +169,16 @@ $(document).on('touchmove', function(e){
 	if(globalEventType == "TS" && numberOfFingers > 1) {
 		var currentSwapTime = Date.now();
 		eventType = "STZE";
-		coordinateX = e.originalEvent.touches[0].clientX;
-		coordinateY = e.originalEvent.touches[0].clientY;
+		coordinateX = Math.round(e.originalEvent.touches[0].clientX);
+		coordinateY = Math.round(e.originalEvent.touches[0].clientY);
 		eventTriggredPositionDetails(e);
 		sendEventDetailsToController();
 		numberOfFingers = -1;
 	} else if(globalEventType == "TS" && numberOfFingers == 1){
 		globalEventType = "TM";
 		eventType = "TM";
-		coordinateX = e.originalEvent.touches[0].clientX;
-		coordinateY = e.originalEvent.touches[0].clientY;
+		coordinateX = Math.round(e.originalEvent.touches[0].clientX);
+		coordinateY = Math.round(e.originalEvent.touches[0].clientY);
 		eventTriggredPositionDetails(e);
 		sendEventDetailsToController();
 	} 
@@ -174,8 +188,8 @@ function setSwapZoom(currentSwapTime){
 	var timeDiffer= (currentSwapTime-previouseSwapTime);
 	if(timeDiffer > 100) {
 		eventType = "STZE";
-		coordinateX = e.originalEvent.touches[0].clientX;
-		coordinateY = e.originalEvent.touches[0].clientY;
+		coordinateX = Math.round(e.originalEvent.touches[0].clientX);
+		coordinateY = Math.round(e.originalEvent.touches[0].clientY);
 		eventTriggredPositionDetails(e);
 		sendEventDetailsToController();
 	}
@@ -191,8 +205,8 @@ $(document).on('click', function(e){
 			eventType = "LC";
 			globalEventType = "LC"
 		}
-		coordinateX = e.clientX;
-		coordinateY = e.clientY;
+		coordinateX = Math.round(e.clientX);
+		coordinateY = Math.round(e.clientY);
 		eventTriggredPositionDetails(e);
 		
 		if(e.originalEvent.touches) {
@@ -203,8 +217,8 @@ $(document).on('click', function(e){
 	if(e.which == 3){
 		globalEventType = "RC";
 		eventType = "RC";
-		coordinateX = e.clientX;
-		coordinateY = e.clientY;
+		coordinateX = Math.round(e.clientX);
+		coordinateY = Math.round(e.clientY);
 		eventTriggredPositionDetails(e);
 		
 		if(e.originalEvent.touches) {
@@ -271,7 +285,17 @@ $(window).on("orientationchange",function(event){
 
 $(document).on('scroll',function(e){
 	
-	if(globalEventType == "TS") {
+	var currentScrollTime = Date.now();
+	globalEventType = "SE";
+	eventType = "SE";
+	numberOfFingers = 0;
+	if(e.originalEvent.touches) {
+		numberOfFingers = e.originalEvent.touches.length;
+	}
+	scrollTopPx = $(window).scrollTop();
+	setScroll(currentScrollTime);
+	
+/*	if(globalEventType == "TS") {
 		globalEventType = "TS";
 	} else if(globalEventType == "TM") {
 		var currentScrollTime = Date.now();
@@ -293,7 +317,8 @@ $(document).on('scroll',function(e){
 		}
 		scrollTopPx = $(window).scrollTop();
 		setScroll(currentScrollTime);
-	}
+	}*/
+	
 });
 function setScroll(currentScrollTime){
 	var timeDiffer= (currentScrollTime-previouseScrollTime);

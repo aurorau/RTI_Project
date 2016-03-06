@@ -3,17 +3,19 @@ package com.aurora.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import com.aurora.model.BrowserDetails;
 import com.aurora.model.DeviceDetails;
+import com.aurora.model.EventDetails;
 import com.aurora.model.SessionDetails;
 import com.aurora.util.BrowserAndDeviceDetailsDTO;
 
 public interface BrowserDetailsService {
-	public String saveBrowserDetails(BrowserDetails browserDetails);
+	public String saveBrowserDetails(HttpServletRequest request, SessionDetails sessionDetails, DeviceDetails deviceDetails, EventDetails eventDetails);
 	/**
 	 *  Get getBrowserById
 	 *  

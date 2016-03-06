@@ -28,6 +28,8 @@ public class UserDetailsDTO {
 	private String timeZone;
 	private String zoneDateTime;
 	private String imageName;
+	private String lastAccessTime;
+	private String firstAccessTime;
 
 	public String getBrowserVersion() {
 		return browserVersion;
@@ -179,6 +181,18 @@ public class UserDetailsDTO {
 	}
 	public void setImageName(String imageName) {
 		this.imageName = imageName;
+	}
+	public String getLastAccessTime() {
+		return lastAccessTime;
+	}
+	public void setLastAccessTime(String lastAccessTime) {
+		this.lastAccessTime = lastAccessTime;
+	}
+	public String getFirstAccessTime() {
+		return firstAccessTime;
+	}
+	public void setFirstAccessTime(String firstAccessTime) {
+		this.firstAccessTime = firstAccessTime;
 	}
 	
 }

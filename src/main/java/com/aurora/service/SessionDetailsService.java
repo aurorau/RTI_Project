@@ -2,6 +2,7 @@ package com.aurora.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -13,7 +14,7 @@ import com.aurora.util.SessionBrowserDetailsDTO;
 import com.aurora.util.UserDetailsDTO;
 
 public interface SessionDetailsService {
-	public String saveSessionDetails(SessionDetails sessionDetails);
+	public String saveSessionDetails(HttpServletRequest request);
 	/**
 	 *  Get getById
 	 *  
@@ -56,4 +57,5 @@ public interface SessionDetailsService {
 	public int getUserDetailsCountBySessionId(String searchq, Long sessionPK);
 	public AnalyseUserDTO analyseUserBySessionId(String sortField,int order, int start, int gridTableSize, String searchq,Long sessionPK);
 	//public int analyseUserCountBySessionId(String searchq, Long sessionPK);
+	public String heartBeat(HttpServletRequest request);
 }

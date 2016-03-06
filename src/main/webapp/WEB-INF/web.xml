@@ -21,12 +21,31 @@
 		<param-value>/WEB-INF/dispatcher-servlet.xml</param-value>
 	</context-param>
 
+	<!-- JERSEY WEB SERVICE -->
+	<!-- <servlet>
+		<servlet-name>jersey-api</servlet-name>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>jersey-api</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/jersey-servlet.xml</param-value>
+	</context-param> 
+	-->
+
+
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
-	<session-config>
+<!-- 	<session-config>
 		<session-timeout>30</session-timeout>
-	</session-config>
+	</session-config> -->
 
 </web-app>
