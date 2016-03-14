@@ -11,6 +11,7 @@ import com.aurora.model.SessionDetails;
 import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.SessionBrowserDetailsDTO;
+import com.aurora.util.SessionTimeOutDTO;
 import com.aurora.util.UserDetailsDTO;
 
 public interface SessionDetailsService {
@@ -58,4 +59,6 @@ public interface SessionDetailsService {
 	public AnalyseUserDTO analyseUserBySessionId(String sortField,int order, int start, int gridTableSize, String searchq,Long sessionPK);
 	//public int analyseUserCountBySessionId(String searchq, Long sessionPK);
 	public String heartBeat(HttpServletRequest request);
+	
+	public List<SessionTimeOutDTO> getSessionIDListBySID(Long sid);
 }

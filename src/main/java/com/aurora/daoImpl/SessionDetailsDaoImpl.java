@@ -12,18 +12,21 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.Transformers;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import com.aurora.dao.SessionDetailsDao;
 import com.aurora.model.BrowserDetails;
 import com.aurora.model.ProxyDetails;
 import com.aurora.model.SessionDetails;
-import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.HibernateBase;
+import com.aurora.util.SessionTimeOutDTO;
 import com.aurora.util.UserDetailsDTO;
 
 @Repository("sessionDetailsDao")
+@EnableScheduling
 public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetailsDao {
 
 	public void saveSessionDetails(SessionDetails sessionDetails) throws Exception {
@@ -43,6 +46,7 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		session.getTransaction().begin();
 		
 		Criteria criteria = session.createCriteria(SessionDetails.class,"sessionDetails")
+				.add(Restrictions.eq("sessionDetails.status", "ACTIVE"))
 				.add(Restrictions.eq("sessionDetails.sessionId", sessionId));
 				//.add(Restrictions.eq("sessionDetails.sessionCreatedTime", creationTime));
 		
@@ -71,16 +75,17 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 	public List<CurrentUsersDTO> getCurrentUserCount() throws Exception {
 		List<CurrentUsersDTO> dtoList = null;
 		
-		String currentTime = getTime();
+/*		String currentTime = getTime();
 		String beforeTime = getBeforeTime();
-		String beforeHeartBeatTime = getBeforeHeartBeatTime();
+		String beforeHeartBeatTime = getBeforeHeartBeatTime();*/
 		
 		Session session = getSession();
 		session.getTransaction().begin();
 		
 		Criteria criteria = session.createCriteria(SessionDetails.class,"sessionDetails")
-				.add(Restrictions.between("sessionDetails.heartBeatTime",beforeHeartBeatTime, currentTime))
-				.add(Restrictions.between("sessionDetails.lastAccessTime",beforeTime, currentTime));
+				.add(Restrictions.eq("status", "ACTIVE"));
+/*				.add(Restrictions.between("sessionDetails.heartBeatTime",beforeHeartBeatTime, currentTime))
+				.add(Restrictions.between("sessionDetails.lastAccessTime",beforeTime, currentTime));*/
 		criteria.addOrder(Order.asc("SID"));
 		criteria.setProjection(Projections.projectionList()
 				.add(Projections.property("SID").as("sid"))
@@ -283,28 +288,100 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		session.getTransaction().commit();
 		session.close();
 		
+		list = getPID(list);
 		return list;
 	}
+	
+	@Scheduled(fixedDelay =60000)
+	public void changeSessionStatus(){
 
-/*	public int analyseUserCountBySessionId(String searchq, Long sessionPK) {
+		List<CurrentUsersDTO> allList = null;
+		List<CurrentUsersDTO> activeList = null;
+		
+		String currentTime = getTime();
+		String beforeTime = getBeforeTime();
+		String beforeHeartBeatTime = getBeforeHeartBeatTime();
+		
 		Session session = getSession();
 		session.getTransaction().begin();
 		
-		int totalRowCount =0;
-		Criteria criteria = session.createCriteria(BrowserDetails.class,"browserDetails");
-				criteria.createAlias("browserDetails.sessionDetails", "sessionDetails");
-				criteria.createAlias("browserDetails.deviceDetails", "deviceDetails");
-				criteria.createAlias("browserDetails.eventDetails", "eventDetails");
-				criteria.add(Restrictions.eq("sessionDetails.SID",sessionPK));
-				criteria.setProjection(Projections.count("eventDetails.EID"));
+		Criteria criteria = session.createCriteria(SessionDetails.class,"sessionDetails")
+				.add(Restrictions.between("sessionDetails.heartBeatTime",beforeHeartBeatTime, currentTime))
+				.add(Restrictions.between("sessionDetails.lastAccessTime",beforeTime, currentTime));
+		criteria.addOrder(Order.asc("SID"));
+		criteria.setProjection(Projections.projectionList()
+				.add(Projections.property("SID").as("sid"))
+				.add(Projections.property("lastAccessTime").as("lastAccessTime")));	
+		activeList = criteria.setResultTransformer(Transformers.aliasToBean(CurrentUsersDTO.class)).list();
 		
-		Long value = (Long) criteria.uniqueResult();
-		totalRowCount = Integer.valueOf(value.intValue());
+		Criteria criteria1 = session.createCriteria(SessionDetails.class,"sessionDetails");
+		criteria1.addOrder(Order.asc("SID"));
+		criteria1.setProjection(Projections.projectionList()
+				.add(Projections.property("SID").as("sid"))
+				.add(Projections.property("lastAccessTime").as("lastAccessTime")));
+		allList= criteria1.setResultTransformer(Transformers.aliasToBean(CurrentUsersDTO.class)).list();
 		
+		for(CurrentUsersDTO dto : allList){
+			try{
+				SessionDetails sd = getById(dto.getSid());
+				sd.setStatus("INACTIVE");
+				saveSessionDetails(sd);
+			} catch(Exception e){
+				System.out.println("E :"+e);
+			}
+		}
+		
+		for(CurrentUsersDTO dto : activeList){
+			try{
+				SessionDetails sd = getById(dto.getSid());
+				sd.setStatus("ACTIVE");
+				saveSessionDetails(sd);
+			} catch(Exception e){
+				System.out.println("E :"+e);
+			}
+		}
+		session.getTransaction().commit();
+		session.close();
+	}
+
+	public List<SessionTimeOutDTO> getSessionIDListBySID(Long sid) {
+		List<SessionTimeOutDTO> dtoList = null;
+		SessionTimeOutDTO dto = null;
+		
+		Session session = getSession();
+		session.getTransaction().begin();
+		
+		Criteria criteria = session.createCriteria(SessionDetails.class,"sessionDetails")
+				.add(Restrictions.eq("SID", sid));
+		criteria.setProjection(Projections.projectionList()
+				.add(Projections.property("SID").as("sid"))
+				.add(Projections.property("sessionId").as("sessionId")));
+		dto = (SessionTimeOutDTO) criteria.uniqueResult();
+		//dtoList = criteria.setResultTransformer(Transformers.aliasToBean(SessionTimeOutDTO.class)).list();
+
 		session.getTransaction().commit();
 		session.close();
 		
-		return totalRowCount;
-	}*/
+		dtoList = getList(dto);
+		return dtoList;
+	}
+	
+	public List<SessionTimeOutDTO> getList(SessionTimeOutDTO dto) {
+		List<SessionTimeOutDTO> dtoList = null;
+		
+		Session session = getSession();
+		session.getTransaction().begin();
+		
+		Criteria criteria1 = session.createCriteria(SessionDetails.class,"sessionDetails")
+				.add(Restrictions.eq("sessionId", dto.getSessionId()));
+		criteria1.setProjection(Projections.projectionList()
+				.add(Projections.property("SID").as("sid"))
+				.add(Projections.property("sessionId").as("sessionId")));
+		dtoList = criteria1.setResultTransformer(Transformers.aliasToBean(SessionTimeOutDTO.class)).list();
+		
+		session.getTransaction().commit();
+		session.close();
+		return dtoList;
+	}
 
 }

@@ -8,6 +8,7 @@ import com.aurora.model.SessionDetails;
 import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.SessionBrowserDetailsDTO;
+import com.aurora.util.SessionTimeOutDTO;
 import com.aurora.util.UserDetailsDTO;
 
 public interface SessionDetailsDao {
@@ -19,4 +20,5 @@ public interface SessionDetailsDao {
 	public int getUserDetailsCountBySessionId(String searchq, Long sessionPK);
 	public List<UserDetailsDTO> analyseUserBySessionId(Long sessionPK);
 	//public int analyseUserCountBySessionId(String searchq, Long sessionPK);
+	public List<SessionTimeOutDTO> getSessionIDListBySID(Long sid);
 }

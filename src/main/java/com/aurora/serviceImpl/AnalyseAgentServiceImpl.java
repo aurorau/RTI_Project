@@ -8,14 +8,24 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.aurora.dao.SessionDetailsDao;
 import com.aurora.service.AnalyseAgentService;
+import com.aurora.util.SessionTimeOutDTO;
 import com.aurora.util.UserDetailsDTO;
 
 @Service("analyseAgentService")
 public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 
+	private SessionDetailsDao sessionDetailsDao = null;
+	
+	@Autowired
+	public void setSessionDetailsDao(SessionDetailsDao sessionDetailsDao) {
+		this.sessionDetailsDao = sessionDetailsDao;
+	}
+	
 	public Map<String, Object> getEventCount(List<UserDetailsDTO> dto) {
 		Map<String, Object> map = new HashMap<String, Object>();
 
@@ -27,6 +37,7 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 		long MAX_IDLE_TIME = 0;
 		String LAST_ACCESS_TIME = null;
 		String FIRST_ACCESS_TIME = null;
+		int NUM_OF_SESSION_TIMEOUT = 0;
 		
 		for(int x = 0; x<dto.size(); x++) { //getting time difference each consecutive events
 			if((x+1) <dto.size()){
@@ -38,6 +49,7 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 				}
 			}
 		}
+		//NUM_OF_SESSION_TIMEOUT = getSessionTimeOutCount(dto);
 		LAST_ACCESS_TIME = dto.get(0).getZoneDateTime();
 		FIRST_ACCESS_TIME = dto.get(dto.size()-1).getZoneDateTime();
 		AVG_TIME_TWO_EVENT = (int)(timeDiffer1/TOTAL_COUNT)/1000; 
@@ -49,8 +61,20 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 		map.put("AVG_TIME_TWO_EVENT", AVG_TIME_TWO_EVENT);
 		map.put("LAST_ACCESS_TIME", LAST_ACCESS_TIME);
 		map.put("FIRST_ACCESS_TIME", FIRST_ACCESS_TIME);
+		map.put("NUM_OF_SESSION_TIMEOUT", NUM_OF_SESSION_TIMEOUT);
 
 		return map;
+	}
+	
+	public int getSessionTimeOutCount(List<UserDetailsDTO> dto){
+		int listSize = 0;
+		Long sid = dto.get(0).getSid();
+		List<SessionTimeOutDTO> dt = sessionDetailsDao.getSessionIDListBySID(sid);
+		
+		if(dt != null){
+			listSize = dt.size()-1;
+		}
+		return listSize;
 	}
 	public long getTimeDifference(String time1, String time2){
 		DateTime crDate = getDate(time1);

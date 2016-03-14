@@ -26,7 +26,6 @@ var viewportWidth = -1;
 var timeZoneOffset = -1;
 var globalEventType= -1;
 var imageName = -1;
-var STATUS=-1;
 
 $(document).ready(function() {
 	clearValues();
@@ -34,11 +33,10 @@ $(document).ready(function() {
 	sendEventDetailsToController();
 	setInterval(function(){ 
 		heartBeat();
-	},30000);
+	},20000);
 });
 
 $(window).unload(function(){
-	STATUS = 'EXIT';
 	heartBeat();
 });
 
@@ -48,7 +46,6 @@ function heartBeat(){
 	setTimeZoneInCookie();
 	$.get('heartBeat', {
 		sessionID : sessionID,
-		STATUS : STATUS,
 		timeZoneOffset : timeZoneOffset
 	}, function(data) {
 		if (data.status == 'SUCCESS') {
@@ -371,12 +368,12 @@ var getCurrentTime=function() {
 	  var minutes = d.getMinutes();
 	  var seconds = d.getSeconds();
 	  var milSec = d.getMilliseconds(); 
-	  var ampm = hours >= 12 ? 'pm' : 'am';
-	  hours = hours % 12;
-	  hours = hours ? hours : 12; // the hour '0' should be '12'
+	//  var ampm = hours >= 12 ? 'pm' : 'am';
+	//  hours = hours % 12;
+	 // hours = hours ? hours : 12; // the hour '0' should be '12'
 	  minutes = minutes < 10 ? '0'+minutes : minutes;
 	 // var strTime = hours + ':' + minutes + ':'+seconds + ' ' + ampm;
-	  var strTime = year +'-'+month+'-'+day+' ' +hours + ':' + minutes + ':'+seconds+':'+milSec + ' '+ampm;
+	  var strTime = year +'-'+month+'-'+day+' ' +hours + ':' + minutes + ':'+seconds+'.'+milSec;
 	  return strTime;
 }
 

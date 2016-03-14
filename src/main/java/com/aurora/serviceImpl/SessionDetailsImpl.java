@@ -4,30 +4,36 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.aurora.dao.SessionDetailsDao;
 import com.aurora.model.SessionDetails;
 import com.aurora.service.AnalyseAgentService;
+import com.aurora.service.AnalyseUserService;
 import com.aurora.service.DeviceDetailsService;
 import com.aurora.service.SessionDetailsService;
 import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.Constants;
 import com.aurora.util.CurrentUsersDTO;
+import com.aurora.util.SessionTimeOutDTO;
 import com.aurora.util.UserDetailsDTO;
 
 @Service("sessionDetailsService")
 public class SessionDetailsImpl implements SessionDetailsService{
 	
-	SessionDetailsDao sessionDetailsDao = null;
-	AnalyseAgentService analyseAgentService = null;
-	DeviceDetailsService deviceDetailsService = null;
+	private SessionDetailsDao sessionDetailsDao = null;
+	private AnalyseAgentService analyseAgentService = null;
+	private DeviceDetailsService deviceDetailsService = null;
+	private AnalyseUserService analyseUserService = null;
 	
 	@Autowired
 	public void setSessionDetailsDao(SessionDetailsDao sessionDetailsDao) {
@@ -44,32 +50,24 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		this.deviceDetailsService = deviceDetailsService;
 	}
 	
+	@Autowired
+	public void setAnalyseUserService(AnalyseUserService analyseUserService) {
+		this.analyseUserService = analyseUserService;
+	}
+	
 	@Transactional
 	public String heartBeat(HttpServletRequest request) {
 		String res = Constants.FAIL;
 		SessionDetails sessionDetails = null;
-		String currentLocationBasedTime = null;
 		String sessionId = null;
 		try {
 			sessionId = request.getParameter("sessionID");
 			if(!sessionId.equalsIgnoreCase("-1")){
 				sessionDetails = sessionDetailsDao.getSessionDetailsByCreationTimeById(1L, sessionId);
-				//currentLocationBasedTime = getLocationBasedCurrentTime(request.getParameter("timeZoneOffset"));
-				
-				//long timeDiffer = getTimeDifference(sessionDetails.getLastAccessTime(),currentLocationBasedTime);
-				//int timeDiffer1 = (int)(timeDiffer/60000);
-				
-				//if(timeDiffer1 < 2) {
-					res = Constants.SUCCESS;
-					sessionDetails.setHeartBeatTime(getServerTime());
-					sessionDetailsDao.saveSessionDetails(sessionDetails);
-				//} 
-			} 
-/*			else {
-				sessionDetails = sessionDetailsDao.getSessionDetailsByCreationTimeById(1L, sessionId);
-				sessionDetails.setStatus("INACTIVE");
+				res = Constants.SUCCESS;
+				sessionDetails.setHeartBeatTime(getServerTime());
 				sessionDetailsDao.saveSessionDetails(sessionDetails);
-			}*/
+			}
 
 		} catch(Exception e){
 			res = Constants.ERROR;
@@ -81,43 +79,44 @@ public class SessionDetailsImpl implements SessionDetailsService{
 	public String saveSessionDetails(HttpServletRequest request) {
 		String res = Constants.FAIL;
 		String sessionId = null;
-		String sessionCreationTime = null;
+		String currentTime = getServerTime();
 	    String currentLocationBasedTime = getLocationBasedCurrentTime(request.getParameter("timeZoneOffset"));
 		sessionId = request.getParameter("sessionID");
 		 
 		SessionDetails sessionDetails = null;
-		
-		if(sessionId == null || sessionId.equalsIgnoreCase("")) {
-			sessionId = request.getSession().getId();
-			//sessionCreationTime = currentLocationBasedTime;
-			sessionCreationTime = getServerTime();
-		}
-		try {
-			sessionDetails = sessionDetailsDao.getSessionDetailsByCreationTimeById(1L, sessionId);	
-		    if(sessionDetails == null) {
-			   sessionDetails = new SessionDetails();
-			   sessionDetails.setSessionId(sessionId);
-			   sessionDetails.setSessionAccessCount(1L);
-			   sessionDetails.setSessionCreatedTime(sessionCreationTime);
-			   sessionDetails.setLastAccessTime(sessionCreationTime);
-			   //sessionDetails.setStatus("INACTIVE");
-		    } else {
-			   sessionDetails = sessionDetailsDao.getById(sessionDetails.getSID());
-			   sessionDetails.setSessionAccessCount(sessionDetails.getSessionAccessCount()+1);
-			   sessionDetails.setLastAccessTime(getServerTime());
-			   //sessionDetails.setStatus("INACTIVE");
-		    }
-			sessionDetailsDao.saveSessionDetails(sessionDetails);
-			String status = deviceDetailsService.saveDeviceDetails(request, sessionDetails);
+
+			if(sessionId == null || sessionId.equalsIgnoreCase("")) {
+				sessionId = request.getSession().getId();
+			} 
 			
-			if(status.equalsIgnoreCase(Constants.SUCCESS)) {
-				res = Constants.SUCCESS;
+			try {
+				sessionDetails = sessionDetailsDao.getSessionDetailsByCreationTimeById(1L, sessionId);
+
+				if(sessionDetails == null) {
+					sessionDetails = new SessionDetails();
+					sessionDetails.setSessionId(sessionId);
+					sessionDetails.setSessionAccessCount(1L);
+					sessionDetails.setSessionCreatedTime(currentTime);
+					sessionDetails.setLastAccessTime(currentTime);
+					sessionDetails.setHeartBeatTime(getServerTime());
+					sessionDetails.setStatus("ACTIVE");
+				} else {
+					sessionDetails = sessionDetailsDao.getById(sessionDetails.getSID());
+					sessionDetails.setSessionAccessCount(sessionDetails.getSessionAccessCount()+1);
+					sessionDetails.setLastAccessTime(currentTime);
+					sessionDetails.setStatus("ACTIVE");
+				}
+				sessionDetailsDao.saveSessionDetails(sessionDetails);
+				String status = deviceDetailsService.saveDeviceDetails(request, sessionDetails);
+			
+				if(status.equalsIgnoreCase(Constants.SUCCESS)) {
+					res = Constants.SUCCESS;
+				}
+			} catch(Exception e) {
+				System.out.println(e);
+				res = Constants.ERROR;
 			}
-		} catch(Exception e) {
-			System.out.println(e);
-			res = Constants.ERROR;
-		}
-		return res;
+			return res;
 	}
 
 	@Transactional
@@ -190,14 +189,28 @@ public class SessionDetailsImpl implements SessionDetailsService{
 			
 			Map<String, Object> map = analyseAgentService.getEventCount(list);
 			String deviceType = analyseAgentService.deviceIdenticication(list);
+			Map<String, Map<String, Integer>> userAnalyseMap = analyseUserService.analyseUser(list);
 			
 			dto.setEventCount(map);
 			dto.setDeviceType(deviceType);
+			dto.setUserStatus(userAnalyseMap);
 			
 		} catch(Exception e) {
 			System.out.println(e);
 		}
 		return dto;
+	}
+	@Transactional
+	public List<SessionTimeOutDTO> getSessionIDListBySID(Long sid) {
+		List<SessionTimeOutDTO> list = null;
+		
+		try {
+			list = sessionDetailsDao.getSessionIDListBySID(sid);
+			
+		} catch(Exception e) {
+			System.out.println(e);
+		}
+		return list;
 	}
 	 public String getLocationBasedCurrentTime(String timeOffset){
 		 String dateTime = null;

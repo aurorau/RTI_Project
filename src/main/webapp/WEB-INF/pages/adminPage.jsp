@@ -15,7 +15,7 @@
 <body>
 
 <h2 style="font-size: 20px;">ADMIN PAGE</h2>
-<button onclick="getCurrentUserCount()">Get Current User Count</button>
+<button onclick="getCurrentUserCount()" style="font-size: 12px;">Get Current User Count</button>
 <div>
 	<div style="width:20%; float: left;">
 	<label style="font-size: 15px; color: #009fbc">Current users : <span id=numberOfCurrentUsers style="font-size: 15px;"></span></label>
@@ -50,6 +50,10 @@
 			<td id="device" style="text-align: left;"></td>
 		</tr>
 		<tr>
+			<td style="text-align: left;"><b><u>NUM_OF_SESSION_TIMEOUT</u></b></td>
+			<td id="numOfSessionTimeout" style="text-align: left;"></td>
+		</tr>
+		<tr>
 			<td style="text-align: left;"><b><u>FIRST_ACCESS_TIME</u></b></td>
 			<td id="firstAccessTime" style="text-align: left;"></td>
 		</tr>
@@ -81,52 +85,56 @@
 			<td style="text-align: left;"><b><u>TOTAL_IMG_COUNT</u></b></td>
 			<td style="text-align: left;" id="totalIMG"></td>
 		</tr>
-<!-- 		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">IMG_COUNT_TS</label></td>
-			<td  style="text-align: left;" id="imgTS"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">IMG_COUNT_TM</label></td>
-			<td style="text-align: left;" id="imgTM"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">IMG_COUNT_TZE</label></td>
-			<td style="text-align: left;" id="imgTZE"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">IMG_COUNT_STZE</label></td>
-			<td style="text-align: left;" id="imgSTZE"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">IMG_COUNT_LC</label></td>
-			<td style="text-align: left;" id="imgLC"></td>
-		</tr> -->
 		<tr>
 			<td style="text-align: left;"><b><u>TOTAL_PARA_COUNT</u></b></td>
 			<td style="text-align: left;" id="totalPARA"></td>
 		</tr>
-<!-- 		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">P_COUNT_TS</label></td>
-			<td  style="text-align: left;" id="pTS"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">P_COUNT_TM</label></td>
-			<td style="text-align: left;" id="pTM"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">P_COUNT_TZE</label></td>
-			<td style="text-align: left;" id="pTZE"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">P_COUNT_STZE</label></td>
-			<td style="text-align: left;" id="pSTZE"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><label style="margin-left: 10px; margin-top: 5px;">P_COUNT_LC</label></td>
-			<td style="text-align: left;" id="pLC"></td>
-		</tr> -->
 	</table>
 </div>
+
+	<div id="analyseUserTable">
+		<label style="font-size: 15px; color: #009fbc">Analyse User </label>
+		<table>
+			<thead>
+				<tr>
+					<th>ATTRIBUTE</th>
+					<th>POSITIVE</th>
+					<th>NEGETIVE</th>
+				</tr>
+			</thead>
+			<tr>
+				<td style="text-align: left;"><b><u>BROWSER ID</u></b></td>
+				<td id="bidp" style="text-align: left;"></td>
+				<td id="bidn" style="text-align: left;"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TIME ZONE</u></b></td>
+				<td id="tzp" style="text-align: left;"></td>
+				<td id="tzn" style="text-align: left;"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>OS NAME</u></b></td>
+				<td id="osp" style="text-align: left;"></td>
+				<td id="osn" style="text-align: left;"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>EVENT SEQUENCE</u></b></td>
+				<td id="esp" style="text-align: left;"></td>
+				<td id="esn" style="text-align: left;"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>PROXY COUNT</u></b></td>
+				<td id="pcp" style="text-align: left;"></td>
+				<td id="pcn" style="text-align: left;"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>USER LOCATION</u></b></td>
+				<td id="ulp" style="text-align: left;"></td>
+				<td id="uln" style="text-align: left;"></td>
+			</tr>
+		</table>
+	</div>
+
 </div>`
 
 </body>

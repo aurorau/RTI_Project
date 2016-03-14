@@ -5,7 +5,8 @@ $(document).ready(function() {
 	$("#proxyDiv").hide();
 	$("#rightDiv").hide();
 	$("#analyseTableId").hide();
-	//getCurrentUserCount();
+	$("#analyseUserTable").hide();
+	getCurrentUserCount();
 	setInterval(function(){ 
 		getCurrentUserCount();
 	},30000);
@@ -23,15 +24,24 @@ function getCurrentUserCount () {
         	if (data.status == 'success') {
 					if(data.result != null){
 						allUsers = data.result.length;
-				        //$("#rightDiv").hide();
-				        //$("#analyseTableId").hide();
-						$('#numberOfCurrentUsers').text(allUsers);
-						$('#userDetailsTable').html('');
-						$('#userDetailsTable').show();
-						 $.each(data.result, function(index, value) {
-							 index = index+1;
-							 $('#userDetailsTable').append('<tr><td><label>User :'+index+'</label></td><td id=_'+index+'><button onclick="getUserDetails('+value.sid+');">Get Details</button></td></tr>');
-						 });
+						if(allUsers > 0) {
+							$('#numberOfCurrentUsers').text(allUsers);
+							$('#userDetailsTable').html('');
+							$('#userDetailsTable').show();
+				        	//$("#analyseUserTable").show();
+							 $.each(data.result, function(index, value) {
+								 index = index+1;
+								 $('#userDetailsTable').append('<tr><td><label>User :'+index+'</label></td><td id=_'+index+'><button onclick="getUserDetails('+value.sid+');">Get Details</button></td></tr>');
+							 });
+						} else {
+					        $("#rightDiv").hide();
+					        $("#analyseTableId").hide();
+					        $('#numberOfEvents').text('');
+					        $('#userDetailsTable').hide();
+					        $('#numberOfCurrentUsers').text('0');
+				        	$("#analyseUserTable").hide();
+						}
+
 					  }
         	}
         }
@@ -46,6 +56,9 @@ function analyseUser(sid){
         url: "analyseUserBySessionId",
         data: formdata,
         success: function(data) {
+        	
+        	$("#analyseUserTable").show();
+        	
         	if(data.result.eventCount != null) {
         		$("#analyseTableId").show();
         		$("#device").text(": "+data.result.deviceType);
@@ -68,6 +81,21 @@ function analyseUser(sid){
         		$("#pTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_TZE);
         		$("#pSTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_STZE);
         		$("#pLC").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_LC);
+        		$("#numOfSessionTimeout").text(": "+data.result.eventCount.NUM_OF_SESSION_TIMEOUT);
+
+        		
+        		$("#bidp").text(": "+data.result.userStatus.BROWSER_ID.POSITIVE);
+        		$("#bidn").text(": "+data.result.userStatus.BROWSER_ID.NEGETIVE);
+        		$("#osp").text(": "+data.result.userStatus.OS_NAME.POSITIVE);
+        		$("#osn").text(": "+data.result.userStatus.OS_NAME.NEGETIVE);
+        		$("#pcp").text(": "+data.result.userStatus.PROXY_COUNT.POSITIVE);
+        		$("#pcn").text(": "+data.result.userStatus.PROXY_COUNT.NEGETIVE);
+        		$("#tzp").text(": "+data.result.userStatus.TIME_ZONE.POSITIVE);
+        		$("#tzn").text(": "+data.result.userStatus.TIME_ZONE.NEGETIVE);
+        		$("#esp").text(": "+data.result.userStatus.EVENT_SEQUENCE.POSITIVE);
+        		$("#esn").text(": "+data.result.userStatus.EVENT_SEQUENCE.NEGETIVE);
+        		$("#ulp").text(": "+data.result.userStatus.USER_LOCATION.POSITIVE);
+        		$("#uln").text(": "+data.result.userStatus.USER_LOCATION.NEGETIVE);
         	}
         	
         	

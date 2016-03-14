@@ -11,8 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.displaytag.tags.TableTagParameters;
@@ -22,6 +24,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
 import com.aurora.model.BrowserDetails;
 import com.aurora.model.DeviceDetails;
 import com.aurora.model.EventDetails;
@@ -49,6 +53,7 @@ import com.aurora.util.JsonResponce;
 import com.aurora.util.ProxyDetailsDTO;
 import com.aurora.util.UserDetailsDTO;
 import com.maxmind.geoip.LookupService;
+
 import nl.bitwalker.useragentutils.Browser;
 import nl.bitwalker.useragentutils.BrowserType;
 import nl.bitwalker.useragentutils.Manufacturer;
@@ -71,7 +76,6 @@ public class HomePageController {
 	 EventDetailsService eventDetailsService = null;
 	 DeviceDetailsService deviceDetailsService = null;
 	 ProxyDetailsService proxyDetailsService = null;
-
 	 
 	 @Autowired
 	 public void setSessionDetailsService(SessionDetailsService sessionDetailsService) {
