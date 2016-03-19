@@ -356,9 +356,8 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		criteria.setProjection(Projections.projectionList()
 				.add(Projections.property("SID").as("sid"))
 				.add(Projections.property("sessionId").as("sessionId")));
-		dto = (SessionTimeOutDTO) criteria.uniqueResult();
-		//dtoList = criteria.setResultTransformer(Transformers.aliasToBean(SessionTimeOutDTO.class)).list();
-
+		dto = (SessionTimeOutDTO) criteria.setResultTransformer(Transformers.aliasToBean(SessionTimeOutDTO.class)).uniqueResult();
+		
 		session.getTransaction().commit();
 		session.close();
 		
@@ -373,6 +372,7 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		session.getTransaction().begin();
 		
 		Criteria criteria1 = session.createCriteria(SessionDetails.class,"sessionDetails")
+				.add(Restrictions.eq("status", "INACTIVE"))
 				.add(Restrictions.eq("sessionId", dto.getSessionId()));
 		criteria1.setProjection(Projections.projectionList()
 				.add(Projections.property("SID").as("sid"))

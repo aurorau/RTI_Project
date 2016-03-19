@@ -38,7 +38,7 @@ public class ProxyDetailsImpl implements ProxyDetailsService {
 		List<String> proxyList = null;
 		try {
 			 proxyList = new ArrayList<String>();
-			 String ipAddress = "112.135.1.252";
+			 String ipAddress = request.getHeader("X-FORWARDED-FOR");
 					 //"112.135.1.252,199.189.80.13";
 					 //request.getHeader("X-FORWARDED-FOR");
 					

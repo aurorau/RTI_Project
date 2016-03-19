@@ -49,7 +49,7 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 				}
 			}
 		}
-		//NUM_OF_SESSION_TIMEOUT = getSessionTimeOutCount(dto);
+		NUM_OF_SESSION_TIMEOUT = getSessionTimeOutCount(dto);
 		LAST_ACCESS_TIME = dto.get(0).getZoneDateTime();
 		FIRST_ACCESS_TIME = dto.get(dto.size()-1).getZoneDateTime();
 		AVG_TIME_TWO_EVENT = (int)(timeDiffer1/TOTAL_COUNT)/1000; 
@@ -72,7 +72,7 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 		List<SessionTimeOutDTO> dt = sessionDetailsDao.getSessionIDListBySID(sid);
 		
 		if(dt != null){
-			listSize = dt.size()-1;
+			listSize = dt.size();
 		}
 		return listSize;
 	}
