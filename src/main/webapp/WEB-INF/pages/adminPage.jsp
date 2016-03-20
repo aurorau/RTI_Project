@@ -89,6 +89,30 @@
 			<td style="text-align: left;"><b><u>TOTAL_PARA_COUNT</u></b></td>
 			<td style="text-align: left;" id="totalPARA"></td>
 		</tr>
+		<tr>
+			<td style="text-align: left;"><b><u>TOTAL_INPUT_COUNT</u></b></td>
+			<td style="text-align: left;" id="totalINPUT"></td>
+		</tr>
+		<tr>
+			<td style="text-align: left;"><b><u>TOTAL_A_COUNT</u></b></td>
+			<td style="text-align: left;" id="totalA"></td>
+		</tr>
+		<tr>
+			<td style="text-align: left;"><b><u>TOTAL_SELECT_COUNT</u></b></td>
+			<td style="text-align: left;" id="totalSELECT"></td>
+		</tr>
+		<tr>
+			<td style="text-align: left;"><b><u>TOTAL_OPTION_COUNT</u></b></td>
+			<td style="text-align: left;" id="totalOPTION"></td>
+		</tr>
+		<tr>
+			<td style="text-align: left;"><b><u>TOTAL_BTN_COUNT</u></b></td>
+			<td style="text-align: left;" id="totalBTN"></td>
+		</tr>
+		<tr>
+			<td style="text-align: left;"><b><u>TOTAL_TYPE_COUNT</u></b></td>
+			<td style="text-align: left;" id="totalTYPE"></td>
+		</tr>
 	</table>
 </div>
 

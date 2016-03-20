@@ -67,22 +67,34 @@ function analyseUser(sid){
         		$("#totalEvents").text(": "+data.result.eventCount.TOTAL_COUNT);
         		$("#totalRF").text(": "+data.result.eventCount.USER_EVENT_COUNT.RF_COUNT);
         		$("#userStayingTime").text(": "+data.result.eventCount.USER_STAYING_TIME+" min");
-        		$("#userIdleTime").text(": "+data.result.eventCount.MAX_IDLE_TIME+" min");
         		$("#avgTime").text(": "+data.result.eventCount.AVG_TIME_TWO_EVENT+" sec");
-        		$("#totalIMG").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT);
         		$("#imgTS").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TS);
         		$("#imgTM").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TM);
         		$("#imgTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TZE);
         		$("#imgSTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_STZE);
         		$("#imgLC").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_LC);
-        		$("#totalPARA").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_P_COUNT);
         		$("#pTS").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_TS);
         		$("#pTM").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_TM);
         		$("#pTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_TZE);
         		$("#pSTZE").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_STZE);
         		$("#pLC").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_LC);
         		$("#numOfSessionTimeout").text(": "+data.result.eventCount.NUM_OF_SESSION_TIMEOUT);
+        		$("#userIdleTime").text(": "+data.result.eventCount.MAX_IDLE_TIME+" min");
+        		
+  /*      		if(data.result.eventCount.MAX_IDLE_TIME > 10) {
+            		$("#userIdleTime").text(": "+data.result.eventCount.MAX_IDLE_TIME+" sec");
+        		} else {
+        			$("#userIdleTime").text(": "+data.result.eventCount.MAX_IDLE_TIME+" min");
+        		}*/
 
+        		$("#totalIMG").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT);
+        		$("#totalPARA").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_P_COUNT);
+        		$("#totalTYPE").text(": "+data.result.eventCount.USER_EVENT_COUNT.TYPE_COUNT_KP);
+        		$("#totalBTN").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_BTN_COUNT);
+        		$("#totalOPTION").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_OPTION_COUNT);
+        		$("#totalSELECT").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_SELECT_COUNT);
+        		$("#totalA").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_A_COUNT);
+        		$("#totalINPUT").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_INPT_COUNT);
         		
         		$("#bidp").text(": "+data.result.userStatus.BROWSER_ID.POSITIVE);
         		$("#bidn").text(": "+data.result.userStatus.BROWSER_ID.NEGETIVE);
