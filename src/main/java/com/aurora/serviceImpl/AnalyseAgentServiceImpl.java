@@ -264,7 +264,7 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 				DC_COUNT += 1;
 			} else if(dt.getEventName().equalsIgnoreCase("KP")) {
 				KP_COUNT += 1;
-				if(dt.getTagName().equalsIgnoreCase("INPUT")){
+				if(dt.getTagName().equalsIgnoreCase("INPUT") || dt.getTagName().equalsIgnoreCase("TEXTAREA")){
 					TYPE_COUNT_KP += 1;
 				} else if(dt.getTagName().equalsIgnoreCase("BODY")){
 					SE_COUNT_BY_KP += 1;
@@ -348,6 +348,7 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 		map.put("TOTAL_SELECT_COUNT", TOTAL_SELECT_COUNT);
 		map.put("TOTAL_OPTION_COUNT", TOTAL_OPTION_COUNT);
 		map.put("TYPE_COUNT_KP", TYPE_COUNT_KP);
+		map.put("SE_COUNT_BY_KP", SE_COUNT_BY_KP);
 		
 		return map;
 		

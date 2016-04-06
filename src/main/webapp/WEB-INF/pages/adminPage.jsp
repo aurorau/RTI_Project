@@ -70,10 +70,6 @@
 			<td id="userIdleTime" style="text-align: left;"></td>
 		</tr>
 		<tr>
-			<td style="text-align: left;"><b><u>TOTAL_EVENT_COUNT</u></b></td>
-			<td id="totalEvents" style="text-align: left;"></td>
-		</tr>
-		<tr>
 			<td style="text-align: left;"><b><u>TOTAL_REFRESH_COUNT</u></b></td>
 			<td id="totalRF" style="text-align: left;"></td>
 		</tr>
@@ -82,39 +78,146 @@
 			<td id="avgTime" style="text-align: left;"></td>
 		</tr>
 		<tr>
-			<td style="text-align: left;"><b><u>TOTAL_IMG_COUNT</u></b></td>
-			<td style="text-align: left;" id="totalIMG"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b><u>TOTAL_PARA_COUNT</u></b></td>
-			<td style="text-align: left;" id="totalPARA"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b><u>TOTAL_INPUT_COUNT</u></b></td>
-			<td style="text-align: left;" id="totalINPUT"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b><u>TOTAL_A_COUNT</u></b></td>
-			<td style="text-align: left;" id="totalA"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b><u>TOTAL_SELECT_COUNT</u></b></td>
-			<td style="text-align: left;" id="totalSELECT"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b><u>TOTAL_OPTION_COUNT</u></b></td>
-			<td style="text-align: left;" id="totalOPTION"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b><u>TOTAL_BTN_COUNT</u></b></td>
-			<td style="text-align: left;" id="totalBTN"></td>
-		</tr>
-		<tr>
-			<td style="text-align: left;"><b><u>TOTAL_TYPE_COUNT</u></b></td>
-			<td style="text-align: left;" id="totalTYPE"></td>
+			<td style="text-align: left; font-size: 12px;"><b><i>TOTAL_EVENT_COUNT</i></b></td>
+			<td id="totalEvents" style="text-align: left; font-size: 12px;"></td>
 		</tr>
 	</table>
 </div>
+
+	<div id="eventPersantageTable">
+		<label style="font-size: 15px; color: #009fbc">Event Persantage </label>
+		<table>
+			<thead>
+				<tr>
+					<th>ATTRIBUTE</th>
+					<th>COUNT</th>
+					<th>PERSANTAGE</th>
+				</tr>
+			</thead>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_LC_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalLC"></td>
+				<td style="text-align: left;" id="totalLC_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_TS_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalTS"></td>
+				<td style="text-align: left;" id="totalTS_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_TM_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalTM"></td>
+				<td style="text-align: left;" id="totalTM_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_TOUCH_ZOOM_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalTZ"></td>
+				<td style="text-align: left;" id="totalTZ_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_SWAP_ZOOM_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalSZ"></td>
+				<td style="text-align: left;" id="totalSZ_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_IMG_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalIMG"></td>
+				<td style="text-align: left;" id="totalIMG_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - LC_IMG_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalIMG_LC"></td>
+				<td style="text-align: left;" id="totalIMG_LC_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - TS_IMG_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalIMG_TS"></td>
+				<td style="text-align: left;" id="totalIMG_TS_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - TM_IMG_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalIMG_TM"></td>
+				<td style="text-align: left;" id="totalIMG_TM_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - TOUCH_ZOOM_IMG_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalIMG_TZ"></td>
+				<td style="text-align: left;" id="totalIMG_TZ_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - SWP_ZOOM_IMG_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalIMG_SZ"></td>
+				<td style="text-align: left;" id="totalIMG_SZ_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_PARA_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalPARA"></td>
+				<td style="text-align: left;" id="totalPARA_P"></td>
+			</tr>	
+<!-- 			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - LC_PARA_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalPARA_LC"></td>
+				<td style="text-align: left;" id="totalPARA_LC_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - TS_PARA_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalPARA_TS"></td>
+				<td style="text-align: left;" id="totalPARA_TS_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - TM_PARA_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalPARA_TM"></td>
+				<td style="text-align: left;" id="totalPARA_TM_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - TOUCH_ZOOM_PARA_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalPARATZ"></td>
+				<td style="text-align: left;" id="totalPARA_TZ_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><i>&nbsp; - SWP_ZOOM_PARA_COUNT</i></b></td>
+				<td style="text-align: left;" id="totalPARA_SZ"></td>
+				<td style="text-align: left;" id="totalPARA_SZ_P"></td>
+			</tr> -->
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_INPUT_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalINPUT"></td>
+				<td style="text-align: left;" id="totalINPUT_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_A_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalA"></td>
+				<td style="text-align: left;" id="totalA_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_SELECT_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalSELECT"></td>
+				<td style="text-align: left;" id="totalSELECT_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_OPTION_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalOPTION"></td>
+				<td style="text-align: left;" id="totalOPTION_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_BTN_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalBTN"></td>
+				<td style="text-align: left;" id="totalBTN_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_INPUT_KP_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalTYPE"></td>
+				<td style="text-align: left;" id="totalTYPE_P"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>TOTAL_SE_COUNT</u></b></td>
+				<td style="text-align: left;" id="totalSE"></td>
+				<td style="text-align: left;" id="totalSE_P"></td>
+			</tr>
+		</table>
+	</div>
+
+
 
 	<div id="analyseUserTable">
 		<label style="font-size: 15px; color: #009fbc">Analyse User </label>

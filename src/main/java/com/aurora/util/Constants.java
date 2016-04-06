@@ -24,7 +24,7 @@ public class Constants {
   /**
    * size of the grid table .
    */
-  public static final int GRID_TABLE_SIZE = 15;
+  public static final int GRID_TABLE_SIZE = 20;
   /**
    * key for parse the grid table .
    */

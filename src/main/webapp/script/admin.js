@@ -6,6 +6,7 @@ $(document).ready(function() {
 	$("#rightDiv").hide();
 	$("#analyseTableId").hide();
 	$("#analyseUserTable").hide();
+	$("#eventPersantageTable").hide();
 	getCurrentUserCount();
 	setInterval(function(){ 
 		getCurrentUserCount();
@@ -40,6 +41,7 @@ function getCurrentUserCount () {
 					        $('#userDetailsTable').hide();
 					        $('#numberOfCurrentUsers').text('0');
 				        	$("#analyseUserTable").hide();
+				        	$("#eventPersantageTable").hide();
 						}
 
 					  }
@@ -58,6 +60,7 @@ function analyseUser(sid){
         success: function(data) {
         	
         	$("#analyseUserTable").show();
+        	$("#eventPersantageTable").show();
         	
         	if(data.result.eventCount != null) {
         		$("#analyseTableId").show();
@@ -88,6 +91,11 @@ function analyseUser(sid){
         		}*/
 
         		$("#totalIMG").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT);
+        		$("#totalIMG_LC").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_LC);
+        		$("#totalIMG_TS").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TS);
+        		$("#totalIMG_TM").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TM);
+        		$("#totalIMG_TZ").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TZE);
+        		$("#totalIMG_SZ").text(": "+data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_STZE);
         		$("#totalPARA").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_P_COUNT);
         		$("#totalTYPE").text(": "+data.result.eventCount.USER_EVENT_COUNT.TYPE_COUNT_KP);
         		$("#totalBTN").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_BTN_COUNT);
@@ -95,6 +103,33 @@ function analyseUser(sid){
         		$("#totalSELECT").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_SELECT_COUNT);
         		$("#totalA").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_A_COUNT);
         		$("#totalINPUT").text(": "+data.result.eventCount.USER_EVENT_COUNT.TOTAL_INPT_COUNT);
+        		$("#totalSE").text(": "+data.result.eventCount.USER_EVENT_COUNT.SE_COUNT);
+        		$("#totalLC").text(": "+data.result.eventCount.USER_EVENT_COUNT.LC_COUNT);
+        		$("#totalTS").text(": "+data.result.eventCount.USER_EVENT_COUNT.TS_COUNT);
+        		$("#totalTM").text(": "+data.result.eventCount.USER_EVENT_COUNT.TM_COUNT);
+        		$("#totalTZ").text(": "+data.result.eventCount.USER_EVENT_COUNT.TZE_COUNT);
+        		$("#totalSZ").text(": "+data.result.eventCount.USER_EVENT_COUNT.STZE_COUNT);
+        		
+        		
+        		$("#totalIMG_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT)+" %");
+        		$("#totalIMG_LC_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_LC)+" %");
+        		$("#totalIMG_TS_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TS)+" %");
+        		$("#totalIMG_TM_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TM)+" %");
+        		$("#totalIMG_TZ_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TZE)+" %");
+        		$("#totalIMG_SZ_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_STZE)+" %");
+        		$("#totalPARA_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_P_COUNT)+" %");
+        		$("#totalTYPE_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TYPE_COUNT_KP)+" %");
+        		$("#totalBTN_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_BTN_COUNT)+" %");
+        		$("#totalOPTION_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_OPTION_COUNT)+" %");
+        		$("#totalSELECT_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_SELECT_COUNT)+" %");
+        		$("#totalA_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_A_COUNT)+" %");
+        		$("#totalINPUT_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_INPT_COUNT)+" %");
+        		$("#totalSE_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.SE_COUNT)+" %");
+        		$("#totalLC_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.LC_COUNT)+" %");
+        		$("#totalTS_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TS_COUNT)+" %");
+        		$("#totalTM_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TM_COUNT)+" %");
+        		$("#totalTZ_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TZE_COUNT)+" %");
+        		$("#totalSZ_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.STZE_COUNT)+" %");
         		
         		$("#bidp").text(": "+data.result.userStatus.BROWSER_ID.POSITIVE);
         		$("#bidn").text(": "+data.result.userStatus.BROWSER_ID.NEGETIVE);
@@ -118,6 +153,10 @@ function analyseUser(sid){
        	 // removeTableText('eventDetailsTableId');
 */        }
 	});
+}
+
+var persantageCount = function(totalEvent, specificEvent){
+	return  Math.round((specificEvent/totalEvent) *100);
 }
 
 function getUserDetails(sid) {
