@@ -30,11 +30,13 @@ var imageName = -1;
 $(document).ready(function() {
 	clearValues();
 	eventType = "RF";
+	numberOfFingers = 0;
 	sendEventDetailsToController();
 	setInterval(function(){ 
 		heartBeat();
 	},20000);
 });
+
 
 $(window).unload(function(){
 	heartBeat();
@@ -42,7 +44,8 @@ $(window).unload(function(){
 
 function heartBeat(){
 	var sessionID = -1;
-	sessionID = sessionStorage.getItem('sessionID');
+	sessionID = window.name;
+	//sessionID = sessionStorage.getItem('sessionID');
 	setTimeZoneInCookie();
 	$.get('heartBeat', {
 		sessionID : sessionID,
@@ -142,29 +145,18 @@ $(document).on('touchstart', function(e){
 	var touchTimeDiffer = (currentTouchTime - previouseTouchTime);
 	globalEventType = "TS";
 	
-/*	if(globalEventType == -1) {
-		globalEventType = "TS";
-	} else {*/
-		if(touchTimeDiffer < 400) {
-			setTimeout(function(){
-				if(numberOfFingers == 1) {
-					eventType = "TZE";
-					coordinateX = Math.round(e.originalEvent.touches[0].clientX);
-					coordinateY = Math.round(e.originalEvent.touches[0].clientY);
-					eventTriggredPositionDetails(e);
-					sendEventDetailsToController();
-				}
-			},400);
-		}
-	//}
+	if(touchTimeDiffer < 400) {
+		setTimeout(function(){
+			if(numberOfFingers == 1 && globalEventType == 'TS') {
+				eventType = "TZE";
+				coordinateX = Math.round(e.originalEvent.touches[0].clientX);
+				coordinateY = Math.round(e.originalEvent.touches[0].clientY);
+				eventTriggredPositionDetails(e);
+				sendEventDetailsToController();
+			}
+		},400);
+	}
 	previouseTouchTime = currentTouchTime;
-	
-/*	globalEventType = "TS";
-	eventType = "TS";
-	coordinateX = e.originalEvent.touches[0].clientX;
-	coordinateY = e.originalEvent.touches[0].clientY;
-	eventTriggredPositionDetails(e);
-	sendEventDetailsToController();*/
 	 
 });
 
@@ -246,7 +238,8 @@ function eventTriggredPositionDetails(e){
 		console.log("ImageName :"+imageName);
 	}
 	if(id == null || id == ''){
-		$(e.target).attr('id',name+'test');
+		var ran =  Math.floor((Math.random() * 15 + 0));
+		$(e.target).attr('id',name+'_RAN_'+ran);
 	}
 	
 	if(document.getElementById(e.target.id).getBoundingClientRect()) {
@@ -290,52 +283,23 @@ $(window).on("orientationchange",function(event){
 $(document).on('scroll',function(e){
 	
 	var currentScrollTime = Date.now();
-	globalEventType = "SE";
-	eventType = "SE";
+
 	numberOfFingers = 0;
 	if(e.originalEvent.touches) {
 		numberOfFingers = e.originalEvent.touches.length;
 	}
 	scrollTopPx = $(window).scrollTop();
-	setScroll(currentScrollTime);
-	
-/*	if(globalEventType == "TS") {
-		globalEventType = "TS";
-	} else if(globalEventType == "TM") {
-		var currentScrollTime = Date.now();
-		globalEventType = "TSE";
-		eventType = "TSE";
-		numberOfFingers = 0;
-		if(e.originalEvent.touches) {
-			numberOfFingers = e.originalEvent.touches.length;
-		}
-		scrollTopPx = $(window).scrollTop();
+	if(globalEventType != 'TS' && globalEventType != 'TM'){
 		setScroll(currentScrollTime);
-	} else {
-		var currentScrollTime = Date.now();
-		globalEventType = "DSE";
-		eventType = "DSE";
-		numberOfFingers = 0;
-		if(e.originalEvent.touches) {
-			numberOfFingers = e.originalEvent.touches.length;
-		}
-		scrollTopPx = $(window).scrollTop();
-		setScroll(currentScrollTime);
-	}*/
-	
+	} 
 });
 function setScroll(currentScrollTime){
 	var timeDiffer= (currentScrollTime-previouseScrollTime);
 	if(timeDiffer > 100) {
 		coordinateX = 0;
 		coordinateY = 0;
-/*		tagName = 0;
-		elementId = 0;
-		elementClass = 0;
-		elementHeight = 0;
-		elementWidth = 0;
-		elementOffsetTop = 0;
-		elementOffsetLeft = 0;*/
+		globalEventType = "SE";
+		eventType = "SE";
 		sendEventDetailsToController();
 	}
 	previouseScrollTime = currentScrollTime;
@@ -346,15 +310,6 @@ $(document).keypress(function(e) {
 	if(e.originalEvent.touches) {
 		numberOfFingers = e.originalEvent.touches.length;
 	}
-/*	if(e.which == 45) { //firefox
-		eventType = "DZE";
-		
-	} else if( e.which == 43) {//firefox
-		eventType = "DZE";
-		
-	} else {
-		eventType = "KP";
-	}*/
 	eventType = "KP";
 	sendEventDetailsToController();
 });
@@ -379,7 +334,8 @@ var getCurrentTime=function() {
 
 function sendEventDetailsToController () {
 	var eventTriggeredTime = getCurrentTime();
-	var sessionID = sessionStorage.getItem('sessionID');
+	var sessionID = window.name;
+		//sessionStorage.getItem('sessionID');
 	identifyDeviceWidthHeight();
 	screenHeight = getScreenHeight;
 	screenWidth = getScreenWidth;
@@ -389,7 +345,7 @@ function sendEventDetailsToController () {
 	//$('#hiddenSessionId').val(sessionID);
 	
 	//console.log("Hidden Session Id :"+$('#hiddenSessionId').val());
-	
+	//getLocation();
 	$.post('postEventDetails', {
 		eventType : eventType,
 		coordinateX : coordinateX,
@@ -417,8 +373,9 @@ function sendEventDetailsToController () {
 	}, function(data) {
 		if (data.status == 'success') {
 			if(data.result !=  null) {
-				sessionStorage.setItem('sessionID', data.result);
-				//$('#hiddenSessionId').val(data.result);
+				window.name = data.result;
+				//sessionStorage.setItem('sessionID', data.result);
+				//$('#hiddenSessionId').val(data.result)
 			}
 			
 		} else {

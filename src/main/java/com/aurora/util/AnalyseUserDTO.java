@@ -1,11 +1,21 @@
 package com.aurora.util;
 
+import java.util.List;
 import java.util.Map;
 
 public class AnalyseUserDTO {
 	Map<String, Object> eventCount;
 	String deviceType;
 	Map<String, Map<String, Integer>> userStatus;
+	List<UserDetailsDTO> userDetailsList;
+
+	public List<UserDetailsDTO> getUserDetailsList() {
+		return userDetailsList;
+	}
+
+	public void setUserDetailsList(List<UserDetailsDTO> userDetailsList) {
+		this.userDetailsList = userDetailsList;
+	}
 
 	public Map<String, Object> getEventCount() {
 		return eventCount;

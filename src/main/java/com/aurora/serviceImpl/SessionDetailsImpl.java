@@ -64,11 +64,14 @@ public class SessionDetailsImpl implements SessionDetailsService{
 			sessionId = request.getParameter("sessionID");
 			if(!sessionId.equalsIgnoreCase("-1")){
 				sessionDetails = sessionDetailsDao.getSessionDetailsByCreationTimeById(1L, sessionId);
-				res = Constants.SUCCESS;
-				sessionDetails.setHeartBeatTime(getServerTime());
-				sessionDetailsDao.saveSessionDetails(sessionDetails);
+				if(sessionDetails != null) {
+					res = Constants.ACTIVE;
+					sessionDetails.setHeartBeatTime(getServerTime());
+					sessionDetailsDao.saveSessionDetails(sessionDetails);
+				} else {
+					res = Constants.INACTIVE;
+				}
 			}
-
 		} catch(Exception e){
 			res = Constants.ERROR;
 		}
@@ -194,6 +197,7 @@ public class SessionDetailsImpl implements SessionDetailsService{
 			dto.setEventCount(map);
 			dto.setDeviceType(deviceType);
 			dto.setUserStatus(userAnalyseMap);
+			dto.setUserDetailsList(list);
 			
 		} catch(Exception e) {
 			System.out.println(e);

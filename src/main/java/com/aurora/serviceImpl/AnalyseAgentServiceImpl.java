@@ -131,6 +131,10 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 			if(type.equalsIgnoreCase("Mobile")) {
 				mobileCount += 1;
 			}
+			if(type.equalsIgnoreCase("Fraud Device")) {
+				desktopCount += 1;
+				mobileCount += 1;
+			}
 		}
 		deviceType = getDeviceTypeByAttribute(desktopCount, mobileCount);
  		return deviceType;
@@ -148,7 +152,8 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 					mobileDevice += 1;
 				}	
 			} else {
-				System.out.println("FRAUD");
+				desktopDevice += 1;
+				mobileDevice += 1;
 			}
 
 		}
@@ -183,6 +188,9 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 		if(map.get("DC_COUNT").intValue() > 0) {
 			desktopDevice += 1;
 		}
+		if(map.get("SE_COUNT").intValue() > 0) {
+			desktopDevice += 1;
+		}
 		if(map.get("TS_COUNT").intValue() > 0) {
 			mobileDevice += 1;
 		}
@@ -193,6 +201,9 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 			mobileDevice += 1;
 		}
 		if(map.get("STZE_COUNT").intValue() > 0) {
+			mobileDevice += 1;
+		}
+		if(map.get("TAP_COUNT").intValue() > 0) {
 			mobileDevice += 1;
 		}
 		
@@ -245,8 +256,12 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 		int TOTAL_OPTION_COUNT = 0;
 		int TYPE_COUNT_KP = 0;
 		int SE_COUNT_BY_KP = 0;
+		int TAP_COUNT = 0;
 		
 		for(UserDetailsDTO dt : dto){
+			if(Integer.parseInt(dt.getNumOfTaps()) > 0){
+				TAP_COUNT += 1;
+			}
 			if(dt.getEventName().equalsIgnoreCase("LC")){
 				LC_COUNT += 1;
 				Map<String,Integer> mapLC = getTagCountForEvent(dt);
@@ -349,9 +364,9 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 		map.put("TOTAL_OPTION_COUNT", TOTAL_OPTION_COUNT);
 		map.put("TYPE_COUNT_KP", TYPE_COUNT_KP);
 		map.put("SE_COUNT_BY_KP", SE_COUNT_BY_KP);
+		map.put("TAP_COUNT", TAP_COUNT);
 		
 		return map;
-		
 	}
 	
 	public Map<String, Integer> getTagCountForEvent(UserDetailsDTO dt){

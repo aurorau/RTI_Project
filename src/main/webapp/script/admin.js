@@ -112,11 +112,20 @@ function analyseUser(sid){
         		
         		
         		$("#totalIMG_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT)+" %");
-        		$("#totalIMG_LC_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_LC)+" %");
-        		$("#totalIMG_TS_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TS)+" %");
-        		$("#totalIMG_TM_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TM)+" %");
-        		$("#totalIMG_TZ_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TZE)+" %");
-        		$("#totalIMG_SZ_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_STZE)+" %");
+        		if(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT > 0 ){
+            		$("#totalIMG_LC_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_LC)+" %");
+            		$("#totalIMG_TS_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TS)+" %");
+            		$("#totalIMG_TM_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TM)+" %");
+            		$("#totalIMG_TZ_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_TZE)+" %");
+            		$("#totalIMG_SZ_P").text(": "+persantageCount(data.result.eventCount.USER_EVENT_COUNT.TOTAL_IMG_COUNT, data.result.eventCount.USER_EVENT_COUNT.IMG_COUNT_STZE)+" %");
+        		} else {
+            		$("#totalIMG_LC_P").text(": 0 %");
+            		$("#totalIMG_TS_P").text(": 0 %");
+            		$("#totalIMG_TM_P").text(": 0 %");
+            		$("#totalIMG_TZ_P").text(": 0 %");
+            		$("#totalIMG_SZ_P").text(": 0 %");
+        		}
+
         		$("#totalPARA_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_P_COUNT)+" %");
         		$("#totalTYPE_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TYPE_COUNT_KP)+" %");
         		$("#totalBTN_P").text(": "+persantageCount(data.result.eventCount.TOTAL_COUNT, data.result.eventCount.USER_EVENT_COUNT.TOTAL_BTN_COUNT)+" %");
@@ -143,15 +152,35 @@ function analyseUser(sid){
         		$("#esn").text(": "+data.result.userStatus.EVENT_SEQUENCE.NEGETIVE);
         		$("#ulp").text(": "+data.result.userStatus.USER_LOCATION.POSITIVE);
         		$("#uln").text(": "+data.result.userStatus.USER_LOCATION.NEGETIVE);
+        		
+        		var eventPercentageArray = [];
+        		var GLOBAL_TOTAL_EVENT_COUNT = data.result.eventCount.TOTAL_COUNT;
+				 $.each(data.result.eventCount.USER_EVENT_COUNT, function(index, value) {
+					 if(value > 0){
+						 if(index != 'TAP_COUNT') {
+							 eventPercentageArray.push([index, persantageCount(GLOBAL_TOTAL_EVENT_COUNT, value) ]); 
+						 }
+						 
+					 }
+					 
+				 });
+        		eventPercentageGraph(eventPercentageArray);
+        		
         	}
-        	
-        	
-/*          $("#rightDiv").show();
-          $("#proxyDiv").hide();
-          $("#eventDetailsTableId").html(data);
-       	  $("#eventDetailsTableId").displayTagAjax();
-       	 // removeTableText('eventDetailsTableId');
-*/        }
+        	if(data.result.userDetailsList != null) {
+        		var eventCoordinateArray = null;
+        		eventCoordinateArray = [];
+				 $.each(data.result.userDetailsList, function(index, value) {
+					 if(value.eventName != 'RF') {
+						 if(value.eventName != 'SE'){
+							 eventCoordinateArray.push([value.coordinateX, value.coordinateY,value.eventName]);  
+						 }
+					 }
+				 });
+				 coordinateGraph(eventCoordinateArray);
+        	}
+
+       }
 	});
 }
 

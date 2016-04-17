@@ -4,6 +4,8 @@ public class Constants {
 	public static final String SUCCESS = "success";
 	public static final String ERROR = "error";
 	public static final String FAIL = "fail";
+	public static final String INACTIVE = "inactive";
+	public static final String ACTIVE = "active";
 	  /**
 	   * This is userDetailsTable table id
 	   */
@@ -24,7 +26,7 @@ public class Constants {
   /**
    * size of the grid table .
    */
-  public static final int GRID_TABLE_SIZE = 20;
+  public static final int GRID_TABLE_SIZE = 10;
   /**
    * key for parse the grid table .
    */
