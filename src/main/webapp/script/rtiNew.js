@@ -26,6 +26,7 @@ var viewportWidth = -1;
 var timeZoneOffset = -1;
 var globalEventType= -1;
 var imageName = -1;
+var STATUS=-1;
 
 $(document).ready(function() {
 	clearValues();
@@ -33,7 +34,12 @@ $(document).ready(function() {
 	sendEventDetailsToController();
 	setInterval(function(){ 
 		heartBeat();
-	},10000);
+	},30000);
+});
+
+$(window).unload(function(){
+	STATUS = 'EXIT';
+	heartBeat();
 });
 
 function heartBeat(){
@@ -42,12 +48,13 @@ function heartBeat(){
 	setTimeZoneInCookie();
 	$.get('heartBeat', {
 		sessionID : sessionID,
+		STATUS : STATUS,
 		timeZoneOffset : timeZoneOffset
 	}, function(data) {
 		if (data.status == 'SUCCESS') {
-			if(data.result !=  'SUCCESS') {
+/*			if(data.result !=  'SUCCESS') {
 				sessionStorage.setItem('sessionID',"");
-			}
+			}*/
 		} else {
 			console.log(data.status);
 		}

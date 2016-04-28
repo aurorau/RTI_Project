@@ -17,6 +17,7 @@ public class SessionDetails implements Serializable{
 	private String sessionCreatedTime;
 	private Long sessionAccessCount;
 	private String lastAccessTime;
+	private String heartBeatTime;
 	private String status;
 	
 	@Id
@@ -68,4 +69,13 @@ public class SessionDetails implements Serializable{
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	@Column(name="heartBeatTime", nullable=true, length=100)
+	public String getHeartBeatTime() {
+		return heartBeatTime;
+	}
+	public void setHeartBeatTime(String heartBeatTime) {
+		this.heartBeatTime = heartBeatTime;
+	}
+	
 }

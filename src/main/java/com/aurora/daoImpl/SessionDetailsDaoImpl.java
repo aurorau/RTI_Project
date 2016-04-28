@@ -73,13 +73,14 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		
 		String currentTime = getTime();
 		String beforeTime = getBeforeTime();
+		String beforeHeartBeatTime = getBeforeHeartBeatTime();
 		
 		Session session = getSession();
 		session.getTransaction().begin();
 		
 		Criteria criteria = session.createCriteria(SessionDetails.class,"sessionDetails")
-				.add(Restrictions.eq("sessionDetails.status","ACTIVE"));
-				//.add(Restrictions.between("sessionDetails.lastAccessTime",beforeTime, currentTime));
+				.add(Restrictions.between("sessionDetails.heartBeatTime",beforeHeartBeatTime, currentTime))
+				.add(Restrictions.between("sessionDetails.lastAccessTime",beforeTime, currentTime));
 		criteria.addOrder(Order.asc("SID"));
 		criteria.setProjection(Projections.projectionList()
 				.add(Projections.property("SID").as("sid"))
@@ -103,6 +104,13 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		 Date date = new Date();
 		 String result = formatter.format(DateUtils.addMinutes(date, -3));
+		 return result;
+	 }
+	public String getBeforeHeartBeatTime(){
+		 
+		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		 Date date = new Date();
+		 String result = formatter.format(DateUtils.addSeconds(date, -31));
 		 return result;
 	 }
 

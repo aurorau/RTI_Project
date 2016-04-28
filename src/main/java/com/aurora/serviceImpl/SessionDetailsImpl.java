@@ -1,18 +1,17 @@
 package com.aurora.serviceImpl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.aurora.dao.SessionDetailsDao;
 import com.aurora.model.SessionDetails;
 import com.aurora.service.AnalyseAgentService;
@@ -21,7 +20,6 @@ import com.aurora.service.SessionDetailsService;
 import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.Constants;
 import com.aurora.util.CurrentUsersDTO;
-import com.aurora.util.SessionBrowserDetailsDTO;
 import com.aurora.util.UserDetailsDTO;
 
 @Service("sessionDetailsService")
@@ -54,22 +52,25 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		String sessionId = null;
 		try {
 			sessionId = request.getParameter("sessionID");
-			if(!sessionId.equalsIgnoreCase("-1")) {
+			if(!sessionId.equalsIgnoreCase("-1")){
 				sessionDetails = sessionDetailsDao.getSessionDetailsByCreationTimeById(1L, sessionId);
-				currentLocationBasedTime = getLocationBasedCurrentTime(request.getParameter("timeZoneOffset"));
+				//currentLocationBasedTime = getLocationBasedCurrentTime(request.getParameter("timeZoneOffset"));
 				
-				long timeDiffer = getTimeDifference(sessionDetails.getLastAccessTime(),currentLocationBasedTime);
-				int timeDiffer1 = (int)(timeDiffer/60000);
+				//long timeDiffer = getTimeDifference(sessionDetails.getLastAccessTime(),currentLocationBasedTime);
+				//int timeDiffer1 = (int)(timeDiffer/60000);
 				
-				if(timeDiffer1 <= 2) {
+				//if(timeDiffer1 < 2) {
 					res = Constants.SUCCESS;
-					sessionDetails.setStatus("ACTIVE");
+					sessionDetails.setHeartBeatTime(getServerTime());
 					sessionDetailsDao.saveSessionDetails(sessionDetails);
-				} else {
-					sessionDetails.setStatus("INACTIVE");
-					sessionDetailsDao.saveSessionDetails(sessionDetails);
-				}
-			}
+				//} 
+			} 
+/*			else {
+				sessionDetails = sessionDetailsDao.getSessionDetailsByCreationTimeById(1L, sessionId);
+				sessionDetails.setStatus("INACTIVE");
+				sessionDetailsDao.saveSessionDetails(sessionDetails);
+			}*/
+
 		} catch(Exception e){
 			res = Constants.ERROR;
 		}
@@ -88,7 +89,8 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		
 		if(sessionId == null || sessionId.equalsIgnoreCase("")) {
 			sessionId = request.getSession().getId();
-			sessionCreationTime = currentLocationBasedTime;
+			//sessionCreationTime = currentLocationBasedTime;
+			sessionCreationTime = getServerTime();
 		}
 		try {
 			sessionDetails = sessionDetailsDao.getSessionDetailsByCreationTimeById(1L, sessionId);	
@@ -98,12 +100,12 @@ public class SessionDetailsImpl implements SessionDetailsService{
 			   sessionDetails.setSessionAccessCount(1L);
 			   sessionDetails.setSessionCreatedTime(sessionCreationTime);
 			   sessionDetails.setLastAccessTime(sessionCreationTime);
-			   sessionDetails.setStatus("ACTIVE");
+			   //sessionDetails.setStatus("INACTIVE");
 		    } else {
 			   sessionDetails = sessionDetailsDao.getById(sessionDetails.getSID());
 			   sessionDetails.setSessionAccessCount(sessionDetails.getSessionAccessCount()+1);
-			   sessionDetails.setLastAccessTime(currentLocationBasedTime);
-			   sessionDetails.setStatus("INACTIVE");
+			   sessionDetails.setLastAccessTime(getServerTime());
+			   //sessionDetails.setStatus("INACTIVE");
 		    }
 			sessionDetailsDao.saveSessionDetails(sessionDetails);
 			String status = deviceDetailsService.saveDeviceDetails(request, sessionDetails);
@@ -222,5 +224,12 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		 DateTime date = null;
 		 date = fmt.parseDateTime(date1);
 	     return date;
+	 }
+	 
+	 public String getServerTime(){
+		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		 Date date = new Date();
+		 String result = formatter.format(date);
+		 return result;
 	 }
 }

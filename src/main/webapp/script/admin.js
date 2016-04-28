@@ -8,7 +8,7 @@ $(document).ready(function() {
 	//getCurrentUserCount();
 	setInterval(function(){ 
 		getCurrentUserCount();
-	},10000);
+	},30000);
 });
 
 function getCurrentUserCount () {
@@ -23,7 +23,7 @@ function getCurrentUserCount () {
         	if (data.status == 'success') {
 					if(data.result != null){
 						allUsers = data.result.length;
-				        $("#rightDiv").hide();
+				        //$("#rightDiv").hide();
 				        //$("#analyseTableId").hide();
 						$('#numberOfCurrentUsers').text(allUsers);
 						$('#userDetailsTable').html('');

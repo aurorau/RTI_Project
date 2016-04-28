@@ -38,8 +38,8 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 				}
 			}
 		}
-		FIRST_ACCESS_TIME = dto.get(0).getFirstAccessTime();
-		LAST_ACCESS_TIME = dto.get(dto.size()-1).getLastAccessTime();
+		LAST_ACCESS_TIME = dto.get(0).getZoneDateTime();
+		FIRST_ACCESS_TIME = dto.get(dto.size()-1).getZoneDateTime();
 		AVG_TIME_TWO_EVENT = (int)(timeDiffer1/TOTAL_COUNT)/1000; 
 		
 		map.put("USER_EVENT_COUNT", getUserEventCount(dto));
