@@ -18,9 +18,10 @@ public interface SessionDetailsDao {
 	public List<UserCountDTO> getCurrentUserCountList(String sortField, int order, int start, int gridTableSize, String searchq)throws Exception;
 	public List<UserDetailsDTO> getUserDetailsBySessionId(String sortField, int order, int start, int gridTableSize,String searchq, Long sid)throws Exception;
 	public SessionDetails getSessionDetailsByCreationTimeById(Long creationTime,String sessionId)throws Exception;
-	public int getUserDetailsCountBySessionId(String searchq, Long sessionPK);
-	public List<UserDetailsDTO> analyseUserBySessionId(Long sessionPK);
+	public int getUserDetailsCountBySessionId(String searchq, Long sessionPK) throws Exception;
+	public List<UserDetailsDTO> analyseUserBySessionId(Long sessionPK) throws Exception;
 	//public int analyseUserCountBySessionId(String searchq, Long sessionPK);
-	public List<SessionTimeOutDTO> getSessionIDListBySID(Long sid);
+	public List<SessionTimeOutDTO> getSessionIDListBySID(Long sid) throws Exception;
 	public int getCurrentUserCount(String searchq) throws Exception;
+	public List<SessionDetails> getActiveSessions()throws Exception;
 }

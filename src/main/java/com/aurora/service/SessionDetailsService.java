@@ -1,6 +1,7 @@
 package com.aurora.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -63,4 +64,5 @@ public interface SessionDetailsService {
 	public String heartBeat(HttpServletRequest request);
 	
 	public List<SessionTimeOutDTO> getSessionIDListBySID(Long sid);
+	public Map<String, Integer> getDeviceCount();
 }

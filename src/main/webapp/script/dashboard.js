@@ -17,6 +17,19 @@ function getCurrentUserCount () {
         	$("#userCountDynamicTable").html(data);
 	  		$("#userCountDynamicTable").displayTagAjax();
 	  		removeTableText('userCountDynamicTable');
+	  		getDeviceCount();
+        }
+	});
+}
+
+function getDeviceCount(){
+	$.ajax({
+        type: "GET",
+        url: "getDeviceCount",
+        success: function(data) {
+        	$('#mobileCount').text(data.result.mobileCount);
+        	$('#desktopCount').text(data.result.desktopCount);
+        	$('#fraudCount').text(data.result.fraudCount);
         }
 	});
 }
@@ -87,10 +100,10 @@ function getHeaderDetailsData(sessionId, userId){
         		var userLocationNegetive = data.result.userStatus.USER_LOCATION.NEGETIVE;
         		
         		userAnalysisBarChart.setData(  [{ "y": "Browser", "a": bowserIdPositive, "b": bowserIdNegeitive },
-        		                                { "y": "Time Zone", "a": OSNamePositive, "b": OSNameNegetive },
-        		                                { "y": "OS", "a": proxyPositive, "b": proxyNegetive},
-        		                                { "y": "Event", "a": timeZonePositive, "b": timeZoneNegetive},
-        		                                { "y": "Proxy", "a": eventSequencePositive, "b": eventSequenceNegetive},
+        		                                { "y": "Time Zone", "a": timeZonePositive, "b": timeZoneNegetive },
+        		                                { "y": "OS", "a": OSNamePositive, "b": proxyNegetive},
+        		                                { "y": "Event", "a": eventSequencePositive, "b": eventSequenceNegetive},
+        		                                { "y": "Proxy", "a": proxyPositive, "b": proxyNegetive},
         		                                { "y": "Location", "a": userLocationPositive, "b": userLocationNegetive}]);
         	}
         }

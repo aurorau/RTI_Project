@@ -11,10 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.displaytag.tags.TableTagParameters;
@@ -33,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-
 import com.aurora.model.BrowserDetails;
 import com.aurora.model.DeviceDetails;
 import com.aurora.model.EventDetails;
@@ -48,7 +44,6 @@ import com.aurora.service.SessionDetailsService;
 import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.ClickDetails;
 import com.aurora.util.Constants;
-import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.EventTypes;
 import com.aurora.util.GeoLocation;
 import com.aurora.util.JsonResponce;
@@ -57,7 +52,6 @@ import com.aurora.util.ProxyDetailsDTO;
 import com.aurora.util.UserCountDTO;
 import com.aurora.util.UserDetailsDTO;
 import com.maxmind.geoip.LookupService;
-
 import nl.bitwalker.useragentutils.Browser;
 import nl.bitwalker.useragentutils.BrowserType;
 import nl.bitwalker.useragentutils.Manufacturer;
@@ -185,21 +179,6 @@ public class HomePageController {
 		 return res;
 	 }
 	 
-	 
-/*	 @RequestMapping(method = RequestMethod.GET, value="/getCurrentUserCount")
-	 public @ResponseBody JsonResponce getCurrentUserCount(HttpServletResponse response) throws Exception {
-		 JsonResponce res= new JsonResponce();
-		 
-	     response.setHeader("Access-Control-Allow-Origin", "*");
-	     response.setHeader("Access-Control-Allow-Methods", "GET");
-	     response.setHeader("Access-Control-Max-Age", "3600");
-	     response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
-	     
-		 res.setStatus("success");
-		 res.setResult(sessionDetailsService.getCurrentUserCount());
-		 return res;
-	 }*/
-	 
 	 @RequestMapping(method = RequestMethod.GET, value="/getCurrentUserCount")
 	 public ModelAndView getCurrentUserCount(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		 
@@ -279,31 +258,30 @@ public class HomePageController {
 	     Long sessionPK = Long.parseLong(request.getParameter("sid"));
 	     
 	     AnalyseUserDTO list = null;
-/*		 Model model = new ExtendedModelMap();
-	     
-		 ParamEncoder paramEncoder = new ParamEncoder(Constants.ANALYSE_USER_TABLE);
-		 
-	    	try{
-	    		String sortField = ServletRequestUtils.getStringParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_SORT));
-	    		int order = ServletRequestUtils.getIntParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER), 0);
-	    		int page = ServletRequestUtils.getIntParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE), 0);
-	    		int start = (page>0) ? (page - 1) * Constants.GRID_TABLE_SIZE : 0;
-	    		String searchq = ServletRequestUtils.getStringParameter(request, Constants.PARAMETER_SEARCH);
-			
-	    		list = sessionDetailsService.analyseUserBySessionId(sortField,order,start, Constants.GRID_TABLE_SIZE, searchq, sessionPK);
-	    		int listCount = sessionDetailsService.analyseUserCountBySessionId(searchq, sessionPK);
-			
-	    		request.setAttribute(Constants.TABLE_SIZE, listCount );
-	    		request.setAttribute(Constants.GRID_TABLE_SIZE_KEY, Constants.GRID_TABLE_SIZE);
-	    		model.addAttribute(Constants.ANALYSE_USER_TABLE, list);
-	    	} catch (Exception e) {
-	    		System.out.println(e);
-	    	}
-		 return new ModelAndView("dynamicTables/dynamicanalyseUserTable", model.asMap());*/
 		 list = sessionDetailsService.analyseUserBySessionId("",1,1, Constants.GRID_TABLE_SIZE, "", sessionPK);
 	     
 		 res.setStatus("success");
 		 res.setResult(list);
+		 
+		 return res;
+	 }
+	 @RequestMapping(method = RequestMethod.GET, value="/getDeviceCount")
+	 public @ResponseBody JsonResponce getDeviceCount(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		 
+		 JsonResponce res= new JsonResponce();
+		 
+	     response.setHeader("Access-Control-Allow-Origin", "*");
+	     response.setHeader("Access-Control-Allow-Methods", "GET");
+	     response.setHeader("Access-Control-Max-Age", "3600");
+	     response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+	     
+	     
+	     
+	     Map<String, Integer> deviceCountMap = null;
+	     deviceCountMap = sessionDetailsService.getDeviceCount();
+	     
+		 res.setStatus("success");
+		 res.setResult(deviceCountMap);
 		 
 		 return res;
 	 }
@@ -327,7 +305,7 @@ public class HomePageController {
 	     response.setHeader("Access-Control-Max-Age", "3600");
 	     response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
 
-		 String eventType = request.getParameter("eventType");
+/*		 String eventType = request.getParameter("eventType");
 		 String orientation = request.getParameter("orientation");
 		 String eventTriggeredTime = request.getParameter("eventTriggeredTime");
 		 String coordinateX = request.getParameter("coordinateX");
@@ -363,7 +341,7 @@ public class HomePageController {
 		 System.out.println("elementOffsetLeft :"+elementOffsetLeft);
 		 System.out.println("numberOfFingers :"+numberOfFingers);
 		 System.out.println("scrollTopPx :"+scrollTopPx);
-		 System.out.println("elementScrollTop :"+elementScrollTop);
+		 System.out.println("elementScrollTop :"+elementScrollTop);*/
 		 
 		 String res1 = sessionDetailsService.saveSessionDetails(request);
 		 
@@ -373,262 +351,7 @@ public class HomePageController {
 		 log.debug("**/Exit postEventDetails method/**");
 		 return res;
 	 }
-	 
-	 public String saveSessionDetails(HttpServletRequest request, String sessionId1) {
-		 
-		   String res = null;
-		   
-		   Long creationTime = request.getSession().getCreationTime();
-		   String sessionId = sessionId1;
-		   
-		   String currentLocationBasedTime = getLocationBasedCurrentTime(request.getParameter("timeZoneOffset"));
-		   
-		   SessionDetails sessionDetails = null;
-		   try{
-			   sessionDetails = sessionDetailsService.getSessionDetailsByCreationTimeById(creationTime, sessionId);	
-			   
-			   if(sessionDetails == null) {
-				   
-				   sessionDetails = new SessionDetails();
-				   sessionDetails.setSessionId(sessionId);
-				  // sessionDetails.setSessionLastAccessedTime(lastAccessTime);
-				  // sessionDetails.setSessionCreatedTime(creationTime);
-				   sessionDetails.setSessionAccessCount(1L);
-				   sessionDetails.setLastAccessTime(currentLocationBasedTime);
-				   
-			   } else {
-				   sessionDetails = sessionDetailsService.getById(sessionDetails.getSID());
-				   //sessionDetails.setSessionLastAccessedTime(lastAccessTime);
-				   sessionDetails.setSessionAccessCount(sessionDetails.getSessionAccessCount()+1);
-				   sessionDetails.setLastAccessTime(currentLocationBasedTime);
-			   }
-			   
-			  // sessionDetailsService.saveSessionDetails(sessionDetails);		   
-			   sessionDetailsService.saveSessionDetails(request);
-			  // setNewDeviceDetails(request,sessionDetails);
-			   res = Constants.SUCCESS;
-			   
-		   } catch(Exception e){
-			   res = Constants.ERROR;
-			   System.out.println("SaveSessionDetails Controller:"+e);
-		   }
-		   return res;
-	 }
-	 
-	 public void setNewEventDetails(HttpServletRequest request,SessionDetails sessionDetails,DeviceDetails deviceDetails) {
-		 
-		 String orientation = request.getParameter("orientation");
-		 String eventType = request.getParameter("eventType");
-		 String eventTriggeredTime = request.getParameter("eventTriggeredTime");
-		 String coordinateX = request.getParameter("coordinateX");
-		 String coordinateY = request.getParameter("coordinateY");
-		 String screenWidth = request.getParameter("screenWidth");
-		 String screenHeight = request.getParameter("screenHeight");
-		 String viewportHeight = request.getParameter("viewportHeight");
-		 String viewportWidth = request.getParameter("viewportWidth");
-		 String numberOfFingers = request.getParameter("numberOfFingers");
-		 String tagName = request.getParameter("tagName");
-		 String elementScrollTopPx = request.getParameter("elementScrollTop");
-		 String scrollTop = request.getParameter("scrollTopPx");
-		 String imageName = request.getParameter("imageName");
-		 
-		 
-		 EventDetails eventDetails = new EventDetails();
 
-		 eventDetails.setCoordinateX(coordinateX);
-		 eventDetails.setCoordinateY(coordinateY);
-		 eventDetails.setTriggeredTime(eventTriggeredTime);
-/*		 try {
-			eventDetails.setTriggeredTime(setStringToDateFormat(eventTriggeredTime));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}*/
-		 eventDetails.setScreenWidth(screenWidth);
-		 eventDetails.setScreenHeight(screenHeight);
-		 eventDetails.setOrientation(orientation);
-		 eventDetails.setNumOfTaps(numberOfFingers);
-		 eventDetails.setViewportHeight(viewportHeight);
-		 eventDetails.setViewportWidth(viewportWidth);
-		 eventDetails.setTagName(tagName);
-		 if(imageName.equalsIgnoreCase("-1")){
-			 eventDetails.setImageName("No Image");
-		 } else {
-			 eventDetails.setImageName(imageName); 
-		 }
-		 
-		 if(eventType.equalsIgnoreCase("SE")) {
-			 eventDetails.setScrollTop(scrollTop);
-		 } else {
-			 eventDetails.setScrollTop(elementScrollTopPx); 
-		 }
-		 
-		 
-		 if(eventType.equalsIgnoreCase("LC")) {
-			 eventDetails.setEventName(EventTypes.LEFT_CLICK.name());
-			 eventDetails.setEventTypes(EventTypes.LEFT_CLICK.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("RC")) {
-			 eventDetails.setEventName(EventTypes.RIGHT_CLICK.name());
-			 eventDetails.setEventTypes(EventTypes.RIGHT_CLICK.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("DC")) {
-			 eventDetails.setEventName(EventTypes.DB_CLICK.name());
-			 eventDetails.setEventTypes(EventTypes.DB_CLICK.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("KP")) {
-			 eventDetails.setEventName(EventTypes.KEY_PRESS.name());
-			 eventDetails.setEventTypes(EventTypes.KEY_PRESS.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("SE")) {
-			 eventDetails.setEventName(EventTypes.SCROLL_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.SCROLL_EVENT.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("TE")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_EVENT.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("DZE")) {
-			 eventDetails.setEventName(EventTypes.DESKTOP_ZOOM.name());
-			 eventDetails.setEventTypes(EventTypes.DESKTOP_ZOOM.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("TZE")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_ZOOM.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_ZOOM.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("TZE_SE")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_ZOOM_EVENT_SCROLL.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_ZOOM_EVENT_SCROLL.getEventTypes());
-			 
-		 }  else if(eventType.equalsIgnoreCase("TE_SE")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_SCROLL.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_SCROLL.getEventTypes());
-			 
-		 }  else if(eventType.equalsIgnoreCase("TM")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_MOVE.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_MOVE.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("DSE")) {
-			 eventDetails.setEventName(EventTypes.DESKTOP_SCROLL.name());
-			 eventDetails.setEventTypes(EventTypes.DESKTOP_SCROLL.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("TS")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_START.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_START.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("RF")) {
-			 eventDetails.setEventName(EventTypes.REFRESH_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.REFRESH_EVENT.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("STZE")) {
-			 eventDetails.setEventName(EventTypes.SWAP_TOUCH_ZOOM.name());
-			 eventDetails.setEventTypes(EventTypes.SWAP_TOUCH_ZOOM.getEventTypes());
-			 
-		 } else if(eventType.equalsIgnoreCase("TSE")) {
-			 eventDetails.setEventName(EventTypes.TOUCH_SCROLL_EVENT.name());
-			 eventDetails.setEventTypes(EventTypes.TOUCH_SCROLL_EVENT.getEventTypes());
-			 
-		 } else {
-			 System.out.println("New Type :"+eventType );
-		 }
-
-		 Map<String, String> map = getCountryDateAndTime(request.getParameter("timeZoneOffset"));
-		 
-		 eventDetails.setTimeZone(map.get("timeZone"));
-		 eventDetails.setZoneDateTime(map.get("dateTime"));
-		 
-		 //eventDetailsService.saveEventDetails(eventDetails);
-		// setNewBrowserDetails(request,sessionDetails,deviceDetails,eventDetails);
-	 }
-	 
-	 public void setNewProxyDetails(HttpServletRequest request,BrowserDetails browserDetails) {
-		 
-		 proxyList = new ArrayList<String>();
-		 String ipAddress = request.getHeader("X-FORWARDED-FOR");
-				 //"112.135.1.252,199.189.80.13";
-				 //request.getHeader("X-FORWARDED-FOR");
-				
-		 
-		 if(ipAddress != null) {
-        	String[] proxyList1 = ipAddress.split(",");
-        	for(String prxy : proxyList1) {
-        		String ip = prxy;
-        		proxyList.add(ip);
-        	}
-		 }
-		 
-		 for(String proxyIP : proxyList) {
-			 ProxyDetails proxyDetails=  new ProxyDetails();
-			 GeoLocation geoLocation = getLocation(proxyIP);
-			 
-			 proxyDetails.setBrowserDetails(browserDetails);
-			 proxyDetails.setCity(geoLocation.getCity());
-			 proxyDetails.setCountryCode(geoLocation.getCountryCode());
-			 proxyDetails.setCountryName(geoLocation.getCountryName());
-			 proxyDetails.setIpAddress(proxyIP);
-			 proxyDetails.setLatitude(geoLocation.getLatitude());
-			 proxyDetails.setLongitude(geoLocation.getLongitude());
-			 proxyDetails.setPostalCode(geoLocation.getPostalCode());
-			 proxyDetails.setRegion(geoLocation.getRegion());
-			 
-			// proxyDetailsService.saveProxyDetailsService(proxyDetails);
-		 }
-	 }
-
-	 
-	public String getTime(){
-		 
-		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
-		 Date date = new Date();
-		 String result = formatter.format(date);
-		 return result;
-	 }
-
-	public void setNewBrowserDetails(HttpServletRequest request, SessionDetails sessionDetails, DeviceDetails deviceDetails, EventDetails eventDetails) {
-		
-		String refererURL = request.getHeader("referer");
-		UserAgent userAgent1 = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
-        long getId = userAgent1.getId();
-        Browser browser = userAgent1.getBrowser();
-        String browserName = browser.getName();
-        BrowserType browserType = browser.getBrowserType();
-        Version browserVersion = userAgent1.getBrowserVersion();
-		
-		BrowserDetails browserDetails =  new BrowserDetails();
-		
-		browserDetails.setBrowserName(browserName);
-		browserDetails.setBrowserType(browserType.toString());
-		browserDetails.setBrowserVersion(browserVersion.toString());
-		browserDetails.setUserAgetntId(getId);
-		browserDetails.setRefererURL(refererURL);
-		browserDetails.setDeviceDetails(deviceDetails);
-		browserDetails.setSessionDetails(sessionDetails);
-		browserDetails.setEventDetails(eventDetails);
-		
-		//browserDetailsService.saveBrowserDetails(browserDetails);
-
-		//setNewProxyDetails(request, browserDetails);
-	}
-	
-	public void setNewDeviceDetails(HttpServletRequest request, SessionDetails sessionDetails) {
-		
-		UserAgent userAgent1 = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
-		OperatingSystem agent = userAgent1.getOperatingSystem(); 
-        String deviceName = agent.getDeviceType().getName();
-        String osName = agent.getName();
-        Manufacturer osManufacture = agent.getManufacturer();
-        String orientation = request.getParameter("orientation");
-        
-		DeviceDetails deviceDetails = new DeviceDetails();
-		deviceDetails.setDeviceName(deviceName);
-		deviceDetails.setOrientation(orientation);
-		deviceDetails.setOsManufacture(osManufacture.toString());
-		deviceDetails.setOsName(osName);
-		 
-		//deviceDetailsService.saveDeviceDetails(deviceDetails);
-		
-		//setNewEventDetails(request,sessionDetails,deviceDetails);
-
-	}
     static {
         try {
             lookUp = new LookupService(
@@ -658,7 +381,7 @@ public class HomePageController {
 		
         return dateOut;
 	 }
-	 public Map<String, String> getCountryDateAndTime(String timeOffset) {
+/*	 public Map<String, String> getCountryDateAndTime(String timeOffset) {
 		 map = new HashMap<String, String>();
 		 if(!timeOffset.equalsIgnoreCase("-1")) {
 			 DateTime utc = new DateTime(DateTimeZone.UTC);
@@ -675,7 +398,7 @@ public class HomePageController {
 			 map.put("dateTime", dateTime);
 		 }
 		 return map;
-	 }
+	 }*/
 	 public String getLocationBasedCurrentTime(String timeOffset){
 		 String dateTime = null;
 		 if(!timeOffset.equalsIgnoreCase("-1")) {

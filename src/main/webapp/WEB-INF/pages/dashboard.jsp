@@ -66,14 +66,14 @@
 
                         <div class="mobile">
                             <a href="#">
-                                <label class="count">50</label>
+                                <label class="count" id="mobileCount">0</label>
                                 <label class="text">Mobile
                                     <br>Users</label>
                             </a>
                         </div>
                         <div class="desktop">
                             <a href="#">
-                                <label class="count">10</label>
+                                <label class="count" id="desktopCount">0</label>
                                 <label class="text">Desktop
                                     <br>Users</label>
                             </a>
@@ -83,7 +83,7 @@
 
                         <div class="desktop">
                             <a href="#">
-                                <label class="count white-text">5</label>
+                                <label class="count white-text" id="fraudCount" >0</label>
                                 <label class="text white-text">Fraud Users</label>
                             </a>
                         </div>

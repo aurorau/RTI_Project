@@ -75,11 +75,15 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 	
 	public int getSessionTimeOutCount(List<UserDetailsDTO> dto){
 		int listSize = 0;
-		Long sid = dto.get(0).getSid();
-		List<SessionTimeOutDTO> dt = sessionDetailsDao.getSessionIDListBySID(sid);
-		
-		if(dt != null){
-			listSize = dt.size();
+		try{
+			Long sid = dto.get(0).getSid();
+			List<SessionTimeOutDTO> dt = sessionDetailsDao.getSessionIDListBySID(sid);
+			
+			if(dt != null){
+				listSize = dt.size();
+			}
+		} catch(Exception e){
+			System.out.println("Error :"+e);
 		}
 		return listSize;
 	}
@@ -245,7 +249,8 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 		}
 		
 		String deviceType = "Not Yet";
-		int totalCount = mobileDevice + desktopDevice;
+		double totalCount = mobileDevice + desktopDevice;
+		
 		//deviceType = getDeviceTypeByAttribute(desktopDevice, mobileDevice);
 		map1.put("desktopDevice", (double) (desktopDevice/totalCount));
 		map1.put("mobileDevice", (double) (mobileDevice/totalCount));

@@ -3,6 +3,8 @@ package com.aurora.util;
 public class UserCountDTO {
 	private Long sid;
 	private int countId;
+	private String deviceType;
+	
 	public Long getSid() {
 		return sid;
 	}
@@ -14,6 +16,12 @@ public class UserCountDTO {
 	}
 	public void setCountId(int countId) {
 		this.countId = countId;
+	}
+	public String getDeviceType() {
+		return deviceType;
+	}
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 	
 }

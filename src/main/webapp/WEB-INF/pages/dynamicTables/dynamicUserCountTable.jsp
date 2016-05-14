@@ -5,7 +5,8 @@
 
 <display:table name="userCountTable" cellspacing="0" requestURI="./getCurrentUserCount" id="userCountTable" sort="external" partialList="true" size="${size}" pagesize="${gridSize}" export="false">
 	<display:column property="countId" title="User No"/>
-     <display:column  sortable="false" headerClass="text-center sortable sorted order1" title="Action" media="html" class="action">
+	<display:column property="deviceType" title="Device"/>
+    <display:column  sortable="false" headerClass="text-center sortable sorted order1" title="Action" media="html" class="action">
 		<div class="text-center">
 			<button onclick="getUserDetailsBySessionId(${userCountTable.sid}, ${userCountTable.countId})" class="edit-btn btn btn-primary"><span class="fa fa-edit"> </span>Get Details</button>
 		</div>

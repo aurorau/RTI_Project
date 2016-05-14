@@ -1,7 +1,9 @@
 package com.aurora.serviceImpl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -149,14 +151,23 @@ public class SessionDetailsImpl implements SessionDetailsService{
 	@Transactional
 	public List<UserCountDTO> getCurrentUserCountList(String sortField, int order, int start, int gridTableSize,String searchq) {
 		List<UserCountDTO> dtoList = null;
-
+		List<UserCountDTO> returnList = new ArrayList<UserCountDTO>();
+		List<UserDetailsDTO> list = null;
 		try {
 			dtoList = sessionDetailsDao.getCurrentUserCountList(sortField, order, start, gridTableSize,searchq);
+			for(UserCountDTO dto : dtoList){
+				list = new ArrayList<UserDetailsDTO>();
+				list = sessionDetailsDao.analyseUserBySessionId(dto.getSid());
+				Map<String, Object> deviceMap = analyseAgentService.deviceIdenticication(list);
+				String deviceType = (String) deviceMap.get("deviceType");
+				dto.setDeviceType(deviceType);
+				returnList.add(dto);
+			}
 			
 		} catch(Exception e) {
 			System.out.println(e);
 		}
-		return dtoList;
+		return returnList;
 	}
 	@Transactional
 	public int getCurrentUserCount(String searchq) {
@@ -218,6 +229,41 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		return dto;
 	}
 	@Transactional
+	public Map<String, Integer> getDeviceCount() {
+		List<SessionDetails> activeSessionList = null;
+		List<UserDetailsDTO> list = null;
+		Map<String, Integer> deviceReturnMap = new HashMap<String, Integer>();
+;		Integer mobileCount = 0;
+		Integer desktopCount = 0;
+		Integer fraudCount = 0;
+		Integer totalCount = 0;
+		try{
+			activeSessionList = sessionDetailsDao.getActiveSessions();
+			totalCount = activeSessionList.size();
+			for(SessionDetails sessionDetail : activeSessionList){
+				list = new ArrayList<UserDetailsDTO>();
+				list = sessionDetailsDao.analyseUserBySessionId(sessionDetail.getSID());
+				Map<String, Object> deviceMap = analyseAgentService.deviceIdenticication(list);
+				String deviceType = (String) deviceMap.get("deviceType");
+				if(deviceType.equalsIgnoreCase("Desktop")) {
+					desktopCount += 1;
+				} else if(deviceType.equalsIgnoreCase("Mobile")){
+					mobileCount += 1;
+				} else if(deviceType.equalsIgnoreCase("Fraud")){
+					fraudCount += 1;
+				}
+			}
+			deviceReturnMap.put("desktopCount", desktopCount);
+			deviceReturnMap.put("mobileCount", mobileCount);
+			deviceReturnMap.put("fraudCount", fraudCount);
+			deviceReturnMap.put("totalCount", totalCount);
+		} catch (Exception e){
+			System.out.println("Error in getDeviceCount:"+e);
+		}
+		return deviceReturnMap;
+	}
+	
+	@Transactional
 	public List<SessionTimeOutDTO> getSessionIDListBySID(Long sid) {
 		List<SessionTimeOutDTO> list = null;
 		
@@ -262,4 +308,5 @@ public class SessionDetailsImpl implements SessionDetailsService{
 		 String result = formatter.format(date);
 		 return result;
 	 }
+
 }

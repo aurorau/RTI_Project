@@ -193,36 +193,43 @@ function setSwapZoom(currentSwapTime){
 }
 
 $(document).on('click', function(e){
-	if(e.which == 1) {
-		
-		if(globalEventType == "TS" ){
-			eventType = "TS";
-		} else {
-			eventType = "LC";
-			globalEventType = "LC"
-		}
-		coordinateX = Math.round(e.clientX);
-		coordinateY = Math.round(e.clientY);
-		eventTriggredPositionDetails(e);
-		
-		if(e.originalEvent.touches) {
-			numberOfFingers = e.originalEvent.touches.length;
-		}
-		sendEventDetailsToController();
-	}
-	if(e.which == 3){
-		globalEventType = "RC";
-		eventType = "RC";
-		coordinateX = Math.round(e.clientX);
-		coordinateY = Math.round(e.clientY);
-		eventTriggredPositionDetails(e);
-		
-		if(e.originalEvent.touches) {
-			numberOfFingers = e.originalEvent.touches.length;
-		}
-		sendEventDetailsToController();
-	}
+	setTimeout(function(){
+		if(globalEventType != "DC"){
+			if(e.which == 1) {
+				
+				if(globalEventType == "TS" ){
+					eventType = "TS";
+				} else if(globalEventType == "DC") {
+					eventType = "DC";
+					globalEventType = "DC"
+				}else {
+					eventType = "LC";
+					globalEventType = "LC"
+				}
+				coordinateX = Math.round(e.clientX);
+				coordinateY = Math.round(e.clientY);
+				eventTriggredPositionDetails(e);
+				
+				if(e.originalEvent.touches) {
+					numberOfFingers = e.originalEvent.touches.length;
+				}
+				sendEventDetailsToController();
+			}
+			if(e.which == 3){
+				globalEventType = "RC";
+				eventType = "RC";
+				coordinateX = Math.round(e.clientX);
+				coordinateY = Math.round(e.clientY);
+				eventTriggredPositionDetails(e);
+				
+				if(e.originalEvent.touches) {
+					numberOfFingers = e.originalEvent.touches.length;
+				}
+				sendEventDetailsToController();
+			}
+		} 
 
+	},400);
 });
 
 function eventTriggredPositionDetails(e){

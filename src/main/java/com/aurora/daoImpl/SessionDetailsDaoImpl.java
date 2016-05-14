@@ -408,4 +408,19 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		return dtoList;
 	}
 
+	public List<SessionDetails> getActiveSessions() throws Exception {
+		List<SessionDetails> sessionDetailsList = null;
+		
+		Session session = getSession();
+		session.getTransaction().begin();
+		
+		Criteria criteria = session.createCriteria(SessionDetails.class)
+				.add(Restrictions.eq("status", "ACTIVE"));
+		
+		sessionDetailsList = criteria.list();
+		session.getTransaction().commit();
+		session.close();
+		return sessionDetailsList;
+	}
+
 }
