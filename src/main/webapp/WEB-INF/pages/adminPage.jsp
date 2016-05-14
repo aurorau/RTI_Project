@@ -32,7 +32,7 @@
 	<h2 style="font-size: 20px;">ADMIN PAGE</h2>
 	<button onclick="getCurrentUserCount()" style="font-size: 12px;">Get Current User Count</button><br>
 	<label style="font-size: 15px; color: #009fbc">Current users : <span id=numberOfCurrentUsers style="font-size: 15px;"></span></label>
-		<div id="userDetailsTableDiv">
+		<div id="userDetailsTable">
 			<label style="font-size: 15px; color: #009fbc">Number of Events : <span id=numberOfEvents style="font-size: 15px;"></span></label>
 			<table id="userDetailsTable">
 			</table>
@@ -76,6 +76,34 @@
 					<td id="totalEvents" style="text-align: left; font-size: 12px;"></td>
 				</tr>
 			</table>
+		</div>
+		
+		<div id="deviceAnlysisTable">
+		<label style="font-size: 15px; color: #009fbc">Analysis Device</label>
+		<table>
+			<thead>
+				<tr>
+					<th>ATTRIBUTE</th>
+					<th>DESKTOP</th>
+					<th>MOBILE</th>
+				</tr>
+			</thead>
+			<tr>
+				<td style="text-align: left;"><b><u>Device by User Events</u></b></td>
+				<td style="text-align: left;" id="deviceUE_D"></td>
+				<td style="text-align: left;" id="deviceUE_M"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>Device by Dimension</u></b></td>
+				<td style="text-align: left;" id="deviceD_D"></td>
+				<td style="text-align: left;" id="deviceD_M"></td>
+			</tr>
+			<tr>
+				<td style="text-align: left;"><b><u>Device by Orientation</u></b></td>
+				<td style="text-align: left;" id="deviceO_D"></td>
+				<td style="text-align: left;" id="deviceO_M"></td>
+			</tr>
+		</table>
 		</div>
 		
 		<div id="eventPersantageTable">
@@ -186,7 +214,7 @@
 		</table>
 	</div>
 		<div id="analyseUserTable">
-		<label style="font-size: 15px; color: #009fbc">Analyse User </label>
+		<label style="font-size: 15px; color: #009fbc">Analysis User </label>
 		<table>
 			<thead>
 				<tr>

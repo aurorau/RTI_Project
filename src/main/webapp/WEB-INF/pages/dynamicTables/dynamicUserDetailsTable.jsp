@@ -3,7 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<display:table name="userDetailsTable" cellspacing="0" requestURI="./getUserDetailsBySessionId" id="userDetailsTable" sort="external" partialList="true" size="${size}" pagesize="${gridSize}" export="false">
+<display:table name="userDetailsTable" class="table events-table" cellspacing="0" requestURI="./getUserDetailsBySessionId" id="userDetailsTable" sort="external" partialList="true" size="${size}" pagesize="${gridSize}" export="false">
 
      <display:column property="eventName" title="Event"/>
      <display:column property="tagName" title="Tag"/>
@@ -16,22 +16,22 @@
      </display:column>
      <display:column property="timeZone" title="TimeZone"/>
      <display:column property="zoneDateTime" title="ZoneDateTime"/>
-	 <display:column property="deviceName" title="Device Name"/>
-	 <display:column property="osName" title="OS"/>
+	 <display:column property="deviceName" title="Device"/>
 	 <display:column title="Device(W,H)">
 	 	<label>${userDetailsTable.screenWidth} , ${userDetailsTable.screenHeight}</label>
 	 </display:column>
+	<%--  <display:column property="osName" title="OS"/> --%>
 	 <display:column title="View(W,H)">
 	 	<label>${userDetailsTable.viewportWidth} , ${userDetailsTable.viewportHeight}</label>
 	 </display:column>
-	 <display:column property="orientation" title="Orientation"/>
+	 <display:column property="orientation" title="View"/>
      <display:column property="browserName" title="Browser"/>
-     <display:column property="browserVersion" title="Version"/>
+    <%--  <display:column property="browserVersion" title="Version"/> --%>
      <display:column property="userAgentId" title="ID"/>
      <display:column  title="Proxies">
      	<label>${userDetailsTable.pid.size()}</label>
      	<c:if test="${userDetailsTable.pid.size() > 0}">
-     		<button onclick="getLocationDetails(${userDetailsTable.bid})" style="height: 20px;"><span class="fa fa-edit"> </span>More</button>
+     		<button onclick="getLocationDetails(${userDetailsTable.bid})" style="height: 20px;"><span class="fa fa-eye proxy"> </span></button>
      	</c:if>
      </display:column>
      
@@ -40,5 +40,5 @@
 </display:table>
 
 <script>
-	$("#numberOfEvents").text(${size});
+	//$("#numberOfEvents").text(${size});
 </script>

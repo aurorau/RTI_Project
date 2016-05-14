@@ -27,34 +27,16 @@ function coordinateGraph(eventCoordinateArray) {
 	          xaxis: {
 	              min:0,
 	              max: 1700,
+	              tickInterval: 100,
 	        	  label:'X-coordinate (px)'
 	          },
 	          yaxis: {
 	              min:0,
 	              max: 1000,
 	        	  label:'Y-coordinate (px)',
+	        	  tickInterval: 100,
 	        	  labelRenderer: $.jqplot.CanvasAxisLabelRenderer
 	          }
-	      }
-	  });
-}
-
-function coordinateGraph1() {
-	 var eventPoints = []; 
-	
-	  eventPoints.push([0, 5]); 
-	  eventPoints.push([10, 15]);
-	  eventPoints.push([890, 125]);
-	  var plot1 = $.jqplot('coordinateGraphDiv', [eventPoints], {  
-	     // series:[{showMarker:false}],
-		  title : 'User Event Coordinates',
-	      axes:{
-	        xaxis:{
-	          label:'X-coordinate (px)'
-	        },
-	        yaxis:{
-	          label:'Y-coordinate (px)'
-	        }
 	      }
 	  });
 }

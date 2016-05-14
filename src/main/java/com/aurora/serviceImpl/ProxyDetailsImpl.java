@@ -39,7 +39,7 @@ public class ProxyDetailsImpl implements ProxyDetailsService {
 		try {
 			 proxyList = new ArrayList<String>();
 			 String ipAddress = request.getHeader("X-FORWARDED-FOR");
-					 //"112.135.1.252,199.189.80.13";
+					 //"112.135.1.252,199.189.80.13,177.207.196.50";
 					 //request.getHeader("X-FORWARDED-FOR");
 					
 			 
@@ -49,6 +49,8 @@ public class ProxyDetailsImpl implements ProxyDetailsService {
 	        		String ip = prxy;
 	        		proxyList.add(ip);
 	        	}
+			 } else {
+				 ipAddress = request.getRemoteAddr();  
 			 }
 			 
 			 for(String proxyIP : proxyList) {

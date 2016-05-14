@@ -110,21 +110,23 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
         return date;
 	}
 
-	public String deviceIdenticication(List<UserDetailsDTO> dto) {
-		List<String> list = new ArrayList<String>();
-		String deviceType = "Not Yet";
-		int desktopCount = 0;
-		int mobileCount = 0; 
+	public Map<String, Object> deviceIdenticication(List<UserDetailsDTO> dto) {
+		Map<String, Object> map = new HashMap<String,Object>();
+		Map<String,Map<String,Double>> map1 = new HashMap<String, Map<String,Double>>();
 		
-		String deviceTypeByEvents = deviceIdentifyByEvents(getUserEventCount(dto));
-		String deviceTypeByOrientation = deviceIdentifyByOrientation(dto);
-		String deviceTypeByDimention = deviceIdentifyByDimention(dto);
+		Map<String,Double> deviceTypeByEvents = deviceIdentifyByEvents(getUserEventCount(dto));
+		Map<String,Double> deviceTypeByOrientation = deviceIdentifyByOrientation(dto);
+		Map<String,Double> deviceTypeByDimention = deviceIdentifyByDimention(dto);
 
-		list.add(deviceTypeByEvents);
-		list.add(deviceTypeByOrientation);
-		list.add(deviceTypeByDimention);
+		map1.put("deviceTypeByEvents",deviceTypeByEvents);
+		map1.put("deviceTypeByOrientation",deviceTypeByOrientation);
+		map1.put("deviceTypeByDimention",deviceTypeByDimention);
 		
-		for(String type : list) {
+		map.put("deviceType",calculateWeightsForAtttribute(map1));
+		map.put("deviceTypeByEvents",deviceTypeByEvents);
+		map.put("deviceTypeByOrientation",deviceTypeByOrientation);
+		map.put("deviceTypeByDimention",deviceTypeByDimention);
+/*		for(String type : list) {
 			if(type.equalsIgnoreCase("Desktop")) {
 				desktopCount += 1;
 			}
@@ -136,13 +138,42 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 				mobileCount += 1;
 			}
 		}
-		deviceType = getDeviceTypeByAttribute(desktopCount, mobileCount);
- 		return deviceType;
+		deviceType = getDeviceTypeByAttribute(desktopCount, mobileCount);*/
+ 		return map;
 	}
-	public String deviceIdentifyByDimention(List<UserDetailsDTO> dto){
+	
+	public String calculateWeightsForAtttribute(Map<String,Map<String,Double>> map){
+		String deviceType = "Not Yet";
+		int desktopCount = 0;
+		int mobileCount = 0; 
+		
+		for(Map.Entry<String, Map<String,Double>> entry : map.entrySet()) {
+			System.out.println("Attribute : "+entry.getKey());
+			for(Map.Entry<String,Double> entry1 : entry.getValue().entrySet()) {
+				if(entry1.getKey().equalsIgnoreCase("desktopDevice")){
+					desktopCount += entry1.getValue();
+				} else {
+					mobileCount += entry1.getValue();
+				}
+				System.out.println(entry1.getKey()+" - "+entry1.getValue());
+			}
+		}
+		if((desktopCount/3)*100 > 80){
+			deviceType = "Desktop";
+		} else if((mobileCount/3)*100 > 80){
+			deviceType = "Mobile";
+		} else {
+			deviceType = "Fraud";
+		}
+		System.out.println("Device Type :"+deviceType);
+		return deviceType;
+	}
+	
+	public Map<String,Double> deviceIdentifyByDimention(List<UserDetailsDTO> dto){
 		String deviceType = "Not Yet";
 		int desktopDevice = 0;
 		int mobileDevice = 0;
+		Map<String,Double> map = new HashMap<String,Double>();
 		
 		for(UserDetailsDTO dt : dto){
 			if(Integer.parseInt(dt.getScreenHeight()) != -100) {
@@ -157,13 +188,16 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 			}
 
 		}
-		deviceType = getDeviceTypeByAttribute(desktopDevice, mobileDevice);
-		return deviceType;
+		//deviceType = getDeviceTypeByAttribute(desktopDevice, mobileDevice);
+		map.put("desktopDevice", (double) (desktopDevice/dto.size()));
+		map.put("mobileDevice", (double) (mobileDevice/dto.size()));
+		return map;
 	}
-	public String deviceIdentifyByOrientation(List<UserDetailsDTO> dto){
+	public Map<String,Double> deviceIdentifyByOrientation(List<UserDetailsDTO> dto){
 		String deviceType = "Not Yet";
 		int desktopDevice = 0;
 		int mobileDevice = 0;
+		Map<String,Double> map = new HashMap<String,Double>();
 		
 		for(UserDetailsDTO dt : dto){
 			if(dt.getOrientation().equalsIgnoreCase("-1")){
@@ -172,12 +206,15 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 				mobileDevice += 1;
 			}
 		}
-		deviceType = getDeviceTypeByAttribute(desktopDevice, mobileDevice);
-		return deviceType;
+		//deviceType = getDeviceTypeByAttribute(desktopDevice, mobileDevice);
+		map.put("desktopDevice", (double) (desktopDevice/dto.size()));
+		map.put("mobileDevice", (double) (mobileDevice/dto.size()));
+		return map;
 	}
-	public String deviceIdentifyByEvents(Map<String, Integer> map){
+	public Map<String,Double> deviceIdentifyByEvents(Map<String, Integer> map){
 		int desktopDevice = 0;
 		int mobileDevice = 0;
+		Map<String,Double> map1 = new HashMap<String,Double>();
 		
 		if(map.get("RC_COUNT").intValue() > 0) {
 			desktopDevice += 1;
@@ -208,9 +245,12 @@ public class AnalyseAgentServiceImpl implements AnalyseAgentService {
 		}
 		
 		String deviceType = "Not Yet";
-		deviceType = getDeviceTypeByAttribute(desktopDevice, mobileDevice);
+		int totalCount = mobileDevice + desktopDevice;
+		//deviceType = getDeviceTypeByAttribute(desktopDevice, mobileDevice);
+		map1.put("desktopDevice", (double) (desktopDevice/totalCount));
+		map1.put("mobileDevice", (double) (mobileDevice/totalCount));
 		
-		return deviceType;
+		return map1;
 	}
 	
 	public Map<String, Integer> getUserEventCount(List<UserDetailsDTO> dto){

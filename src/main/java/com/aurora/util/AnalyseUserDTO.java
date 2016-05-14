@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class AnalyseUserDTO {
 	Map<String, Object> eventCount;
-	String deviceType;
+	Map<String, Object> deviceType;
 	Map<String, Map<String, Integer>> userStatus;
 	List<UserDetailsDTO> userDetailsList;
 
@@ -25,11 +25,11 @@ public class AnalyseUserDTO {
 		this.eventCount = eventCount;
 	}
 
-	public String getDeviceType() {
+	public Map<String, Object> getDeviceType() {
 		return deviceType;
 	}
 
-	public void setDeviceType(String deviceType) {
+	public void setDeviceType(Map<String, Object> deviceType) {
 		this.deviceType = deviceType;
 	}
 

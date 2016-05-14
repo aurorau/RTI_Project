@@ -7,11 +7,28 @@ $(document).ready(function() {
 	$("#analyseTableId").hide();
 	$("#analyseUserTable").hide();
 	$("#eventPersantageTable").hide();
+	$("#deviceAnlysisTable").hide();
 	getCurrentUserCount();
 	setInterval(function(){ 
 		getCurrentUserCount();
 	},30000);
 });
+
+function userLogin(){
+	
+	var userName = $("#userName").val().trim();
+	var password = $("#password").val().trim();
+	
+	var formdata = 'ajax=true&userName='+userName+'&password='+password;
+	$.ajax({
+        type: "POST",
+        url: "userLogin",
+        data: formdata,
+        success: function(data) {
+        	
+        }
+	});
+}
 
 function getCurrentUserCount () {
 	var allUsers = 0;
@@ -42,6 +59,7 @@ function getCurrentUserCount () {
 					        $('#numberOfCurrentUsers').text('0');
 				        	$("#analyseUserTable").hide();
 				        	$("#eventPersantageTable").hide();
+				        	$("#deviceAnlysisTable").hide();
 						}
 
 					  }
@@ -58,13 +76,13 @@ function analyseUser(sid){
         url: "analyseUserBySessionId",
         data: formdata,
         success: function(data) {
-        	
         	$("#analyseUserTable").show();
         	$("#eventPersantageTable").show();
+        	$("#deviceAnlysisTable").show();
+        	$("#analyseTableId").show();
         	
         	if(data.result.eventCount != null) {
-        		$("#analyseTableId").show();
-        		$("#device").text(": "+data.result.deviceType);
+        		
         		$("#firstAccessTime").text(": "+data.result.eventCount.FIRST_ACCESS_TIME);
         		$("#lastAccessTime").text(": "+data.result.eventCount.LAST_ACCESS_TIME);
         		$("#totalEvents").text(": "+data.result.eventCount.TOTAL_COUNT);
@@ -83,6 +101,15 @@ function analyseUser(sid){
         		$("#pLC").text(": "+data.result.eventCount.USER_EVENT_COUNT.P_COUNT_LC);
         		$("#numOfSessionTimeout").text(": "+data.result.eventCount.NUM_OF_SESSION_TIMEOUT);
         		$("#userIdleTime").text(": "+data.result.eventCount.MAX_IDLE_TIME+" min");
+        		
+        		//Device analysis table
+        		$("#device").text(": "+data.result.deviceType.deviceType);
+        		$("#deviceUE_D").text(": "+data.result.deviceType.deviceTypeByEvents.desktopDevice*100+" %");
+        		$("#deviceUE_M").text(": "+data.result.deviceType.deviceTypeByEvents.mobileDevice*100+" %");
+        		$("#deviceD_D").text(": "+data.result.deviceType.deviceTypeByDimention.desktopDevice*100+" %");
+        		$("#deviceD_M").text(": "+data.result.deviceType.deviceTypeByDimention.mobileDevice*100+" %");
+        		$("#deviceO_D").text(": "+data.result.deviceType.deviceTypeByOrientation.desktopDevice*100+" %");
+        		$("#deviceO_M").text(": "+data.result.deviceType.deviceTypeByOrientation.mobileDevice*100+" %");
         		
   /*      		if(data.result.eventCount.MAX_IDLE_TIME > 10) {
             		$("#userIdleTime").text(": "+data.result.eventCount.MAX_IDLE_TIME+" sec");

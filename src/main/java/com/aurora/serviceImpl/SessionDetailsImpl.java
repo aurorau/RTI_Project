@@ -25,6 +25,7 @@ import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.Constants;
 import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.SessionTimeOutDTO;
+import com.aurora.util.UserCountDTO;
 import com.aurora.util.UserDetailsDTO;
 
 @Service("sessionDetailsService")
@@ -146,17 +147,29 @@ public class SessionDetailsImpl implements SessionDetailsService{
 	}
 
 	@Transactional
-	public List<CurrentUsersDTO> getCurrentUserCount() {
-		List<CurrentUsersDTO> dtoList = null;
-		
+	public List<UserCountDTO> getCurrentUserCountList(String sortField, int order, int start, int gridTableSize,String searchq) {
+		List<UserCountDTO> dtoList = null;
+
 		try {
-			dtoList = sessionDetailsDao.getCurrentUserCount();
+			dtoList = sessionDetailsDao.getCurrentUserCountList(sortField, order, start, gridTableSize,searchq);
+			
 		} catch(Exception e) {
 			System.out.println(e);
 		}
 		return dtoList;
 	}
-
+	@Transactional
+	public int getCurrentUserCount(String searchq) {
+		int count = 0;
+		
+		try {
+			count = sessionDetailsDao.getCurrentUserCount(searchq);
+		}catch (Exception e){
+			System.out.println("Error userCount:"+e);
+		}
+		
+		return count;
+	}
 	@Transactional
 	public List<UserDetailsDTO> getUserDetailsBySessionId(String sortField, int order, int start, int gridTableSize,String searchq, Long sid) {
 		
@@ -191,11 +204,11 @@ public class SessionDetailsImpl implements SessionDetailsService{
 			list = sessionDetailsDao.analyseUserBySessionId(sessionPK);
 			
 			Map<String, Object> map = analyseAgentService.getEventCount(list);
-			String deviceType = analyseAgentService.deviceIdenticication(list);
+			Map<String, Object> deviceMap = analyseAgentService.deviceIdenticication(list);
 			Map<String, Map<String, Integer>> userAnalyseMap = analyseUserService.analyseUser(list);
 			
 			dto.setEventCount(map);
-			dto.setDeviceType(deviceType);
+			dto.setDeviceType(deviceMap);
 			dto.setUserStatus(userAnalyseMap);
 			dto.setUserDetailsList(list);
 			

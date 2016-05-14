@@ -12,6 +12,7 @@ import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.SessionBrowserDetailsDTO;
 import com.aurora.util.SessionTimeOutDTO;
+import com.aurora.util.UserCountDTO;
 import com.aurora.util.UserDetailsDTO;
 
 public interface SessionDetailsService {
@@ -34,7 +35,8 @@ public interface SessionDetailsService {
 	 */
 	@GET
 	@Path("getCurrentUserCount")
-	public List<CurrentUsersDTO> getCurrentUserCount(); 
+	public List<UserCountDTO> getCurrentUserCountList(String sortField, int order, int start, int gridTableSize, String searchq); 
+	public int getCurrentUserCount(String searchq);
 	/**
 	 *  Get getUserDetailsBySessionId
 	 *  

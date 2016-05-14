@@ -24,15 +24,16 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.aurora.model.BrowserDetails;
 import com.aurora.model.DeviceDetails;
@@ -47,10 +48,13 @@ import com.aurora.service.SessionDetailsService;
 import com.aurora.util.AnalyseUserDTO;
 import com.aurora.util.ClickDetails;
 import com.aurora.util.Constants;
+import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.EventTypes;
 import com.aurora.util.GeoLocation;
 import com.aurora.util.JsonResponce;
+import com.aurora.util.LoginBean;
 import com.aurora.util.ProxyDetailsDTO;
+import com.aurora.util.UserCountDTO;
 import com.aurora.util.UserDetailsDTO;
 import com.maxmind.geoip.LookupService;
 
@@ -113,8 +117,14 @@ public class HomePageController {
 	 }
 	 
 	 @RequestMapping(method = RequestMethod.GET, value="/adminPage")
-	 public ModelAndView adminPage() throws Exception {
-		 return new ModelAndView("adminPage");
+	 public ModelAndView adminPage(HttpServletRequest request, HttpServletResponse response, LoginBean loginBean) throws Exception {
+		ModelAndView model = new ModelAndView("login");
+		model.addObject("loginBean", loginBean);
+		return model;
+	 }
+	 @RequestMapping(method = RequestMethod.GET, value="/dashboard")
+	 public ModelAndView dashboard() throws Exception {
+		 return new ModelAndView("dashboard");
 	 }
 	 
 	 @RequestMapping(method = RequestMethod.GET, value="/gallary")
@@ -122,16 +132,25 @@ public class HomePageController {
 		 return new ModelAndView("Gallary");
 	 }
 	 
-/*	 @RequestMapping(method = RequestMethod.GET, value="/getLocationDetails")
-	 public @ResponseBody JsonResponce getLocationDetails(HttpServletRequest request) throws Exception {
-		 JsonResponce res= new JsonResponce();
-		 
-		 String ipAddress = request.getParameter("ipAddress");
-		 String detailsLong = getLocation(ipAddress).toString();
-		 res.setStatus("success");
-		 res.setResult(detailsLong);
-		 return res;
-	 }*/
+	 @RequestMapping(value="/login",method=RequestMethod.POST)
+	 public ModelAndView executeLogin(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("loginBean") LoginBean loginBean){
+	    ModelAndView model= null;
+	    try{
+
+	        if(loginBean.getUsername().equalsIgnoreCase("admin") && loginBean.getPassword().equalsIgnoreCase("123")){
+	            System.out.println("User Login Successful");
+	            request.setAttribute("loggedInUser", loginBean.getUsername());
+	            model = new ModelAndView("adminPage");
+	    	}else{
+	    		model = new ModelAndView("login");
+	    		model.addObject("loginBean", loginBean);
+	            request.setAttribute("message", "Invalid credentials!!");
+	    	}
+	     }catch(Exception e){
+	    	 System.out.println("Error :"+e);
+	     }
+	    return model;
+     }
 	 
 	 @RequestMapping(method = RequestMethod.GET, value="/heartBeat")
 	 public @ResponseBody JsonResponce heartBeat(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -167,7 +186,7 @@ public class HomePageController {
 	 }
 	 
 	 
-	 @RequestMapping(method = RequestMethod.GET, value="/getCurrentUserCount")
+/*	 @RequestMapping(method = RequestMethod.GET, value="/getCurrentUserCount")
 	 public @ResponseBody JsonResponce getCurrentUserCount(HttpServletResponse response) throws Exception {
 		 JsonResponce res= new JsonResponce();
 		 
@@ -179,6 +198,38 @@ public class HomePageController {
 		 res.setStatus("success");
 		 res.setResult(sessionDetailsService.getCurrentUserCount());
 		 return res;
+	 }*/
+	 
+	 @RequestMapping(method = RequestMethod.GET, value="/getCurrentUserCount")
+	 public ModelAndView getCurrentUserCount(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		 
+	     response.setHeader("Access-Control-Allow-Origin", "*");
+	     response.setHeader("Access-Control-Allow-Methods", "GET");
+	     response.setHeader("Access-Control-Max-Age", "3600");
+	     response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+	     
+	     List<UserCountDTO> list = null;
+	     
+		 Model model = new ExtendedModelMap();
+		 ParamEncoder paramEncoder = new ParamEncoder(Constants.USER_COUNT_TABLE);
+		 
+	    	try{
+	    		String sortField = ServletRequestUtils.getStringParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_SORT));
+	    		int order = ServletRequestUtils.getIntParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_ORDER), 0);
+	    		int page = ServletRequestUtils.getIntParameter(request, paramEncoder.encodeParameterName(TableTagParameters.PARAMETER_PAGE), 0);
+	    		int start = (page>0) ? (page - 1) * Constants.GRID_TABLE_SIZE : 0;
+	    		String searchq = ServletRequestUtils.getStringParameter(request, Constants.PARAMETER_SEARCH);
+			
+	    		list = sessionDetailsService.getCurrentUserCountList(sortField,order,start, Constants.GRID_TABLE_SIZE, searchq);
+	    		int listCount = sessionDetailsService.getCurrentUserCount(searchq);
+			
+	    		request.setAttribute(Constants.TABLE_SIZE, listCount );
+	    		request.setAttribute(Constants.GRID_TABLE_SIZE_KEY, Constants.GRID_TABLE_SIZE);
+	    		model.addAttribute(Constants.USER_COUNT_TABLE, list);
+	    	} catch (Exception e) {
+	    		System.out.println(e);
+	    	}
+		 return new ModelAndView("dynamicTables/dynamicUserCountTable", model.asMap());
 	 }
 	 
 	 @RequestMapping(method = RequestMethod.GET, value="/getUserDetailsBySessionId")

@@ -10,6 +10,10 @@ public class Constants {
 	   * This is userDetailsTable table id
 	   */
 	public static final String USER_DETAILS= "userDetailsTable";
+	  /**
+	   * This is userCountTable table id
+	   */
+	public static final String USER_COUNT_TABLE= "userCountTable";
 	
 	  /**
 	   * This is analyseUserTable table id

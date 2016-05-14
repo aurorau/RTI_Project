@@ -8,5 +8,5 @@ import com.aurora.util.UserDetailsDTO;
 public interface AnalyseAgentService {
 
 	public Map<String, Object> getEventCount(List<UserDetailsDTO> dto);
-	public String deviceIdenticication(List<UserDetailsDTO> dto);
+	public Map<String, Object> deviceIdenticication(List<UserDetailsDTO> dto);
 }

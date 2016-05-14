@@ -43,6 +43,7 @@ public class AnalyseUserServiceImpl implements AnalyseUserService {
 		Map<String, Integer> analyseUserByEventSquence = analyseUserByEventSquence(dto);
 		Map<String, Integer> analyseUserByProxies = analyseUserByProxies(dto);
 		Map<String, Integer> analyseUserByLocation = analyseUserByLocation(dto);
+		Map<String, Integer> analyseUserByDeviceDiamention = analyseUserByDeviceDiamention(dto);
 		
 		map.put("BROWSER_ID",analyseUserByBrowserId);
 		map.put("TIME_ZONE",analyseUserByTimeZone);
@@ -52,6 +53,10 @@ public class AnalyseUserServiceImpl implements AnalyseUserService {
 		map.put("USER_LOCATION",analyseUserByLocation);
 		
 		return map;
+	}
+	
+	public Map<String, Integer> analyseUserByDeviceDiamention(List<UserDetailsDTO> dto){
+		return null;
 	}
 	
 	public Map<String, Integer> analyseUserByLocation(List<UserDetailsDTO> dto){
@@ -197,12 +202,16 @@ public class AnalyseUserServiceImpl implements AnalyseUserService {
 	}
 	public List<String> getCountryListByTimeOffset(String offset){
 		List<String> list =  new ArrayList<String>();
-		Map<String,String> map = getTimeCountryMap();
+		Map<String,String> map = readPropertyFile.getCountryTimeMap();
 		
 		for (Map.Entry<String, String> entry : map.entrySet()){
 			String val = entry.getValue();
-			if(val.equalsIgnoreCase(offset)){
-				list.add(entry.getKey());
+			String[] timeZones = val.split(",");
+			
+			for(String timeZone : timeZones) {
+				if(timeZone.equalsIgnoreCase(offset)){
+					list.add(entry.getKey());
+				}
 			}
 		}
 		return list;

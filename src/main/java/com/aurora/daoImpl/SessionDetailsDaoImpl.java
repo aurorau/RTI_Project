@@ -1,6 +1,7 @@
 package com.aurora.daoImpl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.aurora.model.SessionDetails;
 import com.aurora.util.CurrentUsersDTO;
 import com.aurora.util.HibernateBase;
 import com.aurora.util.SessionTimeOutDTO;
+import com.aurora.util.UserCountDTO;
 import com.aurora.util.UserDetailsDTO;
 
 @Repository("sessionDetailsDao")
@@ -72,31 +74,53 @@ public class SessionDetailsDaoImpl extends HibernateBase implements SessionDetai
 		return sessionDetails;
 	}
 
-	public List<CurrentUsersDTO> getCurrentUserCount() throws Exception {
-		List<CurrentUsersDTO> dtoList = null;
+	public List<UserCountDTO> getCurrentUserCountList(String sortField, int order, int start, int gridTableSize, String searchq) throws Exception {
+		int count = start;
 		
-/*		String currentTime = getTime();
-		String beforeTime = getBeforeTime();
-		String beforeHeartBeatTime = getBeforeHeartBeatTime();*/
+		List<UserCountDTO> dtoList = null;
+		List<UserCountDTO> dtoListCount = new ArrayList<UserCountDTO>();
 		
 		Session session = getSession();
 		session.getTransaction().begin();
 		
 		Criteria criteria = session.createCriteria(SessionDetails.class,"sessionDetails")
 				.add(Restrictions.eq("status", "ACTIVE"));
-/*				.add(Restrictions.between("sessionDetails.heartBeatTime",beforeHeartBeatTime, currentTime))
-				.add(Restrictions.between("sessionDetails.lastAccessTime",beforeTime, currentTime));*/
 		criteria.addOrder(Order.asc("SID"));
+		criteria.setFirstResult(start)
+        		.setMaxResults(gridTableSize);
 		criteria.setProjection(Projections.projectionList()
-				.add(Projections.property("SID").as("sid"))
-				.add(Projections.property("lastAccessTime").as("lastAccessTime")));
+				.add(Projections.property("SID").as("sid")));
 		
-		dtoList = criteria.setResultTransformer(Transformers.aliasToBean(CurrentUsersDTO.class)).list();
+		dtoList = criteria.setResultTransformer(Transformers.aliasToBean(UserCountDTO.class)).list();
 		session.getTransaction().commit();
 		session.close();
-		return dtoList;
+		
+		if(dtoList.size() > 0 ){
+			for(UserCountDTO dto : dtoList) {
+				dto.setCountId(count+1);
+				dtoListCount.add(dto);
+				count +=1;
+			}	
+		}
+		return dtoListCount;
 	}
-	
+	public int getCurrentUserCount(String searchq) throws Exception{
+		Session session = getSession();
+		session.getTransaction().begin();
+		
+		int totalRowCount =0;
+		Criteria criteria = session.createCriteria(SessionDetails.class);
+		criteria.add(Restrictions.eq("status", "ACTIVE"))
+		.setProjection(Projections.count("SID"));;
+		
+		Long value = (Long) criteria.uniqueResult();
+		totalRowCount = Integer.valueOf(value.intValue());
+		
+		session.getTransaction().commit();
+		session.close();
+		
+		return totalRowCount;
+	}
 	public String getTime(){
 		 
 		 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
